@@ -1,0 +1,7 @@
+- Testklasse voor enum Mark?
+
+
+- Dingen om op te letten bij Protocol:
+
+. Communiceren over extensies die server en client supporten. -> Weet van tevoren niet hoeveel het er zijn dus extra delimiter nodig? of 0 of 1 erachteraan?
+. Borddimensies
