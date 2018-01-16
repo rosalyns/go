@@ -37,15 +37,15 @@ public class GoClient extends Thread {
 		
 		try {
 			GoClient client = new GoClient(args[0], host, port);
-			/*TODO: misschien nodig? 
-			 * client.sendMessage(args[0]);
-			 */
+			client.sendMessage(args[0]);
 			client.start();
 
+			/*
 			do {
 				//TODO: misschien nodig?
 				client.sendMessage("iets?");
 			} while (!client.isConnected());
+			*/
 
 		} catch (IOException e) {
 			print("ERROR: couldn't construct a client object!");
@@ -64,8 +64,6 @@ public class GoClient extends Thread {
 	private String clientName;
 	private TUIView view;
 	
-	
-	
 	public GoClient(String name, InetAddress host, int port) throws IOException {
 		sock = new Socket(host, port);
 		this.clientName = name;
@@ -77,10 +75,6 @@ public class GoClient extends Thread {
 	}
 	
 	public void run() {
-		
-		
-		
-		
 		Thread viewThread = new Thread(view);
 		viewThread.start();
 	}
@@ -100,6 +94,23 @@ public class GoClient extends Thread {
 			out.flush();
 		} catch (IOException e) {
 			//shutdown();
+		}
+	}
+	public void sendRequestToServer(String playerName) {
+		String gameRequest = "REQUEST";
+		gameRequest += "_" + playerName;
+		gameRequest += "\n\n";
+		
+		sendCommandToServer(gameRequest);
+	}
+	
+	public void sendCommandToServer(String command) {
+		try {
+			System.out.println("Sending \"" + command + "\" to server");
+			out.write(command);
+			out.flush();
+		} catch (IOException e) {
+			System.out.println("In sendCommandToServer: There is no server to send a message to.");
 		}
 	}
 	

@@ -27,8 +27,9 @@ public class TUIView implements Observer, Runnable {
 					+ "Type HELP if you want to see all the commands. ").toUpperCase();
 			
 			String[] words = line.split(" ");
-			if (words.length == 3 && words[0].equals("ADD") && words[1].equals("PARTY")) {
-				print("wants to add party.");
+			if (words.length == 2 && words[0].equals("REQUEST")) {
+				controller.sendRequestToServer(words[1]);
+				print("requesting a game with " + words[1]);
 			} else if (words.length == 1 && words[0].equals("IETS")) {
 				print("iets.");
 			} else {
