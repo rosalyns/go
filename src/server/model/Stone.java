@@ -1,6 +1,6 @@
 package server.model;
 
-public enum Mark {
+public enum Stone {
 	BLACK, WHITE, EMPTY;
 
 	/*
@@ -11,7 +11,7 @@ public enum Mark {
 	 * Returns the other mark.
 	 * @return the other mark is this mark is not EMPTY or EMPTY
 	 */
-	public Mark other() {
+	public Stone other() {
 		if (this == BLACK) {
 			return WHITE;
 		} else if (this == WHITE) {

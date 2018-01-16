@@ -6,12 +6,10 @@ package server.model;
  */
 
 public abstract class Player {
-
     private String name;
-    private Mark mark;
-
+    private Stone mark;
    
-    public Player(Mark mark, String name) {
+    public Player(Stone mark, String name) {
         this.name = name;
         this.mark = mark;
     }
@@ -20,7 +18,7 @@ public abstract class Player {
         return name;
     }
 
-    public Mark getMark() {
+    public Stone getMark() {
         return mark;
     }
 

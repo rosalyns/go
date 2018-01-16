@@ -34,13 +34,14 @@ public class Lobby extends Thread {
 			}
 			
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
+	//better to start with players?
 	public void startGame(ClientHandler player1, ClientHandler player2) {
 		System.out.println(thisMoment() + "Starting a game with players " + 
 				player1.getName() + " and " + 

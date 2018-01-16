@@ -1,11 +1,11 @@
-package client.tests;
+package server.tests;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import client.model.*;
+import server.model.*;
 
 public class PlayerTest {
 	private Player hPlayer;
@@ -14,8 +14,8 @@ public class PlayerTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		cPlayer = new ComputerPlayer(Mark.BLACK, new RandomStrategy());
-		hPlayer = new HumanPlayer(Mark.WHITE, "Dummy");
+		cPlayer = new ComputerPlayer(Stone.BLACK, new RandomStrategy());
+		hPlayer = new HumanPlayer(Stone.WHITE, "Dummy");
 		board = new Board(9);
 	}
 
@@ -37,8 +37,8 @@ public class PlayerTest {
 	
 	@Test
 	public void testGetMark() {
-		assertTrue(hPlayer.getMark() == Mark.WHITE);
-		assertTrue(cPlayer.getMark() == Mark.BLACK);
+		assertTrue(hPlayer.getMark() == Stone.WHITE);
+		assertTrue(cPlayer.getMark() == Stone.BLACK);
 	}
 
 	@Test

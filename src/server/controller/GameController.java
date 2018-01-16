@@ -1,9 +1,12 @@
 package server.controller;
 
-public class GameController extends Thread {
+import server.model.*;
 
+public class GameController extends Thread {
+	private Game game; 
+	
 	public GameController() {
-		// TODO Auto-generated constructor stub
+		game = new Game();
 	}
 
 	

@@ -8,7 +8,7 @@ public class BasicStrategy implements Strategy {
 	}
 
 	@Override
-	public int determineMove(Board b, Mark m) {
+	public int determineMove(Board b, Stone m) {
 		// TODO Auto-generated method stub
 		return 0;
 	}

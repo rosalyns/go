@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class HumanPlayer extends Player {
 
-    public HumanPlayer(Mark mark, String name) {
+    public HumanPlayer(Stone mark, String name) {
         super(mark, name);
     }
 

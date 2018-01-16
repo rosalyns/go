@@ -3,12 +3,12 @@ package server.model;
 public class ComputerPlayer extends Player {
 	private Strategy strategy;
 	
-	public ComputerPlayer(Mark mark, Strategy strategy) {
+	public ComputerPlayer(Stone mark, Strategy strategy) {
 		super(mark, strategy.getName() + "-computer-" + mark.toString());
 		this.strategy = strategy;
 	}
 	
-	public ComputerPlayer(Mark mark) {
+	public ComputerPlayer(Stone mark) {
 		this(mark, new RandomStrategy());
 	}
 

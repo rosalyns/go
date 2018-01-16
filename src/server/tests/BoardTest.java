@@ -1,4 +1,4 @@
-package client.tests;
+package server.tests;
 
 import static org.junit.Assert.*;
 
@@ -9,8 +9,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import client.model.Board;
-import client.model.Mark;
+import server.model.*;
 
 public class BoardTest {
 	private Board board;
@@ -45,39 +44,39 @@ public class BoardTest {
 	
 	@Test
 	public void testSetAndGetFieldRowCol() {
-		board.setField(Mark.BLACK, 3, 3);
-		assertEquals(Mark.BLACK, board.getField(3, 3));
+		board.setField(new Move(Stone.BLACK, 3, 3));
+		assertEquals(Stone.BLACK, board.getField(3, 3));
 	}
 	
 	@Test
-	public void testSetAndGetFieldIndex() {
-		board.setField(Mark.BLACK, 15);
-		assertEquals(Mark.BLACK, board.getField(15));
+	public void testGetFieldIndex() {
+		board.setField(new Move(Stone.BLACK, 3, 3));
+		assertEquals(Stone.BLACK, board.getField(3 * dim + 3));
 	}
 	
 	
 	
 	@Test
 	public void testDeepCopy() {
-		board.setField(Mark.BLACK, 3);
+		board.setField(new Move(Stone.BLACK, 3, 3));
 		Board copyBoard = board.deepCopy();
-		copyBoard.setField(Mark.WHITE, 3);
+		copyBoard.setField(new Move(Stone.WHITE, 3, 3));
 		assertTrue(copyBoard instanceof Board);
-		assertEquals(board.getField(3), Mark.BLACK);
-		assertEquals(copyBoard.getField(3), Mark.WHITE);
-		assertEquals(copyBoard.getField(5), Mark.EMPTY);
+		assertEquals(board.getField(3, 3), Stone.BLACK);
+		assertEquals(copyBoard.getField(3, 3), Stone.WHITE);
+		assertEquals(copyBoard.getField(4, 4), Stone.EMPTY);
 	}
 	
 	@Test
 	public void testIsEmptyFieldIndex() {
-		board.setField(Mark.BLACK, 3);
-		assertFalse(board.isEmptyField(3));
+		board.setField(new Move(Stone.BLACK, 3, 3));
+		assertFalse(board.isEmptyField(3 * dim + 3));
 		assertTrue(board.isEmptyField(2));
 	}
 	
 	@Test
 	public void testIsEmptyFieldRowCol() {
-		board.setField(Mark.BLACK, 3, 3);
+		board.setField(new Move(Stone.BLACK, 3, 3));
 		assertFalse(board.isEmptyField(3, 3));
 		assertTrue(board.isEmptyField(2, 2));
 	}
@@ -107,7 +106,7 @@ public class BoardTest {
 		Set<Integer> emptiesSet = new HashSet<Integer>(emptiesList);
 		assertEquals(emptiesSet.size(), dim * dim);
 		
-		board.setField(Mark.BLACK, 0);
+		board.setField(new Move(Stone.BLACK, 0, 0));
 		emptiesList = board.getEmptyFields();
 		emptiesSet = new HashSet<Integer>(emptiesList);
 		assertEquals(emptiesSet.size(), dim * dim - 1);
@@ -115,19 +114,57 @@ public class BoardTest {
 	
 	@Test
 	public void testReset() {
-		board.setField(Mark.BLACK, 0);
-		board.setField(Mark.WHITE, 1);
-		board.setField(Mark.BLACK, 2);
+		board.setField(new Move(Stone.BLACK, 0, 0));
+		board.setField(new Move(Stone.WHITE, 1, 1));
+		board.setField(new Move(Stone.BLACK, 2, 2));
 		board.reset();
-		assertEquals(Mark.EMPTY, board.getField(0));
-		assertEquals(Mark.EMPTY, board.getField(1));
-		assertEquals(Mark.EMPTY, board.getField(2));
+		assertEquals(Stone.EMPTY, board.getField(0, 0));
+		assertEquals(Stone.EMPTY, board.getField(1, 1));
+		assertEquals(Stone.EMPTY, board.getField(2, 2)); 
 	}
 	
 	@Test
 	public void testChangeDim() {
 		board2.changeDim(12);
 		assertEquals(board2.dim(), 12);
+	}
+	
+	@Test
+	public void testCapturedGroup() {
+		/*
+		 *  ooo
+		 * oxxxo
+		 *  ooo
+		 */
+		board.setField(new Move(Stone.BLACK, 0, 1));
+		board.setField(new Move(Stone.BLACK, 0, 2));
+		board.setField(new Move(Stone.BLACK, 0, 3));
+		board.setField(new Move(Stone.BLACK, 1, 0));
+		board.setField(new Move(Stone.BLACK, 2, 1));
+		board.setField(new Move(Stone.BLACK, 2, 2));
+		board.setField(new Move(Stone.BLACK, 2, 3));
+		board.setField(new Move(Stone.BLACK, 1, 4));
+		board.setField(new Move(Stone.WHITE, 1, 1));
+		board.setField(new Move(Stone.WHITE, 1, 2));
+		board.setField(new Move(Stone.WHITE, 1, 3));
+		
+		List<Integer> capturedGroup = board.capturedGroup(new Move(Stone.WHITE, 1, 3));
+		assertFalse(capturedGroup.isEmpty());
+		assertTrue(capturedGroup.contains(board.index(1, 1)));
+		assertTrue(capturedGroup.contains(board.index(1, 2)));
+		assertTrue(capturedGroup.contains(board.index(1, 3)));
+		assertTrue(capturedGroup.size() == 3);
+		
+	}
+	
+	@Test
+	public void testIsNeighbourOfGroup() {
+		
+	}
+	
+	@Test
+	public void testIsNeighbourOfStone() {
+		
 	}
 
 }

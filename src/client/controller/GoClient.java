@@ -54,8 +54,6 @@ public class GoClient extends Thread {
 
 	}
 	
-	
-	
 	// --------------- CLASS METHODS ---------------
 	
 	private Socket sock;

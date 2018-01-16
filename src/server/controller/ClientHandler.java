@@ -48,6 +48,7 @@ public class ClientHandler extends Thread {
 		try {
 			while ((message = in.readLine()) != null && !message.equals("exit")) {
 				server.broadcast(clientName + ": " + message);
+				//readCommand
 			}
 			shutdown();
 		} catch (IOException e) {
