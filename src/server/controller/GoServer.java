@@ -30,7 +30,7 @@ public class GoServer {
 	public GoServer(int portArg) {
 		threads = new ArrayList<ClientHandler>();
 		this.port = portArg;
-		lobby = new Lobby();
+		lobby = new Lobby(this);
 		lobby.start();
 	}
 	/**
@@ -95,6 +95,10 @@ public class GoServer {
 	 */
 	public void removeHandler(ClientHandler handler) {
 		threads.remove(handler);
+	}
+	
+	public boolean isRunning() {
+		return !sock.isClosed();
 	}
 
 }

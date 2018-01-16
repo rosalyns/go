@@ -77,6 +77,21 @@ public class GoClient extends Thread {
 	public void run() {
 		Thread viewThread = new Thread(view);
 		viewThread.start();
+		
+		boolean keepGoing = true;
+		while (keepGoing) {
+			try {
+				String message = in.readLine();
+				if (message != null) {
+					print(message);
+				} else {
+					keepGoing = false;
+				}
+			} catch (IOException e) {
+				keepGoing = false;
+			}
+		}
+		shutdown();
 	}
 	
 	public boolean isConnected() {
@@ -93,7 +108,7 @@ public class GoClient extends Thread {
 			out.write(msg + "\n");
 			out.flush();
 		} catch (IOException e) {
-			//shutdown();
+			shutdown();
 		}
 	}
 	public void sendRequestToServer(String playerName) {
@@ -114,4 +129,7 @@ public class GoClient extends Thread {
 		}
 	}
 	
+	public void shutdown() {
+		
+	}
 }

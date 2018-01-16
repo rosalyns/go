@@ -42,7 +42,7 @@ public class TUIView implements Observer, Runnable {
 
 	private static String readString(String prompt) {
 		String result = null;
-		System.out.print(prompt);
+		System.out.println(prompt);
 		if (in.hasNextLine()) {
 			result = in.nextLine();
 		}
