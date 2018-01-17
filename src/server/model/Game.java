@@ -31,7 +31,9 @@ public class Game {
 			if (move == PASS) {
 				consecutivePasses++;
 			} else {
+				board.setField(new Move(players.get(currentPlayer).getMark(), move));
 				consecutivePasses = 0;
+				board.doCaptures(move);
 			}
 			
 			currentPlayer = (currentPlayer + 1) % players.size();

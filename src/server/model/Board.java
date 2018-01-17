@@ -156,10 +156,6 @@ public class Board {
 		return neighbours;
 	}
 	
-	public boolean isNeighbour(Move move) {
-		return false;
-	}
-	
 	public void recalculateGroups() {
 		groups.put(Stone.BLACK, new ArrayList<Set<Integer>>());
 		groups.put(Stone.WHITE, new ArrayList<Set<Integer>>());
@@ -195,7 +191,25 @@ public class Board {
 		return this.groups;
 	}
 	
-	public List<Set<Integer>> getGroups(Stone color) {
-		return groups.get(color);
+	public void doCaptures(Move move) {
+		Stone opponentColor = move.getColor().other();
+		List<Set<Integer>> groupsToRemove = new ArrayList<Set<Integer>>();
+		for (Set<Integer> group : groups.get(opponentColor)) {
+			if (!hasLiberties(group)) {
+				groupsToRemove.add(group);
+			}
+		}
+		for (Set<Integer> group : groupsToRemove) {
+			removeGroup(group, opponentColor);
+		}
+		
+		//part 2 where you check for suicide...
+	}
+	
+	public void removeGroup(Set<Integer> group, Stone color) {
+		for (Integer field : group) {
+			setField(new Move(Stone.EMPTY, field));
+		}
+		groups.get(color).remove(group);
 	}
 }
