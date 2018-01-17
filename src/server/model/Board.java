@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class Board {
 	private int dim;
-	private Stone[][] fields;
+	private Stone[] fields;
 	private Map<Stone, List<Set<Integer>>> groups;
 	
 	public Board() {
@@ -18,11 +18,9 @@ public class Board {
 	
 	public Board(int dim) {
 		this.dim = dim;
-		this.fields = new Stone[dim][dim];
-		for (int i = 0; i < dim; i++) {
-			for (int j = 0; j < dim; j++) {
-				this.fields[i][j] = Stone.EMPTY;
-			}
+		this.fields = new Stone[dim * dim];
+		for (int i = 0; i < dim * dim; i++) {
+			this.fields[i] = Stone.EMPTY;
 		}
 		this.groups = new HashMap<Stone, List<Set<Integer>>>();
 		this.groups.put(Stone.BLACK, new ArrayList<Set<Integer>>());
@@ -31,10 +29,8 @@ public class Board {
 	
 	public Board deepCopy() {
 		Board copyBoard = new Board(this.dim);
-		for (int i = 0; i < dim; i++) {
-			for (int j = 0; j < dim; j++) {
-				copyBoard.setField(new Move(fields[i][j], i, j));
-			}
+		for (int i = 0; i < dim * dim; i++) {
+			copyBoard.setField(new Move(fields[i], i));
 		}
 		return copyBoard;
 	}
@@ -47,22 +43,16 @@ public class Board {
 		return row * dim + col; 
 	}
 	
-	public int[] indexToCoordinates(int index) {
-		return new int[] {index / dim, index % dim };
-	}
-	
 	public void setField(Move move) {
-		
-		this.fields[move.getRow()][move.getCol()] = move.getColor();
+		this.fields[move.getPosition()] = move.getColor();
 	}
 	
 	public Stone getField(int index) {
-		int[] position = indexToCoordinates(index);
-		return this.fields[position[0]][position[1]];
+		return this.fields[index];
 	}
 	
 	public Stone getField(int row, int col) {
-		return this.fields[row][col];
+		return this.fields[index(row, col)];
 	}
 	
 	public boolean isField(int index) {
@@ -74,50 +64,42 @@ public class Board {
 	}
 	
 	public boolean isEmpty() {
-		for (int i = 0; i < dim; i++) {
-			for (int j = 0; j < dim; j++) {
-				if (fields[i][j] != Stone.EMPTY) {
-					return false;
-				}
+		for (int i = 0; i < dim * dim; i++) {
+			if (fields[i] != Stone.EMPTY) {
+				return false;
 			}
 		}
 		return true;
 	}
 	
 	public boolean isEmptyField(int index) {
-		int[] position = indexToCoordinates(index);
-		return this.fields[position[0]][position[1]] == Stone.EMPTY;
+		return this.fields[index] == Stone.EMPTY;
 	}
 	
 	public boolean isEmptyField(int row, int col) {
-		return this.fields[row][col] == Stone.EMPTY;
+		return this.fields[index(row, col)] == Stone.EMPTY;
 	}
 	
 	//@ ensures geen dubbelen.
 	public List<Integer> getEmptyFields() {
 		List<Integer> emptyFields = new ArrayList<Integer>();
-		for (int i = 0; i < dim; i++) {
-			for (int j = 0; j < dim; j++) {
-				if (isEmptyField(i, j)) {
-					emptyFields.add(index(i, j));
-				}
+		for (int i = 0; i < dim * dim; i++) {
+			if (isEmptyField(i)) {
+				emptyFields.add(i);
 			}
 		}
 		return emptyFields;
 	}
 	
 	public void reset() {
-		for (int i = 0; i < dim; i++) {
-			for (int j = 0; j < dim; j++) {
-				this.fields[i][j] = Stone.EMPTY;
-			}
+		for (int i = 0; i < dim * dim; i++) {
+			this.fields[i] = Stone.EMPTY;
 		}
 	}
 	
 	public void changeDim(int newDim) {
 		this.dim = newDim;
 	}
-	
 	
 	public List<Integer> capturedGroup(Move move) {
 		/*
@@ -183,6 +165,6 @@ public class Board {
 	}
 	
 	public boolean isNeighbour(Move move) {
-		
+		return false;
 	}
 }

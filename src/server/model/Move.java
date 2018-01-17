@@ -1,23 +1,17 @@
 package server.model;
 
 public class Move {
-	private int row;
-	private int col;
+	private int position;
 	private Stone color;
 	
-	public Move(Stone color, int row, int col) {
-		this.row = row;
-		this.col = col;
+	public Move(Stone color, int position) {
+		this.position = position;
 		this.color = color;
 	}
 
 
-	public int getRow() {
-		return this.row;
-	}
-	
-	public int getCol() {
-		return this.col;
+	public int getPosition() {
+		return this.position;
 	}
 
 	public Stone getColor() {

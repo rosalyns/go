@@ -43,40 +43,38 @@ public class BoardTest {
 	}
 	
 	@Test
-	public void testSetAndGetFieldRowCol() {
-		board.setField(new Move(Stone.BLACK, 3, 3));
+	public void testGetFieldRowCol() {
+		board.setField(new Move(Stone.BLACK, board.index(3, 3)));
 		assertEquals(Stone.BLACK, board.getField(3, 3));
 	}
 	
 	@Test
 	public void testGetFieldIndex() {
-		board.setField(new Move(Stone.BLACK, 3, 3));
-		assertEquals(Stone.BLACK, board.getField(3 * dim + 3));
+		board.setField(new Move(Stone.BLACK, 3));
+		assertEquals(Stone.BLACK, board.getField(3));
 	}
-	
-	
 	
 	@Test
 	public void testDeepCopy() {
-		board.setField(new Move(Stone.BLACK, 3, 3));
+		board.setField(new Move(Stone.BLACK, 3));
 		Board copyBoard = board.deepCopy();
-		copyBoard.setField(new Move(Stone.WHITE, 3, 3));
+		copyBoard.setField(new Move(Stone.WHITE, 3));
 		assertTrue(copyBoard instanceof Board);
-		assertEquals(board.getField(3, 3), Stone.BLACK);
-		assertEquals(copyBoard.getField(3, 3), Stone.WHITE);
-		assertEquals(copyBoard.getField(4, 4), Stone.EMPTY);
+		assertEquals(board.getField(3), Stone.BLACK);
+		assertEquals(copyBoard.getField(3), Stone.WHITE);
+		assertEquals(copyBoard.getField(4), Stone.EMPTY);
 	}
 	
 	@Test
 	public void testIsEmptyFieldIndex() {
-		board.setField(new Move(Stone.BLACK, 3, 3));
-		assertFalse(board.isEmptyField(3 * dim + 3));
+		board.setField(new Move(Stone.BLACK, 3));
+		assertFalse(board.isEmptyField(3));
 		assertTrue(board.isEmptyField(2));
 	}
 	
 	@Test
 	public void testIsEmptyFieldRowCol() {
-		board.setField(new Move(Stone.BLACK, 3, 3));
+		board.setField(new Move(Stone.BLACK, board.index(3, 3)));
 		assertFalse(board.isEmptyField(3, 3));
 		assertTrue(board.isEmptyField(2, 2));
 	}
@@ -106,7 +104,7 @@ public class BoardTest {
 		Set<Integer> emptiesSet = new HashSet<Integer>(emptiesList);
 		assertEquals(emptiesSet.size(), dim * dim);
 		
-		board.setField(new Move(Stone.BLACK, 0, 0));
+		board.setField(new Move(Stone.BLACK, 0));
 		emptiesList = board.getEmptyFields();
 		emptiesSet = new HashSet<Integer>(emptiesList);
 		assertEquals(emptiesSet.size(), dim * dim - 1);
@@ -114,13 +112,13 @@ public class BoardTest {
 	
 	@Test
 	public void testReset() {
-		board.setField(new Move(Stone.BLACK, 0, 0));
-		board.setField(new Move(Stone.WHITE, 1, 1));
-		board.setField(new Move(Stone.BLACK, 2, 2));
+		board.setField(new Move(Stone.BLACK, 0));
+		board.setField(new Move(Stone.WHITE, 1));
+		board.setField(new Move(Stone.BLACK, 2));
 		board.reset();
-		assertEquals(Stone.EMPTY, board.getField(0, 0));
-		assertEquals(Stone.EMPTY, board.getField(1, 1));
-		assertEquals(Stone.EMPTY, board.getField(2, 2)); 
+		assertEquals(Stone.EMPTY, board.getField(0));
+		assertEquals(Stone.EMPTY, board.getField(1));
+		assertEquals(Stone.EMPTY, board.getField(2)); 
 	}
 	
 	@Test
@@ -136,17 +134,17 @@ public class BoardTest {
 		 * oxxxo
 		 *  ooo
 		 */
-		board.setField(new Move(Stone.BLACK, 0, 1));
-		board.setField(new Move(Stone.BLACK, 0, 2));
-		board.setField(new Move(Stone.BLACK, 0, 3));
-		board.setField(new Move(Stone.BLACK, 1, 0));
-		board.setField(new Move(Stone.BLACK, 2, 1));
-		board.setField(new Move(Stone.BLACK, 2, 2));
-		board.setField(new Move(Stone.BLACK, 2, 3));
-		board.setField(new Move(Stone.BLACK, 1, 4));
-		board.setField(new Move(Stone.WHITE, 1, 1));
-		board.setField(new Move(Stone.WHITE, 1, 2));
-		board.setField(new Move(Stone.WHITE, 1, 3));
+		board.setField(new Move(Stone.BLACK, board.index(0, 1)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 2)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 3)));
+		board.setField(new Move(Stone.BLACK, board.index(1, 0)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 1)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 2)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 3)));
+		board.setField(new Move(Stone.BLACK, board.index(1, 4)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 1)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
 		
 		List<Integer> capturedGroup = board.capturedGroup(new Move(Stone.WHITE, 1, 3));
 		assertFalse(capturedGroup.isEmpty());
@@ -154,16 +152,6 @@ public class BoardTest {
 		assertTrue(capturedGroup.contains(board.index(1, 2)));
 		assertTrue(capturedGroup.contains(board.index(1, 3)));
 		assertTrue(capturedGroup.size() == 3);
-		
-	}
-	
-	@Test
-	public void testIsNeighbourOfGroup() {
-		
-	}
-	
-	@Test
-	public void testIsNeighbourOfStone() {
 		
 	}
 
