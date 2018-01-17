@@ -127,34 +127,6 @@ public class BoardTest {
 		assertEquals(board2.dim(), 12);
 	}
 	
-//	@Test
-//	public void testCapturedGroup() {
-//		/*
-//		 *  ooo
-//		 * oxxxo
-//		 *  ooo
-//		 */
-//		board.setField(new Move(Stone.BLACK, board.index(0, 1)));
-//		board.setField(new Move(Stone.BLACK, board.index(0, 2)));
-//		board.setField(new Move(Stone.BLACK, board.index(0, 3)));
-//		board.setField(new Move(Stone.BLACK, board.index(1, 0)));
-//		board.setField(new Move(Stone.BLACK, board.index(2, 1)));
-//		board.setField(new Move(Stone.BLACK, board.index(2, 2)));
-//		board.setField(new Move(Stone.BLACK, board.index(2, 3)));
-//		board.setField(new Move(Stone.BLACK, board.index(1, 4)));
-//		board.setField(new Move(Stone.WHITE, board.index(1, 1)));
-//		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
-//		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
-//		
-//		List<Integer> capturedGroup = board.capturedGroup(new Move(Stone.WHITE, 1, 3));
-//		assertFalse(capturedGroup.isEmpty());
-//		assertTrue(capturedGroup.contains(board.index(1, 1)));
-//		assertTrue(capturedGroup.contains(board.index(1, 2)));
-//		assertTrue(capturedGroup.contains(board.index(1, 3)));
-//		assertTrue(capturedGroup.size() == 3);
-//		
-//	}
-	
 	@Test
 	public void testRecalculateGroups() {
 		/*
@@ -188,6 +160,16 @@ public class BoardTest {
 		assertEquals(5, blackgroup1.size());
 		assertEquals(1, blackgroup2.size());
 		assertEquals(3, blackgroup3.size());
+	}
+	
+	@Test
+	public void testHasLiberties() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testGetNeighbours() {
+		fail("Not yet implemented");
 	}
 
 }

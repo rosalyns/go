@@ -47,6 +47,7 @@ public class Board {
 	
 	public void setField(Move move) {
 		this.fields[move.getPosition()] = move.getColor();
+		recalculateGroups();
 	}
 	
 	public Stone getField(int index) {
@@ -101,17 +102,6 @@ public class Board {
 	
 	public void changeDim(int newDim) {
 		this.dim = newDim;
-	}
-	
-	public List<Integer> capturedGroup(Move move) {
-		/*
-		 * check voor move.getColor() of die color.other() buren heeft.
-		 * dan moet je voor die color.other() stenen checken in welke groep die zitten
-		 * voor de groepen kijken of die overal omringd zijn door color.other()
-		*/
-		
-		
-		return null;
 	}
 	
 	public boolean hasLiberties(Set<Integer> group) {
@@ -171,6 +161,8 @@ public class Board {
 	}
 	
 	public void recalculateGroups() {
+		groups.put(Stone.BLACK, new ArrayList<Set<Integer>>());
+		groups.put(Stone.WHITE, new ArrayList<Set<Integer>>());
 		Set<Integer> haveChecked = new HashSet<Integer>();
 		
 		for (int i = 0; i < dim * dim; i++) {
@@ -201,5 +193,9 @@ public class Board {
 	
 	public Map<Stone, List<Set<Integer>>> getGroups() {
 		return this.groups;
+	}
+	
+	public List<Set<Integer>> getGroups(Stone color) {
+		return groups.get(color);
 	}
 }
