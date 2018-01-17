@@ -1,12 +1,16 @@
 package server.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Board {
 	private int dim;
 	private Stone[][] fields;
+	private Map<Stone, List<Set<Integer>>> groups;
 	
 	public Board() {
 		this(9);
@@ -20,6 +24,9 @@ public class Board {
 				this.fields[i][j] = Stone.EMPTY;
 			}
 		}
+		this.groups = new HashMap<Stone, List<Set<Integer>>>();
+		this.groups.put(Stone.BLACK, new ArrayList<Set<Integer>>());
+		this.groups.put(Stone.WHITE, new ArrayList<Set<Integer>>());
 	}
 	
 	public Board deepCopy() {
@@ -45,6 +52,7 @@ public class Board {
 	}
 	
 	public void setField(Move move) {
+		
 		this.fields[move.getRow()][move.getCol()] = move.getColor();
 	}
 	
@@ -118,25 +126,63 @@ public class Board {
 		 * voor de groepen kijken of die overal omringd zijn door color.other()
 		*/
 		
-		List<Integer> neighbours = getNeighbourGroupsOfOtherColor(move);
 		
 		return null;
 	}
 	
-	public List<List<Integer>> getNeighbourGroupsOfOtherColor(Move move) {
-		List<List<Integer>> neighboursgroups = new ArrayList<List<Integer>>();
-		
-		return null;
-	}
-	
-	public int getNumberOfNeighbourFieldsOfGroup(Set<Integer> group) {
-		int result = 0;
+	public boolean hasLiberties(Set<Integer> group) {
+		Set<Integer> liberties = new HashSet<Integer>();
 		for (Integer stone : group) {
-			//buren.....
-			if (true || false) {
-				result++;
+			Set<Integer> neighbours = getNeighbours(stone);
+			for (Integer neighbour : neighbours) {
+				if (isEmptyField(neighbour)) {
+					liberties.add(neighbour);
+				}
 			}
 		}
-		return result;
+		return liberties.size() > 0;
+	}
+	
+	private Set<Integer> getNeighbours(int index) {
+		Set<Integer> neighbours = new HashSet<Integer>();
+		if (index == 0) {
+			neighbours.add(index + 1);
+			neighbours.add(index + dim);
+		} else if (index == dim - 1) {
+			neighbours.add(index - 1);
+			neighbours.add(index + dim);
+		} else if (index / dim == dim - 1) {
+			neighbours.add(index - dim);
+			neighbours.add(index + 1);
+		} else if (index == dim * dim - 1) {
+			neighbours.add(index - dim);
+			neighbours.add(index - 1);
+		}  else if (index < dim) {
+			neighbours.add(index - 1);
+			neighbours.add(index + 1);
+			neighbours.add(index + dim);
+		} else if (index % dim == 0) {
+			neighbours.add(index - dim);
+			neighbours.add(index + dim);
+			neighbours.add(index + 1);
+		} else if (index % dim == dim - 1) {
+			neighbours.add(index - dim);
+			neighbours.add(index - dim);
+			neighbours.add(index - 1);
+		} else if (index > dim * (dim - 1)) {
+			neighbours.add(index - 1);
+			neighbours.add(index + 1);
+			neighbours.add(index - dim);
+		} else {
+			neighbours.add(index - 1);
+			neighbours.add(index + 1);
+			neighbours.add(index - dim);
+			neighbours.add(index + dim);
+		}
+		return neighbours;
+	}
+	
+	public boolean isNeighbour(Move move) {
+		
 	}
 }

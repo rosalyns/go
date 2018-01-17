@@ -1,7 +1,7 @@
 package server.model;
 
-import java.util.ArrayList;
 import java.util.List;
+import exceptions.*;
 
 public class Game {
 	public static final int PASS = -1;
@@ -22,12 +22,16 @@ public class Game {
 	}
 	
 	public void start() {
-		while (!gameOver()) {
+		while (!isGameOver()) {
 			//GUI update
 			int move = players.get(currentPlayer).determineMove(board); //zend move naar clients
 			board.checkForCaptures();
 			currentPlayer = (currentPlayer + 1) % players.size();
 		}
+	}
+	
+	public boolean isGameOver() {
+		return false;
 	}
 
 }

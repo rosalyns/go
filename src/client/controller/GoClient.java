@@ -18,6 +18,11 @@ public class GoClient extends Thread {
 	private static final String USAGE = "usage: java week7.cmdchat.Client <name> <address> <port>";
 
 	public static void main(String[] args) {
+		if (args.length != 3) {
+			System.out.println(USAGE);
+			System.exit(0);
+		}
+		
 		InetAddress host = null;
 		int port = 0;
 
@@ -59,12 +64,12 @@ public class GoClient extends Thread {
 	private Socket sock;
 	private BufferedReader in;
 	private BufferedWriter out;
-	private String clientName;
+	//private String clientName;
 	private TUIView view;
 	
 	public GoClient(String name, InetAddress host, int port) throws IOException {
 		sock = new Socket(host, port);
-		this.clientName = name;
+		//this.clientName = name;
 		this.view = new TUIView(this);
 		out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
 		in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
