@@ -4,7 +4,12 @@ package general;
 public class Protocol {
 	/**
 	 * @author Rosalyn.Sleurink
-	 * @version 1
+	 * @version 2
+	 */
+	
+	/**
+	 * Aanpassing versie 1 -> 2:
+	 * Bij START worden de namen van de spelers niet meegegeven, dit is wel handig om te doen.
 	 */
 	
 	/**
@@ -114,8 +119,9 @@ public class Protocol {
 		
 		/**
 		 * Een spel starten. Dit stuur je naar de eerste speler. <br>
-		 * Format: START aantalspelers (speler 1)<br>
-		 * Format: START kleur bordgrootte (naar andere speler(s))<br>
+		 * Format: START aantalspelers (naar speler 1)<br>
+		 * Format: START aantalspelers kleur bordgrootte speler1 speler2 (3, etc..) 
+		 * (naar alle spelers)<br>
 		 * Voorbeeld: START 2 of START BLACK 19
 		 */
 		public static final String START = "START";

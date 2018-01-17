@@ -3,8 +3,10 @@ package server.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 public class Board {
@@ -166,5 +168,38 @@ public class Board {
 	
 	public boolean isNeighbour(Move move) {
 		return false;
+	}
+	
+	public void recalculateGroups() {
+		Set<Integer> haveChecked = new HashSet<Integer>();
+		
+		for (int i = 0; i < dim * dim; i++) {
+			for (Stone color : groups.keySet()) {
+				if (fields[i] == color && !haveChecked.contains(i)) {
+					Set<Integer> newGroup = new HashSet<Integer>();
+					Queue<Integer> haveToCheck = new LinkedList<Integer>();
+					haveToCheck.add(i);
+					newGroup.add(i);
+					while (!haveToCheck.isEmpty()) {
+						int index = (int) haveToCheck.poll();
+						Set<Integer> neighbours = getNeighbours(index);
+						for (Integer neighbour : neighbours) {
+							if (fields[neighbour] == color && 
+									!newGroup.contains(neighbour) && 
+									!haveToCheck.contains(neighbour)) {
+								newGroup.add(neighbour);
+								haveToCheck.add(neighbour);
+							}
+						}
+						haveChecked.add(index);
+					}
+					groups.get(color).add(newGroup);
+				} 
+			}
+		}
+	}
+	
+	public Map<Stone, List<Set<Integer>>> getGroups() {
+		return this.groups;
 	}
 }
