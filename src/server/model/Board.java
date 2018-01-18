@@ -192,18 +192,28 @@ public class Board {
 	}
 	
 	public void doCaptures(Move move) {
-		Stone opponentColor = move.getColor().other();
+		Stone playerColor = move.getColor();
+		Stone opponentColor = playerColor.other();
 		List<Set<Integer>> groupsToRemove = new ArrayList<Set<Integer>>();
 		for (Set<Integer> group : groups.get(opponentColor)) {
 			if (!hasLiberties(group)) {
 				groupsToRemove.add(group);
 			}
 		}
+		
 		for (Set<Integer> group : groupsToRemove) {
 			removeGroup(group, opponentColor);
 		}
 		
-		//part 2 where you check for suicide...
+		for (Set<Integer> group : groups.get(playerColor)) {
+			if (!hasLiberties(group)) {
+				groupsToRemove.add(group);
+			}
+		}
+		
+		for (Set<Integer> group : groupsToRemove) {
+			removeGroup(group, opponentColor);
+		}
 	}
 	
 	public void removeGroup(Set<Integer> group, Stone color) {

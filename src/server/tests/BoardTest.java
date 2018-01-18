@@ -171,5 +171,93 @@ public class BoardTest {
 	public void testGetNeighbours() {
 		fail("Not yet implemented");
 	}
+	
+	@Test
+	public void testDoCapturesSuicide() {
+		/*
+		 * oooo
+		 * oxxxo
+		 *  ooo
+		 */
+		board.setField(new Move(Stone.BLACK, board.index(0, 1)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 2)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 3)));
+		board.setField(new Move(Stone.BLACK, board.index(1, 0)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 1)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 2)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 3)));
+		board.setField(new Move(Stone.BLACK, board.index(1, 4)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 0)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 1)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
+		
+		board.recalculateGroups();
+		board.doCaptures(new Move(Stone.WHITE, board.index(1, 1)));
+		
+		assertEquals(Stone.EMPTY, board.getField(1, 1));
+		assertEquals(Stone.EMPTY, board.getField(1, 2));
+		assertEquals(Stone.EMPTY, board.getField(1, 3));
+	}
+	
+	@Test
+	public void testDoCapturesOpponent() {
+		/*
+		 * oooo
+		 * oxxxo
+		 *  ooo
+		 */
+		board.setField(new Move(Stone.BLACK, board.index(0, 1)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 2)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 3)));
+		board.setField(new Move(Stone.BLACK, board.index(1, 0)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 1)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 2)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 3)));
+		board.setField(new Move(Stone.BLACK, board.index(1, 4)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 0)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 1)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
+		
+		board.recalculateGroups();
+		board.doCaptures(new Move(Stone.BLACK, board.index(1, 4)));
+		
+		assertEquals(Stone.EMPTY, board.getField(1, 1));
+		assertEquals(Stone.EMPTY, board.getField(1, 2));
+		assertEquals(Stone.EMPTY, board.getField(1, 3));
+	}
+	
+	@Test
+	public void testDoCapturesAlmostSuicide() {
+		/*
+		 * oooox
+		 * oxxXox
+		 *  ooox
+		 */
+		board.setField(new Move(Stone.BLACK, board.index(0, 0)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 1)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 2)));
+		board.setField(new Move(Stone.BLACK, board.index(0, 3)));
+		board.setField(new Move(Stone.WHITE, board.index(0, 4)));
+		board.setField(new Move(Stone.BLACK, board.index(1, 0)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 1)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
+		board.setField(new Move(Stone.BLACK, board.index(1, 4)));
+		board.setField(new Move(Stone.WHITE, board.index(1, 5)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 1)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 2)));
+		board.setField(new Move(Stone.BLACK, board.index(2, 3)));
+		board.setField(new Move(Stone.WHITE, board.index(2, 4)));
+		
+		board.recalculateGroups();
+		board.doCaptures(new Move(Stone.WHITE, board.index(1, 3)));
+		
+		assertEquals(Stone.EMPTY, board.getField(1, 4));
+		assertEquals(Stone.WHITE, board.getField(1, 1));
+		assertEquals(Stone.WHITE, board.getField(1, 2));
+		assertEquals(Stone.WHITE, board.getField(1, 3));
+	}
 
 }
