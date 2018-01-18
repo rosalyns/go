@@ -121,11 +121,11 @@ public class BoardTest {
 		assertEquals(Stone.EMPTY, board.getField(2)); 
 	}
 	
-	@Test
-	public void testChangeDim() {
-		board2.changeDim(12);
-		assertEquals(board2.dim(), 12);
-	}
+//	@Test
+//	public void testChangeDim() {
+//		board2.changeDim(12);
+//		assertEquals(board2.dim(), 12);
+//	}
 	
 	@Test
 	public void testRecalculateGroups() {

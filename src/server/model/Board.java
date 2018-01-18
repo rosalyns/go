@@ -100,10 +100,6 @@ public class Board {
 		}
 	}
 	
-	public void changeDim(int newDim) {
-		this.dim = newDim;
-	}
-	
 	public boolean hasLiberties(Set<Integer> group) {
 		Set<Integer> liberties = new HashSet<Integer>();
 		for (Integer stone : group) {
