@@ -21,9 +21,9 @@ public class PlayerTest {
 
 	@Test
 	public void testComputerDetermineMove() {
-		int move = cPlayer.determineMove(board);
-		assertTrue(0 <= move && move < board.dim() * board.dim());
-		assertTrue(board.isEmptyField(move));
+		Move move = cPlayer.determineMove(board);
+		assertTrue(0 <= move.getPosition() && move.getPosition() < board.dim() * board.dim());
+		assertTrue(board.isEmptyField(move.getPosition()));
 	}
 	
 	/* is pas nuttig als View of Controller controleert of het een geldige move is.
@@ -37,8 +37,8 @@ public class PlayerTest {
 	
 	@Test
 	public void testGetMark() {
-		assertTrue(hPlayer.getMark() == Stone.WHITE);
-		assertTrue(cPlayer.getMark() == Stone.BLACK);
+		assertTrue(hPlayer.getColor() == Stone.WHITE);
+		assertTrue(cPlayer.getColor() == Stone.BLACK);
 	}
 
 	@Test

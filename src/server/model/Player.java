@@ -7,21 +7,21 @@ package server.model;
 
 public abstract class Player {
     private String name;
-    private Stone mark;
+    private Stone color;
    
-    public Player(Stone mark, String name) {
+    public Player(Stone color, String name) {
         this.name = name;
-        this.mark = mark;
+        this.color = color;
     }
 
     public String getName() {
         return name;
     }
 
-    public Stone getMark() {
-        return mark;
+    public Stone getColor() {
+        return color;
     }
 
-    public abstract int determineMove(Board board);
+    public abstract Move determineMove(Board board);
 
 }

@@ -121,12 +121,6 @@ public class BoardTest {
 		assertEquals(Stone.EMPTY, board.getField(2)); 
 	}
 	
-//	@Test
-//	public void testChangeDim() {
-//		board2.changeDim(12);
-//		assertEquals(board2.dim(), 12);
-//	}
-	
 	@Test
 	public void testRecalculateGroups() {
 		/*
@@ -148,7 +142,7 @@ public class BoardTest {
 		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
 		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
 		
-		board.recalculateGroups();
+		board.recalculateGroups(false);
 		List<Set<Integer>> blackgroups = board.getGroups().get(Stone.BLACK);
 		List<Set<Integer>> whitegroups = board.getGroups().get(Stone.WHITE);
 		assertEquals(3, blackgroups.size());
@@ -192,7 +186,7 @@ public class BoardTest {
 		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
 		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
 		
-		board.recalculateGroups();
+		board.recalculateGroups(false);
 		board.doCaptures(new Move(Stone.WHITE, board.index(1, 1)));
 		
 		assertEquals(Stone.EMPTY, board.getField(1, 1));
@@ -220,7 +214,7 @@ public class BoardTest {
 		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
 		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
 		
-		board.recalculateGroups();
+		board.recalculateGroups(false);
 		board.doCaptures(new Move(Stone.BLACK, board.index(1, 4)));
 		
 		assertEquals(Stone.EMPTY, board.getField(1, 1));
@@ -251,7 +245,7 @@ public class BoardTest {
 		board.setField(new Move(Stone.BLACK, board.index(2, 3)));
 		board.setField(new Move(Stone.WHITE, board.index(2, 4)));
 		
-		board.recalculateGroups();
+		board.recalculateGroups(false);
 		board.doCaptures(new Move(Stone.WHITE, board.index(1, 3)));
 		
 		assertEquals(Stone.EMPTY, board.getField(1, 4));

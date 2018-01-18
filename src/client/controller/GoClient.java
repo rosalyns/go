@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.view.*;
+import com.nedap.go.gui.*;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

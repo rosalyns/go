@@ -4,18 +4,23 @@ package general;
 public class Protocol {
 	/**
 	 * @author Rosalyn.Sleurink
-	 * @version 2
+	 * @version 3
 	 */
 	
 	/**
 	 * Aanpassing versie 1 -> 2:
 	 * Bij START worden de namen van de spelers niet meegegeven, dit is wel handig om te doen.
+	 * 
+	 * Aanpassing versie 2 -> 3:
+	 * - Version verdeeld in VERSION (String) en VERSIONNO (int)
+	 * - Constantes BLACK en WHITE toegevoegd
 	 */
 	
 	/**
 	 * OVERAL WAAR SPATIES STAAN KOMT DUS DELIMITER1 (in de voorbeelden en formats).
 	 * OOK MOETEN ALLE COMMANDO'S EINDIGEN MET COMMAND_END.
 	 */
+	public static final int VERSION_NO = 3;
 	
 	public static class Client {
 		/**
@@ -26,7 +31,8 @@ public class Protocol {
 		 * Voorbeeld: NAME piet VERSION 2 EXTENSIONS 0 0 1 1 0 0 0
 		 */
 		public static final String NAME = "NAME";
-		public static final int VERSION = 1;
+		public static final String VERSION = "VERSION";
+		public static final int VERSIONNO = VERSION_NO;
 		public static final String EXTENSIONS = "EXTENSIONS";
 		
 		/**
@@ -114,7 +120,8 @@ public class Protocol {
 		 * Voorbeeld: NAME serverpiet VERSION 2 EXTENSIONS 0 0 1 1 0 0 0
 		 */
 		public static final String NAME = "NAME";
-		public static final int VERSION = 1;
+		public static final String VERSION = "VERSION";
+		public static final int VERSIONNO = VERSION_NO;
 		public static final String EXTENSIONS = "EXTENSIONS";
 		
 		/**
@@ -213,6 +220,8 @@ public class Protocol {
 		public static final char DELIMITER1 = '$';
 		public static final char DELIMITER2 = '_';
 		public static final String COMMAND_END = "\n";
+		public static final String BLACK = "BLACK";
+		public static final String WHITE = "WHITE";
 	}
 
 }

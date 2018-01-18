@@ -1,5 +1,6 @@
 package server.model;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,13 +42,17 @@ public class Board {
 		return this.dim;
 	}
 	
+	public Point indexToCoordinates(int index) {
+		return new Point(index / dim, index % dim);
+	}
+	
 	public int index(int row, int col) {
 		return row * dim + col; 
 	}
 	
 	public void setField(Move move) {
 		this.fields[move.getPosition()] = move.getColor();
-		recalculateGroups();
+		recalculateGroups(false);
 	}
 	
 	public Stone getField(int index) {
@@ -152,10 +157,16 @@ public class Board {
 		return neighbours;
 	}
 	
-	public void recalculateGroups() {
+	public void recalculateGroups(boolean gameEnded) {
 		groups.put(Stone.BLACK, new ArrayList<Set<Integer>>());
 		groups.put(Stone.WHITE, new ArrayList<Set<Integer>>());
+		if (gameEnded) {
+			groups.put(Stone.EMPTY, new ArrayList<Set<Integer>>());
+		}
+		
 		Set<Integer> haveChecked = new HashSet<Integer>();
+		
+		
 		
 		for (int i = 0; i < dim * dim; i++) {
 			for (Stone color : groups.keySet()) {
