@@ -118,6 +118,15 @@ public class Board {
 		return liberties.size() > 0;
 	}
 	
+	public Set<Integer> getNeighbours(Set<Integer> group) {
+		Set<Integer> neighbours = new HashSet<Integer>();
+		for (Integer field : group) {
+			neighbours.addAll(getNeighbours(field));
+		}
+		neighbours.removeAll(group);
+		return neighbours;
+	}
+	
 	private Set<Integer> getNeighbours(int index) {
 		Set<Integer> neighbours = new HashSet<Integer>();
 		if (index == 0) {
@@ -126,7 +135,7 @@ public class Board {
 		} else if (index == dim - 1) {
 			neighbours.add(index - 1);
 			neighbours.add(index + dim);
-		} else if (index / dim == dim - 1) {
+		} else if (index == dim * dim - dim) {
 			neighbours.add(index - dim);
 			neighbours.add(index + 1);
 		} else if (index == dim * dim - 1) {
@@ -165,8 +174,6 @@ public class Board {
 		}
 		
 		Set<Integer> haveChecked = new HashSet<Integer>();
-		
-		
 		
 		for (int i = 0; i < dim * dim; i++) {
 			for (Stone color : groups.keySet()) {

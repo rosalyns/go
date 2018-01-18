@@ -162,8 +162,13 @@ public class BoardTest {
 	}
 	
 	@Test
-	public void testGetNeighbours() {
+	public void testGetNeighboursField() {
 		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testGetNeighboursGroup() {
+		fail("Not yet implmemented");
 	}
 	
 	@Test

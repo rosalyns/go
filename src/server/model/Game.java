@@ -1,6 +1,7 @@
 package server.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +55,8 @@ public class Game {
 			}
 			currentPlayer = (currentPlayer + 1) % players.size();
 		}
+		this.calculateScores();
+		this.printScores();
 	}
 	
 	public boolean isGameOver() {
@@ -99,20 +102,40 @@ public class Game {
 	}
 	
 	public void calculateScores() {
-		// doe boolean bij recalculate groups waar ook group voor Stone.EMPTY berekend wordt. Als buur = zwart, scoreZwart += group.size() 
-		int scoreBlack = 0;
-		int scoreWhite = 0;
 		board.recalculateGroups(true);
+		scores = new HashMap<Player, Integer>(); 
+		scores.put(players.get(0), 0);
+		scores.put(players.get(1), 0);
 		
+		List<Set<Integer>> emptyGroups = board.getGroups().get(Stone.EMPTY);
 		for (Player p : players) {
 			List<Set<Integer>> groups = board.getGroups().get(p.getColor());
-			//check of kleur buur is van de groep -> dan bij de kleur optellen
-			
+			for (Set<Integer> group : groups) {
+				scores.put(p, scores.get(p) + group.size());
+			}
+			for (Set<Integer> emptyGroup : emptyGroups) {
+				boolean captured = true;
+				Set<Integer> neighbours = board.getNeighbours(emptyGroup);
+				for (Integer neighbour : neighbours) {
+					if (board.getField(neighbour) != p.getColor()) {
+						captured = false;
+					}
+				}
+				if (captured) {
+					scores.put(p, scores.get(p) + emptyGroup.size());
+				}
+			}
 		}
+		
 		
 	}
 	
 	
+	public void printScores() {
+		for (Player p : scores.keySet()) {
+			System.out.println("Player " + p.getName() + " has " + scores.get(p) + " points.");
+		}
+	}
 	
 	
 	
