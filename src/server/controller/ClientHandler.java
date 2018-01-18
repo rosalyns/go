@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
+import client.controller.GoClient;
+import commands.*;
 
 public class ClientHandler extends Thread {
 	private GoServer server;
@@ -48,6 +53,7 @@ public class ClientHandler extends Thread {
 		try {
 			while ((message = in.readLine()) != null && !message.equals("exit")) {
 				server.broadcast(clientName + ": " + message);
+				
 				//readCommand
 			}
 			shutdown();

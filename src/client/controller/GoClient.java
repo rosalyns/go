@@ -1,7 +1,7 @@
 package client.controller;
 
 import client.view.*;
-import com.nedap.go.gui.*;
+import general.Protocol;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -43,7 +43,6 @@ public class GoClient extends Thread {
 		
 		try {
 			GoClient client = new GoClient(args[0], host, port);
-			client.sendMessage(args[0]);
 			client.start();
 
 			/*
@@ -60,6 +59,10 @@ public class GoClient extends Thread {
 
 	}
 	
+	private static void print(String msg) {
+		System.out.println(msg);
+	}
+	
 	// --------------- CLASS METHODS ---------------
 	
 	private Socket sock;
@@ -72,8 +75,8 @@ public class GoClient extends Thread {
 		sock = new Socket(host, port);
 		//this.clientName = name;
 		this.view = new TUIView(this);
-		out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()));
-		in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+		out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(), Protocol.General.ENCODING));
+		in = new BufferedReader(new InputStreamReader(sock.getInputStream(), Protocol.General.ENCODING));
 		
 		//addObservers to relevant classes (that are Observables)
 	}
@@ -81,15 +84,18 @@ public class GoClient extends Thread {
 	public void run() {
 		Thread viewThread = new Thread(view);
 		viewThread.start();
-		
 		boolean keepGoing = true;
+		
+		//sendHello.. ?
+		
 		while (keepGoing) {
 			try {
 				String message = in.readLine();
 				if (message != null) {
-					print(message);
+					System.out.println(message);
+					readCommand(message);
 				} else {
-					keepGoing = false;
+					//keepGoing = false;
 				}
 			} catch (IOException e) {
 				keepGoing = false;
@@ -98,27 +104,11 @@ public class GoClient extends Thread {
 		shutdown();
 	}
 	
-	public boolean isConnected() {
-		return sock.isClosed();
-	}
-	
-	private static void print(String message) {
-		System.out.println(message);
-	}
-	
-	public void sendMessage(String msg) {
-		//TODO: aanpassen naar iets dat naar server stuurt.
-		try {
-			out.write(msg + "\n");
-			out.flush();
-		} catch (IOException e) {
-			shutdown();
-		}
-	}
 	public void sendRequestToServer(String playerName) {
-		String gameRequest = "REQUEST";
-		gameRequest += "_" + playerName;
-		gameRequest += "\n\n";
+		String gameRequest = Protocol.Client.REQUESTGAME;
+		gameRequest += Protocol.General.DELIMITER1 + 2;
+		gameRequest += Protocol.General.DELIMITER1 + Protocol.Client.RANDOM;
+		gameRequest += Protocol.General.COMMAND_END;
 		
 		sendCommandToServer(gameRequest);
 	}
