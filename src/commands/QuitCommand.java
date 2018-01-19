@@ -1,26 +1,23 @@
 package commands;
 
-import java.util.List;
-
 import client.controller.GoClient;
+import exceptions.InvalidCommandLengthException;
 import general.Protocol;
+import server.controller.ClientHandler;
 
-public class QuitCommand extends ClientCommand {
-
+public class QuitCommand extends Command {
 	public final String commandStr = Protocol.Client.QUIT;
 	
 	public QuitCommand(GoClient client) {
 		super(client);
 	}
-
-	public static void execute() {
-		// TODO Auto-generated method stub
-		
+	
+	public QuitCommand(ClientHandler clientHandler) {
+		super(clientHandler);
 	}
 
-	public static List<Object> parse(String command) {
-		// TODO Auto-generated method stub
-		return null;
+	public void parse(String command) throws InvalidCommandLengthException {
+		
 	}
 
 	@Override

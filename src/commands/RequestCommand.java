@@ -1,11 +1,11 @@
 package commands;
 
-import java.util.List;
 
 import client.controller.GoClient;
+import exceptions.InvalidCommandLengthException;
 import general.Protocol;
 
-public class RequestCommand extends ClientCommand {
+public class RequestCommand extends Command {
 	protected final String commandStr = Protocol.Client.REQUESTGAME;
 	private int numberOfPlayers;
 	private String challengee;
@@ -19,15 +19,6 @@ public class RequestCommand extends ClientCommand {
 	public RequestCommand(GoClient client) {
 		super(client);
 	}
-
-	public static void execute() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public static List<Object> parse(String command) {
-		return null;
-	}
 	
 	public String compose() {
 		String gameRequest = commandStr;
@@ -35,6 +26,12 @@ public class RequestCommand extends ClientCommand {
 		gameRequest += Protocol.General.DELIMITER1 + challengee;
 		gameRequest += Protocol.General.COMMAND_END;
 		return gameRequest;
+	}
+
+	@Override
+	public void parse(String command) throws InvalidCommandLengthException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

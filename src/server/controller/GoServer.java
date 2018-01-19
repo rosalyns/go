@@ -52,7 +52,6 @@ public class GoServer {
 				Socket client = sock.accept();
 				System.out.println("Client connected on the server.");
 				ClientHandler clientHandler = new ClientHandler(this, client);
-				clientHandler.announce();
 				clientHandler.start();
 				addHandler(clientHandler);
 				lobby.addPlayer(clientHandler);
@@ -77,7 +76,7 @@ public class GoServer {
 	public synchronized void broadcast(String msg) {
 		print(msg);
 		for (ClientHandler ch : threads) {
-			ch.sendMessage(msg);
+			ch.sendCommandToClient(msg);
 		}
 	}
 

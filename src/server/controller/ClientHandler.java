@@ -6,11 +6,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import client.controller.GoClient;
 import commands.*;
+import exceptions.InvalidCommandLengthException;
+import general.Protocol;
 
 public class ClientHandler extends Thread {
 	private GoServer server;
@@ -18,7 +19,9 @@ public class ClientHandler extends Thread {
 	private BufferedWriter out;
 	private String clientName;
 	private Socket client;
-
+	private Map<String, Command> incomingCommands;
+	private boolean[] extensions;
+	
 	/**
 	 * Constructs a ClientHandler object Initialises both Data streams.
 	 */
@@ -28,17 +31,9 @@ public class ClientHandler extends Thread {
 		this.client = sockArg;
 		in = new BufferedReader(new InputStreamReader(sockArg.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(sockArg.getOutputStream()));
-	}
-
-	/**
-	 * Reads the name of a Client from the input stream and sends a broadcast
-	 * message to the Server to signal that the Client is participating in the chat.
-	 * Notice that this method should be called immediately after the ClientHandler
-	 * has been constructed.
-	 */
-	public void announce() throws IOException {
-		clientName = in.readLine();
-		this.setName(clientName);
+		
+		incomingCommands = new HashMap<String, Command>();
+		incomingCommands.put(Protocol.Server.NAME, new NameCommand(this));
 	}
 
 	/**
@@ -51,10 +46,16 @@ public class ClientHandler extends Thread {
 	public void run() {
 		String message = "";
 		try {
-			while ((message = in.readLine()) != null && !message.equals("exit")) {
-				server.broadcast(clientName + ": " + message);
-				
-				//readCommand
+			while ((message = in.readLine()) != null) {
+				for (String command : incomingCommands.keySet()) {
+					if (message.startsWith(command)) {
+						try {
+							incomingCommands.get(command).parse(message);
+						} catch (InvalidCommandLengthException e) {
+							e.printStackTrace();
+						}
+					}
+				}
 			}
 			shutdown();
 		} catch (IOException e) {
@@ -62,14 +63,18 @@ public class ClientHandler extends Thread {
 		}
 	}
 
+	public void setExtensions(boolean[] extensions) {
+		this.extensions = extensions;
+	}
+	
 	/**
 	 * This method can be used to send a message over the socket connection to the
 	 * Client. If the writing of a message fails, the method concludes that the
 	 * socket connection has been lost and shutdown() is called.
 	 */
-	public void sendMessage(String msg) {
+	public void sendCommandToClient(String command) {
 		try {
-			out.write(msg + "\n");
+			out.write(command + "\n");
 			out.flush();
 		} catch (IOException e) {
 			shutdown();

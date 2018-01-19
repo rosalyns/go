@@ -4,7 +4,7 @@ package general;
 public class Protocol {
 	/**
 	 * @author Rosalyn.Sleurink
-	 * @version 3
+	 * @version 4
 	 */
 	
 	/**
@@ -14,13 +14,16 @@ public class Protocol {
 	 * Aanpassing versie 2 -> 3:
 	 * - Version verdeeld in VERSION (String) en VERSIONNO (int)
 	 * - Constantes BLACK en WHITE toegevoegd
+	 * 
+	 * Aanpassing versie 3 -> 4:
+	 * - Beide delimiters een String gemaakt en $ is //$ geworden.
 	 */
 	
 	/**
 	 * OVERAL WAAR SPATIES STAAN KOMT DUS DELIMITER1 (in de voorbeelden en formats).
 	 * OOK MOETEN ALLE COMMANDO'S EINDIGEN MET COMMAND_END.
 	 */
-	public static final int VERSION_NO = 3;
+	public static final int VERSION_NO = 4;
 	
 	public static class Client {
 		/**
@@ -217,8 +220,8 @@ public class Protocol {
 		public static final String ENCODING = "UTF-8";
 		public static final int TIMEOUTSECONDS = 90;
 		public static final short DEFAULT_PORT = 5647;
-		public static final char DELIMITER1 = '$';
-		public static final char DELIMITER2 = '_';
+		public static final String DELIMITER1 = "$";
+		public static final String DELIMITER2 = "_";
 		public static final String COMMAND_END = "\n";
 		public static final String BLACK = "BLACK";
 		public static final String WHITE = "WHITE";

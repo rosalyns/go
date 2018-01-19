@@ -1,6 +1,8 @@
 package client.controller;
 
 import client.view.*;
+import commands.*;
+import exceptions.InvalidCommandLengthException;
 import general.Protocol;
 
 import java.io.BufferedReader;
@@ -11,6 +13,8 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GoClient extends Thread {
 	
@@ -65,18 +69,39 @@ public class GoClient extends Thread {
 	
 	// --------------- CLASS METHODS ---------------
 	
+	public final boolean toServer = true;
+	
 	private Socket sock;
 	private BufferedReader in;
 	private BufferedWriter out;
-	//private String clientName;
 	private TUIView view;
+	private Map<String, Command> incomingCommands;
+	// Volgorde extensions: chat challenge leaderboard security 2+ simultaneous multiplemoves
+	private boolean[] extensions = new boolean[] {false, false, false, false, false, false, false};
+	//private Map<String, Command> outgoingCommands;
 	
 	public GoClient(String name, InetAddress host, int port) throws IOException {
 		sock = new Socket(host, port);
-		//this.clientName = name;
+		this.setName(name);
 		this.view = new TUIView(this);
-		out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(), Protocol.General.ENCODING));
-		in = new BufferedReader(new InputStreamReader(sock.getInputStream(), Protocol.General.ENCODING));
+		out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(), 
+				Protocol.General.ENCODING));
+		in = new BufferedReader(new InputStreamReader(sock.getInputStream(), 
+				Protocol.General.ENCODING));
+		
+		incomingCommands = new HashMap<String, Command>();
+		incomingCommands.put(Protocol.Server.NAME, new NameCommand(this));
+		incomingCommands.put(Protocol.Server.START, new StartCommand(this));
+		incomingCommands.put(Protocol.Server.TURN, new TurnCommand(this));
+		incomingCommands.put(Protocol.Server.ENDGAME, new EndGameCommand(this));
+		incomingCommands.put(Protocol.Server.ERROR, new ErrorCommand(this));
+		incomingCommands.put(Protocol.Server.REQUESTGAME, new RequestCommand(this));
+		incomingCommands.put(Protocol.Server.DECLINED, new DeclinedCommand(this));
+		incomingCommands.put(Protocol.Server.LOBBY, new LobbyCommand(this));
+		incomingCommands.put(Protocol.Server.CHAT, new ChatCommand(this));
+		incomingCommands.put(Protocol.Server.LEADERBOARD, new LeadCommand(this));
+		
+		
 		
 		//addObservers to relevant classes (that are Observables)
 	}
@@ -86,6 +111,9 @@ public class GoClient extends Thread {
 		viewThread.start();
 		boolean keepGoing = true;
 		
+		
+		new NameCommand(this, extensions).send(toServer);
+		//sendCommandToServer(nameCommand.compose());
 		//sendHello.. ?
 		
 		while (keepGoing) {
@@ -93,8 +121,20 @@ public class GoClient extends Thread {
 				String message = in.readLine();
 				if (message != null) {
 					System.out.println(message);
-					readCommand(message);
+					
+					for (String command : incomingCommands.keySet()) {
+						if (message.startsWith(command)) {
+							try {
+								incomingCommands.get(command).parse(command);
+							} catch (InvalidCommandLengthException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					
+					//readCommand(message);
 				} else {
+					System.out.println("stahp it");
 					//keepGoing = false;
 				}
 			} catch (IOException e) {
@@ -102,15 +142,6 @@ public class GoClient extends Thread {
 			}
 		}
 		shutdown();
-	}
-	
-	public void sendRequestToServer(String playerName) {
-		String gameRequest = Protocol.Client.REQUESTGAME;
-		gameRequest += Protocol.General.DELIMITER1 + 2;
-		gameRequest += Protocol.General.DELIMITER1 + Protocol.Client.RANDOM;
-		gameRequest += Protocol.General.COMMAND_END;
-		
-		sendCommandToServer(gameRequest);
 	}
 	
 	public void sendCommandToServer(String command) {
