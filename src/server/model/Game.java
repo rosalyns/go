@@ -126,8 +126,6 @@ public class Game {
 				}
 			}
 		}
-		
-		
 	}
 	
 	
@@ -136,8 +134,4 @@ public class Game {
 			System.out.println("Player " + p.getName() + " has " + scores.get(p) + " points.");
 		}
 	}
-	
-	
-	
-
 }

@@ -4,7 +4,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import commands.*;
+import exceptions.InvalidCommandLengthException;
+import general.Protocol;
 
 public class GoServer {
 
@@ -26,9 +32,11 @@ public class GoServer {
 	private ServerSocket sock;
 	private Lobby lobby;
 	
+	
 	/** Constructs a new Server object. */
 	public GoServer(int portArg) {
 		threads = new ArrayList<ClientHandler>();
+		
 		this.port = portArg;
 		lobby = new Lobby(this);
 		lobby.start();
@@ -78,6 +86,10 @@ public class GoServer {
 		for (ClientHandler ch : threads) {
 			ch.sendCommandToClient(msg);
 		}
+	}
+	
+	public void handleCommandFromClient(Command commandType, String commandStr) throws InvalidCommandLengthException {
+		commandType.parse(commandStr, false);
 	}
 
 	/**

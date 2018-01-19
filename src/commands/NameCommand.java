@@ -57,14 +57,14 @@ public class NameCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command) throws InvalidCommandLengthException {
+	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 12) {
 			throw new InvalidCommandLengthException();
 		}
 		clientHandler.setName(words[1]);
 		
-		
+		clientHandler.checkVersion(Integer.parseInt(words[3]));
 		extensions = new boolean[7];
 		for (int i = 0; i < extensions.length; i++) {
 			extensions[i] = Boolean.parseBoolean(words[i + 5]);

@@ -14,13 +14,15 @@ import exceptions.InvalidCommandLengthException;
 import general.Protocol;
 
 public class ClientHandler extends Thread {
+	private final boolean toClient = false;
+	
 	private GoServer server;
 	private BufferedReader in;
 	private BufferedWriter out;
 	private String clientName;
 	private Socket client;
-	private Map<String, Command> incomingCommands;
 	private boolean[] extensions;
+	private Map<String, Command> incomingCommands;
 	
 	/**
 	 * Constructs a ClientHandler object Initialises both Data streams.
@@ -44,15 +46,15 @@ public class ClientHandler extends Thread {
 	 * connection is broken and shutdown() will be called.
 	 */
 	public void run() {
-		String message = "";
+		String command = "";
 		try {
-			while ((message = in.readLine()) != null) {
-				for (String command : incomingCommands.keySet()) {
-					if (message.startsWith(command)) {
+			while ((command = in.readLine()) != null) {
+				for (String commandStr : incomingCommands.keySet()) {
+					if (command.startsWith(commandStr)) {
 						try {
-							incomingCommands.get(command).parse(message);
+							server.handleCommandFromClient(incomingCommands.get(commandStr), command); 
 						} catch (InvalidCommandLengthException e) {
-							e.printStackTrace();
+							new ErrorCommand(this, ErrorCommand.INVCOMMAND, "Number of arguments is not valid.").send(false);
 						}
 					}
 				}
@@ -63,6 +65,12 @@ public class ClientHandler extends Thread {
 		}
 	}
 
+	public void checkVersion(int version) {
+		if (version != Protocol.Server.VERSIONNO) {
+			new ErrorCommand(this, ErrorCommand.INVPROTOCOL, "").send(toClient);
+		}
+	}
+	
 	public void setExtensions(boolean[] extensions) {
 		this.extensions = extensions;
 	}
@@ -89,6 +97,7 @@ public class ClientHandler extends Thread {
 	private void shutdown() {
 		server.removeHandler(this);
 		server.broadcast("[" + clientName + " has left]");
+		sendCommandToClient("Server shut down.");
 		try {
 			client.close();
 		} catch (IOException e) {

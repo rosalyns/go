@@ -70,6 +70,7 @@ public class GoClient extends Thread {
 	// --------------- CLASS METHODS ---------------
 	
 	public final boolean toServer = true;
+	public final boolean fromServer = true;
 	
 	private Socket sock;
 	private BufferedReader in;
@@ -100,9 +101,6 @@ public class GoClient extends Thread {
 		incomingCommands.put(Protocol.Server.LOBBY, new LobbyCommand(this));
 		incomingCommands.put(Protocol.Server.CHAT, new ChatCommand(this));
 		incomingCommands.put(Protocol.Server.LEADERBOARD, new LeadCommand(this));
-		
-		
-		
 		//addObservers to relevant classes (that are Observables)
 	}
 	
@@ -111,10 +109,7 @@ public class GoClient extends Thread {
 		viewThread.start();
 		boolean keepGoing = true;
 		
-		
 		new NameCommand(this, extensions).send(toServer);
-		//sendCommandToServer(nameCommand.compose());
-		//sendHello.. ?
 		
 		while (keepGoing) {
 			try {
@@ -125,17 +120,15 @@ public class GoClient extends Thread {
 					for (String command : incomingCommands.keySet()) {
 						if (message.startsWith(command)) {
 							try {
-								incomingCommands.get(command).parse(command);
+								incomingCommands.get(command).parse(command, fromServer);
 							} catch (InvalidCommandLengthException e) {
 								e.printStackTrace();
 							}
 						}
 					}
-					
-					//readCommand(message);
 				} else {
 					System.out.println("stahp it");
-					//keepGoing = false;
+					keepGoing = false;
 				}
 			} catch (IOException e) {
 				keepGoing = false;

@@ -16,13 +16,18 @@ public class QuitCommand extends Command {
 		super(clientHandler);
 	}
 
-	public void parse(String command) throws InvalidCommandLengthException {
+	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
+		String[] words = command.split("\\" + delim1);
+		if (words.length != 1) {
+			throw new InvalidCommandLengthException();
+		}
 		
+		// clientHandler.quitGame(); ofzo 
 	}
 
 	@Override
 	public String compose() {
-		return commandStr;
+		return commandStr + commandEnd;
 	}
 
 }
