@@ -30,7 +30,7 @@ public class ChatCommand extends Command {
 	}
 
 	@Override
-	public String compose() {
+	public String compose(boolean toClient) {
 		return commandStr + delim1 + name + delim1 + message + commandEnd;
 	}
 

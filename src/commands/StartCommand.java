@@ -17,7 +17,7 @@ public class StartCommand extends Command {
 	}
 
 	@Override
-	public String compose() {
+	public String compose(boolean toClient) {
 		// TODO Auto-generated method stub
 		return null;
 	}

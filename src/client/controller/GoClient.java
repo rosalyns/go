@@ -48,19 +48,10 @@ public class GoClient extends Thread {
 		try {
 			GoClient client = new GoClient(args[0], host, port);
 			client.start();
-
-			/*
-			do {
-				//TODO: misschien nodig?
-				client.sendMessage("iets?");
-			} while (!client.isConnected());
-			*/
-
 		} catch (IOException e) {
 			print("ERROR: couldn't construct a client object!");
 			System.exit(0);
 		}
-
 	}
 	
 	private static void print(String msg) {
@@ -76,12 +67,18 @@ public class GoClient extends Thread {
 	private BufferedReader in;
 	private BufferedWriter out;
 	private TUIView view;
+	private String name;
+	private String serverName;
+	private int protocolVersion;
 	private Map<String, Command> incomingCommands;
 	// Volgorde extensions: chat challenge leaderboard security 2+ simultaneous multiplemoves
 	private boolean[] extensions = new boolean[] {false, false, false, false, false, false, false};
+	private boolean[] serverExtensions;
 	//private Map<String, Command> outgoingCommands;
 	
 	public GoClient(String name, InetAddress host, int port) throws IOException {
+		protocolVersion = Protocol.Client.VERSIONNO;
+		
 		sock = new Socket(host, port);
 		this.setName(name);
 		this.view = new TUIView(this);
@@ -101,7 +98,8 @@ public class GoClient extends Thread {
 		incomingCommands.put(Protocol.Server.LOBBY, new LobbyCommand(this));
 		incomingCommands.put(Protocol.Server.CHAT, new ChatCommand(this));
 		incomingCommands.put(Protocol.Server.LEADERBOARD, new LeadCommand(this));
-		//addObservers to relevant classes (that are Observables)
+		
+		//TODO: addObservers to relevant classes (that are Observables)
 	}
 	
 	public void run() {
@@ -147,7 +145,29 @@ public class GoClient extends Thread {
 		}
 	}
 	
+	public void showLeaderboard(Map<String, Integer> scores) {
+		//TODO
+	}
+	
+	public void setServerName(String serverName) {
+		this.serverName = name; 
+	}
+	
+	public void setServerExtensions(boolean[] serverExt) {
+		this.serverExtensions = serverExt;
+	}
+	
+	public void checkVersion(int serverVersion) {
+		if (this.protocolVersion != serverVersion) {
+			//TODO
+		}
+	}
+	
+	public void handleError(String reason, String message) {
+		//TODO
+	}
+	
 	public void shutdown() {
-		
+		//TODO
 	}
 }

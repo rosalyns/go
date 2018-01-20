@@ -14,7 +14,7 @@ import exceptions.InvalidCommandLengthException;
 import general.Protocol;
 
 public class ClientHandler extends Thread {
-	private final boolean toClient = false;
+	public final boolean toClient = false;
 	
 	private GoServer server;
 	private BufferedReader in;
@@ -73,6 +73,10 @@ public class ClientHandler extends Thread {
 	
 	public void setExtensions(boolean[] extensions) {
 		this.extensions = extensions;
+	}
+	
+	public Map<String, Integer> getLeaderboard() {
+		return this.server.getLeaderboard();
 	}
 	
 	/**

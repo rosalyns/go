@@ -67,7 +67,6 @@ public class GoServer {
 				//e.printStackTrace();
 				keepRunning = false;
 			}
-			
 		}
 	}
 
@@ -90,6 +89,10 @@ public class GoServer {
 	
 	public void handleCommandFromClient(Command commandType, String commandStr) throws InvalidCommandLengthException {
 		commandType.parse(commandStr, false);
+	}
+	
+	public Map<String, Integer> getLeaderboard() {
+		return lobby.getLeaderBoard();
 	}
 
 	/**

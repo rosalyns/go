@@ -30,7 +30,7 @@ public class DeclinedCommand extends Command {
 	}
 
 	@Override
-	public String compose() {
+	public String compose(boolean toClient) {
 		return commandStr + delim1 + challengee + commandEnd;
 	}
 
@@ -41,7 +41,7 @@ public class DeclinedCommand extends Command {
 		if (words.length != 2) {
 			throw new InvalidCommandLengthException();
 		}
-		//client.declined(); ofzo
+		//TODO: client.declined(); ofzo
 		
 	}
 

@@ -5,6 +5,12 @@ import exceptions.InvalidCommandLengthException;
 import general.Protocol;
 import server.controller.ClientHandler;
 
+/**
+ * Als je midden in een spel zit en wil stoppen. Wordt niet gestuurd als client abrupt 
+ * afgesloten wordt.<br>
+ * Format: QUIT<br>
+ * Voorbeeld: QUIT
+ */
 public class QuitCommand extends Command {
 	public final String commandStr = Protocol.Client.QUIT;
 	
@@ -22,11 +28,11 @@ public class QuitCommand extends Command {
 			throw new InvalidCommandLengthException();
 		}
 		
-		// clientHandler.quitGame(); ofzo 
+		// TODO: clientHandler.quitGame(); ofzo 
 	}
 
 	@Override
-	public String compose() {
+	public String compose(boolean toClient) {
 		return commandStr + commandEnd;
 	}
 

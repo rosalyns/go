@@ -1,12 +1,9 @@
 package commands;
 
-import java.util.Map;
-
 import client.controller.GoClient;
 import exceptions.InvalidCommandLengthException;
 import general.Protocol;
 import server.controller.ClientHandler;
-import server.model.Player;
 /**
  * Als het spel klaar is om welke reden dan ook. Reden kan zijn FINISHED (normaal einde), 
  * ABORTED (abrupt einde) of TIMEOUT (geen respons binnen redelijke tijd)<br>
@@ -28,7 +25,9 @@ public class EndGameCommand extends Command {
 		super(clientHandler);
 	}
 	
-	public EndGameCommand(ClientHandler clientHandler, String reason, String winningPlayer, int winningScore, String losingPlayer, int losingScore) {
+	public EndGameCommand(ClientHandler clientHandler, String reason, 
+			String winningPlayer, int winningScore, 
+			String losingPlayer, int losingScore) {
 		super(clientHandler);
 		this.endReason = reason;
 		this.winningPlayer = winningPlayer;
@@ -42,7 +41,7 @@ public class EndGameCommand extends Command {
 	}
 
 	@Override
-	public String compose() {
+	public String compose(boolean toClient) {
 		String command = commandStr + delim1 + endReason + delim1 + winningPlayer + delim1 + 
 						winningScore + delim1 + losingPlayer + delim1 + losingScore + commandEnd;
 		return command;

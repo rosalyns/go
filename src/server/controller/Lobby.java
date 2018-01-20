@@ -2,6 +2,7 @@ package server.controller;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Lobby extends Thread {
 	private GoServer server;
@@ -21,8 +22,13 @@ public class Lobby extends Thread {
 		this.players.remove(player);
 	}
 
-	public String thisMoment() {
+	private String thisMoment() {
 		return "[" + LocalDateTime.now() + "] ";
+	}
+	
+	public Map<String, Integer> getLeaderBoard() {
+		//TODO: implement
+		return null;
 	}
 	
 	public void run() {

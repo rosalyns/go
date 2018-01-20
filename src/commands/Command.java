@@ -21,15 +21,15 @@ public abstract class Command {
 		this.clientHandler = clientHandler;
 	}
 	
-	public abstract void parse(String command, boolean fromServer) 
+	public abstract void parse(String command, boolean toClient) 
 			throws InvalidCommandLengthException;
-	public abstract String compose();
+	public abstract String compose(boolean toClient);
 	
-	public void send(boolean toServer) {
-		if (toServer) {
-			client.sendCommandToServer(this.compose());
+	public void send(boolean toClient) {
+		if (toClient) {
+			clientHandler.sendCommandToClient(this.compose(toClient));
 		} else {
-			clientHandler.sendCommandToClient(this.compose());
+			client.sendCommandToServer(this.compose(toClient));
 		}
 	}
 

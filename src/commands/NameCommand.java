@@ -42,7 +42,8 @@ public class NameCommand extends Command {
 	}
 
 	@Override
-	public String compose() {
+	public String compose(boolean toClient) {
+		//commando zelfde voor server en client.
 		String command = commandStr + delim1 + name + delim1 +  versionStr 
 						+ delim1 + versionNumber + delim1 + extensionStr + delim1;
 		for (int i = 0; i < extensions.length; i++) {
@@ -62,14 +63,24 @@ public class NameCommand extends Command {
 		if (words.length != 12) {
 			throw new InvalidCommandLengthException();
 		}
-		clientHandler.setName(words[1]);
 		
-		clientHandler.checkVersion(Integer.parseInt(words[3]));
-		extensions = new boolean[7];
-		for (int i = 0; i < extensions.length; i++) {
-			extensions[i] = Boolean.parseBoolean(words[i + 5]);
+		if (fromServer) {
+			client.setServerName(words[1]);
+			client.checkVersion(Integer.parseInt(words[3]));
+			extensions = new boolean[7];
+			for (int i = 0; i < extensions.length; i++) {
+				extensions[i] = Boolean.parseBoolean(words[i + 5]);
+			}
+			client.setServerExtensions(extensions);
+		} else {
+			clientHandler.setName(words[1]);
+			clientHandler.checkVersion(Integer.parseInt(words[3]));
+			extensions = new boolean[7];
+			for (int i = 0; i < extensions.length; i++) {
+				extensions[i] = Boolean.parseBoolean(words[i + 5]);
+			}
+			clientHandler.setExtensions(extensions);
 		}
-		clientHandler.setExtensions(extensions);
 	}
 
 }

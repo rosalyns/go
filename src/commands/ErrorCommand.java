@@ -37,15 +37,19 @@ public class ErrorCommand extends Command {
 	}
 	
 	@Override
-	public String compose() {
+	public String compose(boolean toClient) {
 		String command = commandStr + delim1 + errorType + delim1 + errorMessage + commandEnd;
 		return command;
 	}
 
 	@Override
 	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
-		// TODO Auto-generated method stub
-		
+		String[] words = command.split("\\" + delim1);
+		if (words.length != 3) {
+			throw new InvalidCommandLengthException();
+		}
+		//altijd van server naar client
+		client.handleError(words[1], words[2]);
 	}
 
 }

@@ -4,7 +4,7 @@ package general;
 public class Protocol {
 	/**
 	 * @author Rosalyn.Sleurink
-	 * @version 4
+	 * @version 5
 	 */
 	
 	/**
@@ -17,13 +17,18 @@ public class Protocol {
 	 * 
 	 * Aanpassing versie 3 -> 4:
 	 * - Beide delimiters een String gemaakt en $ is //$ geworden.
+	 * 
+	 * Aanpassing versie 4 -> 5:
+	 * - Delimiter weer terugveranderd naar $.
+	 * - Aan TURN zijn String FIRST en PASS toegevoegd
+	 * - Tweede voorbeeld bij START is aangepast naar het format.
 	 */
 	
 	/**
 	 * OVERAL WAAR SPATIES STAAN KOMT DUS DELIMITER1 (in de voorbeelden en formats).
 	 * OOK MOETEN ALLE COMMANDO'S EINDIGEN MET COMMAND_END.
 	 */
-	public static final int VERSION_NO = 4;
+	public static final int VERSION_NO = 5;
 	
 	public static class Client {
 		/**
@@ -132,7 +137,7 @@ public class Protocol {
 		 * Format: START aantalspelers (naar speler 1)<br>
 		 * Format: START aantalspelers kleur bordgrootte speler1 speler2 (3, etc..) 
 		 * (naar alle spelers)<br>
-		 * Voorbeeld: START 2 of START BLACK 19
+		 * Voorbeeld: START 2 of START 2 BLACK 19 jan piet
 		 */
 		public static final String START = "START";
 		
@@ -140,11 +145,14 @@ public class Protocol {
 		 * Vertelt aan de spelers welke beurt er gedaan is. Speler1 is de speler die de beurt heeft
 		 * gedaan, speler 2 de speler die nu aan de beurt is om een MOVE door te geven. Als dit de
 		 * eerste beurt is zijn speler1 en speler2 allebei de speler die nu aan de beurt is, en dan
-		 * stuur je FIRST i.p.v. de integers.<br>
+		 * stuur je FIRST i.p.v. de integers. Als de speler past geeft je PASS door ip.v. de 
+		 * integers.<br>
 		 * Format: TURN speler1 rij_kolom speler2<br>
 		 * Voorbeeld: TURN piet 1_3 jan of TURN piet FIRST piet
 		 */
 		public static final String TURN = "TURN";
+		public static final String FIRST = "FIRST";
+		public static final String PASS = "PASS";
 		
 		/**
 		 * Als het spel klaar is om welke reden dan ook. Reden kan zijn FINISHED (normaal einde), 
