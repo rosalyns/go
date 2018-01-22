@@ -3,6 +3,7 @@ package client.controller;
 import client.view.*;
 import commands.*;
 import exceptions.InvalidCommandLengthException;
+import general.Extension;
 import general.Protocol;
 
 import java.io.BufferedReader;
@@ -14,8 +15,10 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GoClient extends Thread {
 	
@@ -72,20 +75,21 @@ public class GoClient extends Thread {
 	private String serverName;
 	private int protocolVersion;
 	private Map<String, Command> incomingCommands;
-	// Volgorde extensions: chat challenge leaderboard security 2+ simultaneous multiplemoves
-	private boolean[] extensions = new boolean[] {false, false, false, false, false, false, false};
-	private boolean[] serverExtensions;
+	private Set<Extension> extensions;
+	private Set<Extension> serverExtensions;
 	//private Map<String, Command> outgoingCommands;
 	
 	public GoClient(String name, InetAddress host, int port) throws IOException {
-		protocolVersion = Protocol.Client.VERSIONNO;
+		this.protocolVersion = Protocol.Client.VERSIONNO;
+		this.extensions = new HashSet<Extension>();
+		//extensions nog toevoegen.
 		
-		sock = new Socket(host, port);
+		this.sock = new Socket(host, port);
 		this.setName(name);
 		this.view = new TUIView(this);
-		out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(), 
+		this.out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(), 
 				Protocol.General.ENCODING));
-		in = new BufferedReader(new InputStreamReader(sock.getInputStream(), 
+		this.in = new BufferedReader(new InputStreamReader(sock.getInputStream(), 
 				Protocol.General.ENCODING));
 		
 		incomingCommands = new HashMap<String, Command>();
@@ -112,14 +116,14 @@ public class GoClient extends Thread {
 		
 		while (keepGoing) {
 			try {
-				String message = in.readLine();
-				if (message != null) {
-					System.out.println(message);
+				String socketInput = in.readLine();
+				if (socketInput != null) {
+					//System.out.println(message);
 					
 					for (String command : incomingCommands.keySet()) {
-						if (message.startsWith(command)) {
+						if (socketInput.startsWith(command)) {
 							try {
-								incomingCommands.get(command).parse(command, fromServer);
+								incomingCommands.get(command).parse(socketInput, fromServer);
 							} catch (InvalidCommandLengthException e) {
 								e.printStackTrace();
 							}
@@ -146,7 +150,7 @@ public class GoClient extends Thread {
 		}
 	}
 	
-	public void showLeaderboard(Map<String, Integer> scores) {
+	public void showLeaderboard(Map<Integer, String> scores) {
 		//TODO
 	}
 	
@@ -162,8 +166,8 @@ public class GoClient extends Thread {
 		this.serverName = name; 
 	}
 	
-	public void setServerExtensions(boolean[] serverExt) {
-		this.serverExtensions = serverExt;
+	public void setServerExtensions(Set<Extension> supportedExtensions) {
+		this.serverExtensions = supportedExtensions;
 	}
 	
 	public void checkVersion(int serverVersion) {

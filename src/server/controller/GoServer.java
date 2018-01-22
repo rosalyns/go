@@ -5,9 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import commands.*;
 
 public class GoServer {
 
@@ -24,13 +21,10 @@ public class GoServer {
 		server.run();
 	}
 
-	
-	
 	private int port;
 	private List<ClientHandler> clients;
 	private ServerSocket sock;
 	private Lobby lobby;
-	
 	
 	/** Constructs a new Server object. */
 	public GoServer(int portArg) {

@@ -1,0 +1,5 @@
+package general;
+
+public enum Extension {
+	CHAT, CHALLENGE, LEADERBOARD, SECURITY, MOREPLAYERS, SIMULTANEOUS, MULTIMOVES
+}

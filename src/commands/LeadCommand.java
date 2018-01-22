@@ -24,13 +24,13 @@ import server.controller.ClientHandler;
  */
 public class LeadCommand extends Command {
 	protected final String commandStr = "";
-	private Map<String, Integer> scores;
+	private Map<Integer, String> scores;
 	
 	public LeadCommand(ClientHandler clientHandler) {
 		super(clientHandler);
 	}
 	
-	public LeadCommand(ClientHandler clientHandler, Map<String, Integer> scores) {
+	public LeadCommand(ClientHandler clientHandler, Map<Integer, String> scores) {
 		super(clientHandler);
 		this.scores = scores;
 	}
@@ -45,8 +45,8 @@ public class LeadCommand extends Command {
 		
 		if (toClient) {
 			int playersAdded = 0;
-			for (String player : scores.keySet()) {
-				command += delim1 + player + delim1 + scores.get(player);
+			for (Integer score : scores.keySet()) {
+				command += delim1 + scores.get(score) + delim1 + score;
 				playersAdded++;
 				if (playersAdded == 10) {
 					break;
@@ -63,9 +63,9 @@ public class LeadCommand extends Command {
 			if (words.length < 21) {
 				throw new InvalidCommandLengthException();
 			}
-			scores = new HashMap<String, Integer>();
+			scores = new HashMap<Integer, String>();
 			for (int i = 0; i < 10; i += 2) {
-				scores.put(words[1 + i], Integer.parseInt(words[2 + i]));
+				scores.put(Integer.parseInt(words[2 + i]), words[1 + i]);
 			}
 			client.showLeaderboard(this.scores);
 		} else {

@@ -2,6 +2,7 @@ package commands;
 
 import client.controller.GoClient;
 import exceptions.InvalidCommandLengthException;
+import exceptions.PlayerNotFoundException;
 import general.Protocol;
 import server.controller.ClientHandler;
 /**
@@ -33,7 +34,12 @@ public class DeclineCommand extends Command {
 		if (words.length != 2) {
 			throw new InvalidCommandLengthException();
 		}
-		clientHandler.declineGame(words[1]);
+		try {
+			clientHandler.declineGame(words[1]);
+		} catch (PlayerNotFoundException e) {
+			new ErrorCommand(clientHandler, ErrorCommand.INVCOMMAND, 
+					"This player is not in the lobby.").send(toClient);
+		}
 	}
 
 	@Override

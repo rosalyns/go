@@ -9,10 +9,12 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import commands.*;
 import exceptions.InvalidCommandLengthException;
 import exceptions.PlayerNotFoundException;
+import general.Extension;
 import general.Protocol;
 import server.model.Stone;
 
@@ -23,10 +25,11 @@ public class ClientHandler extends Thread {
 	private GoServer server;
 	private BufferedReader in;
 	private BufferedWriter out;
-	private String clientName;
 	private Socket client;
-	private boolean[] extensions;
+	private Set<Extension> supportedExtensions;
 	private Map<String, Command> incomingCommands;
+	
+	
 	
 	/**
 	 * Constructs a ClientHandler object Initialises both Data streams.
@@ -58,7 +61,8 @@ public class ClientHandler extends Thread {
 						try {
 							incomingCommands.get(commandStr).parse(command, fromClient); 
 						} catch (InvalidCommandLengthException e) {
-							new ErrorCommand(this, ErrorCommand.INVCOMMAND, "Number of arguments is not valid.").send(toClient);
+							new ErrorCommand(this, ErrorCommand.INVCOMMAND, 
+									"Number of arguments is not valid.").send(toClient);
 						}
 					}
 				}
@@ -75,8 +79,8 @@ public class ClientHandler extends Thread {
 		}
 	}
 	
-	public void setExtensions(boolean[] extensions) {
-		this.extensions = extensions;
+	public void setExtensions(Set<Extension> extensions) {
+		this.supportedExtensions = extensions;
 	}
 	
 	public void makeMove(boolean pass, int row, int column) {
@@ -92,8 +96,7 @@ public class ClientHandler extends Thread {
 	}
 	
 	public void challenge(int numberOfPlayers, String playerName) throws PlayerNotFoundException {
-		ClientHandler ch = server.getLobby().findPlayer(playerName);
-		new RequestCommand(ch, clientName).send(toClient);
+		server.getLobby().challenge(this, playerName);
 	}
 	
 	public void acceptGame(String playerName) {
@@ -101,8 +104,11 @@ public class ClientHandler extends Thread {
 	}
 	
 	public void declineGame(String playerName) throws PlayerNotFoundException {
-		ClientHandler ch = server.getLobby().findPlayer(playerName);
-		new DeclinedCommand(ch, clientName).send(toClient);
+		//TODO
+	}
+	
+	public void announce() {
+		server.getLobby().announce(this.getName());
 	}
 	
 	public Map<Integer, String> getLeaderboard() {
@@ -114,12 +120,12 @@ public class ClientHandler extends Thread {
 	}
 	
 	public void handleChatMessage(String message) {
-		if (thisPlayer.inGame()) {
-			//send to players in game
-		} else {
-			//send to players in lobby
-			server.getLobby().chat(clientName, message);
-		}
+//		if (thisPlayer.inGame()) {
+//			//send to players in game
+//		} else {
+//			//send to players in lobby
+//			server.getLobby().chat(clientName, message);
+//		}
 	}
 	
 	/**
@@ -129,7 +135,7 @@ public class ClientHandler extends Thread {
 	 */
 	public void sendCommandToClient(String command) {
 		try {
-			out.write(command + "\n");
+			out.write(command);
 			out.flush();
 		} catch (IOException e) {
 			shutdown();
@@ -142,8 +148,8 @@ public class ClientHandler extends Thread {
 	 * in the chat.
 	 */
 	private void shutdown() {
-		server.removeHandler(this);
-		server.broadcast("[" + clientName + " has left]");
+		server.getLobby().removePlayer(this);
+		server.broadcast("[" + this.getName() + " has left]");
 		sendCommandToClient("Server shut down.");
 		try {
 			client.close();
