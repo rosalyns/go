@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GoClient extends Thread {
@@ -60,7 +61,7 @@ public class GoClient extends Thread {
 	
 	// --------------- CLASS METHODS ---------------
 	
-	public final boolean toServer = true;
+	public final boolean toServer = false;
 	public final boolean fromServer = true;
 	
 	private Socket sock;
@@ -149,6 +150,14 @@ public class GoClient extends Thread {
 		//TODO
 	}
 	
+	public void showPlayersInLobby(List<String> players) {
+		//TODO
+	}
+	
+	public void showChatMessage(String playerName, String message) {
+		//TODO
+	}
+	
 	public void setServerName(String serverName) {
 		this.serverName = name; 
 	}
@@ -161,6 +170,14 @@ public class GoClient extends Thread {
 		if (this.protocolVersion != serverVersion) {
 			//TODO
 		}
+	}
+	
+	public void challengedBy(String playerName) {
+		//TODO
+	}
+	
+	public void declined(String playerName) {
+		//TODO
 	}
 	
 	public void handleError(String reason, String message) {

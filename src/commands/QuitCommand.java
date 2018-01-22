@@ -6,6 +6,7 @@ import general.Protocol;
 import server.controller.ClientHandler;
 
 /**
+ * CLIENT -> SERVER
  * Als je midden in een spel zit en wil stoppen. Wordt niet gestuurd als client abrupt 
  * afgesloten wordt.<br>
  * Format: QUIT<br>
@@ -27,8 +28,7 @@ public class QuitCommand extends Command {
 		if (words.length != 1) {
 			throw new InvalidCommandLengthException();
 		}
-		
-		// TODO: clientHandler.quitGame(); ofzo 
+		clientHandler.quitGame(); 
 	}
 
 	@Override

@@ -96,7 +96,7 @@ public class Protocol {
 		public static final String DECLINEGAME = "DECLINEGAME";
 		
 		/**
-		 * Om op te vragen wie je allemaal kan uitdagen.<br>
+		  * Om op te vragen wie je allemaal kan uitdagen.<br>
 		 * Format: LOBBY<br>
 		 * Voorbeeld: LOBBY
 		 */

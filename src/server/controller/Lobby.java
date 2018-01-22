@@ -31,6 +31,11 @@ public class Lobby extends Thread {
 		return null;
 	}
 	
+	public List<String> getFreePlayers() {
+		//TODO: implement
+		return null;
+	}
+	
 	public void run() {
 		System.out.println(thisMoment() + "Lobby started...");
 		

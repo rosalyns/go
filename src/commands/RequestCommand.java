@@ -7,11 +7,19 @@ import general.Protocol;
 import server.controller.ClientHandler;
 
 /**
+ * CLIENT -> SERVER
  * Sturen als je een spel wilt spelen. De eerste keer en als een spel afgelopen is opnieuw.
  * Als je de Challenge extensie niet ondersteunt, stuur dan RANDOM in plaats van een naam.
  * <br>
  * Format: REQUESTGAME aantalspelers naamtegenspeler (RANDOM als je geen challenge doet)<br>
  * Voorbeeld: REQUESTGAME 2 RANDOM of REQUESTGAME 2 piet
+ */
+
+/**
+ * SERVER -> CLIENT
+ * Stuurt aan één client wie hem heeft uitgedaagd.<br>
+ * Format: REQUESTGAME uitdager<br>
+ * Voorbeeld: REQUESTGAME piet
  */
 public class RequestCommand extends Command {
 	protected final String commandStr = Protocol.Client.REQUESTGAME;
@@ -41,20 +49,24 @@ public class RequestCommand extends Command {
 	}
 	
 	public String compose(boolean toClient) {
-		String command = commandStr;
-		if (toClient) {
-			command += delim1 + challenger;
-		} else {
-			command += delim1 + numberOfPlayers;
-			command += delim1 + challengee;
-		}
-		command += commandEnd;
-		return command;
+		String command = commandStr + delim1;
+		command += toClient ? challenger : numberOfPlayers + delim1 + challengee;
+		return command + commandEnd;
 	}
 
 	@Override
 	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
-		// TODO Auto-generated method stub
+		String[] words = command.split("\\" + delim1);
+		if (toClient) {
+			if (words.length != 2) {
+				throw new InvalidCommandLengthException();
+			}
+			client.challengedBy(words[1]);
+		} else {
+			if (words.length != 3) {
+				throw new InvalidCommandLengthException();
+			}
+			clientHandler.challenge(Integer.parseInt(words[1]), words[2]);
+		}
 	}
-
 }

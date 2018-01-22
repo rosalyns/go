@@ -6,11 +6,12 @@ import general.Protocol;
 import server.controller.ClientHandler;
 
 /**
+ * CLIENT -> SERVER en SERVER -> CLIENT
 * Het eerste commando wat de server naar de client stuurt. Gaat om versie
 * van het protocol. De volgorde van de extensions is als volgt: 
 * chat challenge leaderboard security 2+ simultaneous multiplemoves.<br>
 * Format: NAME clientnaam VERSION versienummer EXTENSIONS boolean boolean boolean etc<br>
-* Voorbeeld: NAME serverpiet VERSION 2 EXTENSIONS 0 0 1 1 0 0 0
+* Voorbeeld: NAME piet VERSION 2 EXTENSIONS 0 0 1 1 0 0 0
 */
 public class NameCommand extends Command {
 	protected final String commandStr = Protocol.Client.NAME;
@@ -45,16 +46,11 @@ public class NameCommand extends Command {
 	public String compose(boolean toClient) {
 		//commando zelfde voor server en client.
 		String command = commandStr + delim1 + name + delim1 +  versionStr 
-						+ delim1 + versionNumber + delim1 + extensionStr + delim1;
+						+ delim1 + versionNumber + delim1 + extensionStr;
 		for (int i = 0; i < extensions.length; i++) {
-			command += extensions[i] ? 1 : 0;
-			if (i != extensions.length - 1) {
-				command += delim1;
-			} else {
-				command += commandEnd;
-			}
+			command += delim1 + (extensions[i] ? 1 : 0);
 		}
-		return command;
+		return command + commandEnd;
 	}
 
 	@Override

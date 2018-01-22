@@ -4,6 +4,21 @@ import client.controller.GoClient;
 import exceptions.InvalidCommandLengthException;
 import general.Protocol;
 import server.controller.ClientHandler;
+/**
+ * CLIENT -> SERVER
+ * Om een chatbericht te sturen. Als je in een spel zit mogen alleen de spelers het zien. 
+ * Als je in de lobby zit mag iedereen in de lobby het zien.<br>
+ * Format: CHAT bericht<br>
+ * Voorbeeld: CHAT hoi ik ben piet
+ */
+
+/**
+ * SERVER -> CLIENT
+ * Stuurt chatbericht naar relevante clients (in spel of in lobby).<br>
+ * Format: CHAT naam bericht<br>
+ * Voorbeeld: CHAT piet hallo ik ben piet (Met correcte delimiter ziet dat er dus uit als:
+ * CHAT$piet$hallo ik ben piet)
+ */
 
 public class ChatCommand extends Command {
 	protected final String commandStr = Protocol.Client.CHAT;
@@ -31,26 +46,22 @@ public class ChatCommand extends Command {
 
 	@Override
 	public String compose(boolean toClient) {
-		return commandStr + delim1 + name + delim1 + message + commandEnd;
+		return commandStr + delim1 + (toClient ? name + delim1 : "") + message + commandEnd;
 	}
 
 	@Override
-	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
+	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
-		
-		if (fromServer) {
+		if (toClient) {
 			if (words.length != 3) {
 				throw new InvalidCommandLengthException();
 			}
-			//client.handleChatMessage(words[1], words[2]);
+			client.showChatMessage(words[1], words[2]);
 		} else {
 			if (words.length != 2) {
 				throw new InvalidCommandLengthException();
 			}
-			//clientHandler.handleChatMessage(clientHandler.getName(), words[1]);
+			clientHandler.handleChatMessage(words[1]);
 		}
-		
-		
 	}
-
 }

@@ -7,6 +7,15 @@ import exceptions.InvalidCommandLengthException;
 import server.controller.ClientHandler;
 
 /**
+ * CLIENT -> SERVER
+ * Om de leaderboard op te vragen. Overige queries moet je afspreken met anderen die ook 
+ * leaderboard willen implementeren.<br>
+ * Format: LEADERBOARD<br>
+ * Voorbeeld: LEADERBOARD
+ */
+
+/**
+ * SERVER -> CLIENT
  * Reactie op LEADERBOARD van client. Stuurt de beste 10 scores naar één client.
  * Overige queries moet je afspreken met anderen die ook 
  * leaderboard willen implementeren.<br>
@@ -44,8 +53,7 @@ public class LeadCommand extends Command {
 				}
 			}
 		}
-		command += commandEnd;
-		return command;
+		return command + commandEnd;
 	}
 
 	@Override

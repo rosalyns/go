@@ -1,5 +1,6 @@
 package commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import client.controller.GoClient;
@@ -8,6 +9,14 @@ import general.Protocol;
 import server.controller.ClientHandler;
 
 /**
+ * CLIENT -> SERVER
+ * Om op te vragen wie je allemaal kan uitdagen.<br>
+ * Format: LOBBY<br>
+ * Voorbeeld: LOBBY
+ */
+
+/**
+ * SERVER -> CLIENT
  * Reactie op LOBBY van de client. Stuurt alle spelers die uitgedaagd kunnen worden 
  * (in de lobby zitten).<br>
  * Format: LOBBY naam1_naam2_naam3<br>
@@ -33,22 +42,34 @@ public class LobbyCommand extends Command {
 	@Override
 	public String compose(boolean toClient) {
 		String command = commandStr;
-		if (toClient) {
+		if (toClient && !availablePlayers.isEmpty()) {
 			command += delim1;
 			for (String player : availablePlayers) {
 				command += player;
-				if (player == availablePlayers.get(availablePlayers.size() - 1)) {
+				if (!(player == availablePlayers.get(availablePlayers.size() - 1))) {
 					command += delim2;
 				}
 			}
 		}
-		command += commandEnd;
-		return command;
+		return command + commandEnd;
 	}
 
 	@Override
-	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
-		// TODO Auto-generated method stub
+	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
+		String[] words = command.split("\\" + delim1);
+		if (toClient) {
+			if (words.length != 2) {
+				throw new InvalidCommandLengthException();
+			}
+			availablePlayers = new ArrayList<String>();
+			String[] players = words[1].split(delim2);
+			for (String player : players) {
+				availablePlayers.add(player);
+			}
+			client.showPlayersInLobby(availablePlayers);
+		} else {
+			new LobbyCommand(clientHandler, clientHandler.getPlayersInLobby());
+		}
 		
 	}
 

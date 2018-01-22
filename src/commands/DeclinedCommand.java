@@ -6,7 +6,7 @@ import general.Protocol;
 import server.controller.ClientHandler; 
 
 /**
- * Server -> Client
+ * SERVER -> CLIENT
  * Stuurt aan de uitdager dat de uitdaging is geweigerd en door wie.<br>
  * Format: DECLINED uitgedaagde<br>
  * Voorbeeld: DECLINED piet
@@ -26,7 +26,6 @@ public class DeclinedCommand extends Command {
 	
 	public DeclinedCommand(GoClient client) {
 		super(client);
-		
 	}
 
 	@Override
@@ -41,8 +40,7 @@ public class DeclinedCommand extends Command {
 		if (words.length != 2) {
 			throw new InvalidCommandLengthException();
 		}
-		//TODO: client.declined(); ofzo
-		
+		client.declined(words[1]);
 	}
 
 }
