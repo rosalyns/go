@@ -10,10 +10,8 @@ import server.model.*;
 public class GameController extends Thread {
 	private Game game; 
 	
-	public GameController() {
-		HumanPlayer hPlayer1 = new HumanPlayer(Stone.BLACK, "Rosalyn");
-		ComputerPlayer cPlayer2 = new ComputerPlayer(Stone.WHITE, new RandomStrategy());
-		HumanPlayer hPlayer2 = new HumanPlayer(Stone.WHITE, "Pietje");
+	public GameController(ClientHandler player1, ClientHandler player2) {
+		Player player1 = new NetworkPlayer()
 		List<Player> players = new ArrayList<Player>();
 		players.add(hPlayer1);
 		players.add(hPlayer2);
@@ -25,8 +23,8 @@ public class GameController extends Thread {
 		game.start();
 	}
 	
-	public static void main(String[] args) {
-		GameController gc = new GameController();
+	public void run() {
+		
 	}
 
 	

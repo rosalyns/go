@@ -3,6 +3,7 @@ package commands;
 
 import client.controller.GoClient;
 import exceptions.InvalidCommandLengthException;
+import exceptions.PlayerNotFoundException;
 import general.Protocol;
 import server.controller.ClientHandler;
 
@@ -66,7 +67,13 @@ public class RequestCommand extends Command {
 			if (words.length != 3) {
 				throw new InvalidCommandLengthException();
 			}
-			clientHandler.challenge(Integer.parseInt(words[1]), words[2]);
+			
+			try {
+				clientHandler.challenge(Integer.parseInt(words[1]), words[2]);
+			} catch (PlayerNotFoundException e) {
+				new ErrorCommand(clientHandler, ErrorCommand.INVCOMMAND, 
+						"This player is not in the lobby.").send(toClient);
+			}
 		}
 	}
 }

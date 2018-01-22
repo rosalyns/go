@@ -28,15 +28,14 @@ public class GoServer {
 	public final boolean fromClient = false;
 	
 	private int port;
-	private List<ClientHandler> threads;
+	private List<ClientHandler> clients;
 	private ServerSocket sock;
 	private Lobby lobby;
 	
 	
 	/** Constructs a new Server object. */
 	public GoServer(int portArg) {
-		threads = new ArrayList<ClientHandler>();
-		
+		clients = new ArrayList<ClientHandler>();
 		this.port = portArg;
 		lobby = new Lobby(this);
 		lobby.start();
@@ -61,7 +60,6 @@ public class GoServer {
 				System.out.println("Client connected on the server.");
 				ClientHandler clientHandler = new ClientHandler(this, client);
 				clientHandler.start();
-				addHandler(clientHandler);
 				lobby.addPlayer(clientHandler);
 			} catch (IOException e) {
 				//e.printStackTrace();
@@ -82,46 +80,13 @@ public class GoServer {
 	 */
 	public synchronized void broadcast(String msg) {
 		print(msg);
-		for (ClientHandler ch : threads) {
+		for (ClientHandler ch : clients) {
 			ch.sendCommandToClient(msg);
 		}
 	}
 	
-	public Map<String, Integer> getLeaderboard() {
-		return lobby.getLeaderBoard();
-	}
-	
-	public List<String> getPlayersInLobby() {
-		return lobby.getFreePlayers();
-	}
-	
-	public void chatInLobby(String name, String message) {
-		for (String player : getPlayersInLobby()) {
-			ClientHandler ch = findPlayer(player);
-			new ChatCommand(ch, name, message).send(toClient);
-		}
-	}
-	
-	public ClientHandler findPlayer(String name) {
-		//TODO
-		return null;
-	}
-	
-
-	/**
-	 * Add a ClientHandler to the collection of ClientHandlers.
-	 * @param handler ClientHandler that will be added
-	 */
-	public void addHandler(ClientHandler handler) {
-		threads.add(handler);
-	}
-
-	/**
-	 * Remove a ClientHandler from the collection of ClientHanlders.
-	 * @param handler ClientHandler that will be removed
-	 */
-	public void removeHandler(ClientHandler handler) {
-		threads.remove(handler);
+	public Lobby getLobby() {
+		return lobby;
 	}
 	
 	public boolean isRunning() {

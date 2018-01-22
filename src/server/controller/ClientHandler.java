@@ -12,6 +12,7 @@ import java.util.Map;
 
 import commands.*;
 import exceptions.InvalidCommandLengthException;
+import exceptions.PlayerNotFoundException;
 import general.Protocol;
 import server.model.Stone;
 
@@ -90,27 +91,26 @@ public class ClientHandler extends Thread {
 		//TODO
 	}
 	
-	public void challenge(int numberOfPlayers, String playerName) {
-		//TODO: zoiets. Kan ook verplaatsen naar server.
-		ClientHandler ch = server.findPlayer(playerName);
-		new RequestCommand(ch, clientName);
+	public void challenge(int numberOfPlayers, String playerName) throws PlayerNotFoundException {
+		ClientHandler ch = server.getLobby().findPlayer(playerName);
+		new RequestCommand(ch, clientName).send(toClient);
 	}
 	
 	public void acceptGame(String playerName) {
 		//TODO: start new game
 	}
 	
-	public void declineGame(String playerName) {
-		ClientHandler ch = server.findPlayer(playerName);
+	public void declineGame(String playerName) throws PlayerNotFoundException {
+		ClientHandler ch = server.getLobby().findPlayer(playerName);
 		new DeclinedCommand(ch, clientName).send(toClient);
 	}
 	
-	public Map<String, Integer> getLeaderboard() {
-		return this.server.getLeaderboard();
+	public Map<Integer, String> getLeaderboard() {
+		return this.server.getLobby().getLeaderBoard();
 	}
 	
 	public List<String> getPlayersInLobby() {
-		return this.server.getPlayersInLobby();
+		return this.server.getLobby().getFreePlayers();
 	}
 	
 	public void handleChatMessage(String message) {
@@ -118,7 +118,7 @@ public class ClientHandler extends Thread {
 			//send to players in game
 		} else {
 			//send to players in lobby
-			server.chatInLobby(clientName, message);
+			server.getLobby().chat(clientName, message);
 		}
 	}
 	
