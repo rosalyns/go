@@ -24,8 +24,7 @@ public class GoServer {
 		server.run();
 	}
 
-	public final boolean toClient = true;
-	public final boolean fromClient = false;
+	
 	
 	private int port;
 	private List<ClientHandler> clients;

@@ -9,9 +9,16 @@ import server.model.*;
 
 public class GameController extends Thread {
 	private Game game; 
+	private GoServer server;
+	private List<ClientHandler> players;
 	
-	public GameController(ClientHandler player1, ClientHandler player2) {
-		Player player1 = new NetworkPlayer()
+	public GameController(GoServer server, List<ClientHandler> players) {
+		this.server = server;
+		this.players = players;
+		
+		HumanPlayer hPlayer1 = new HumanPlayer(Stone.BLACK, "Rosalyn");
+		ComputerPlayer cPlayer2 = new ComputerPlayer(Stone.WHITE, new RandomStrategy()); 
+		HumanPlayer hPlayer2 = new HumanPlayer(Stone.WHITE, "Pietje");
 		List<Player> players = new ArrayList<Player>();
 		players.add(hPlayer1);
 		players.add(hPlayer2);
@@ -23,9 +30,7 @@ public class GameController extends Thread {
 		game.start();
 	}
 	
-	public void run() {
-		
-	}
+
 
 	
 }
