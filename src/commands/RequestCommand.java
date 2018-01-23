@@ -30,14 +30,14 @@ public class RequestCommand extends Command {
 	private String challengee;
 	private String challenger;
 	
+	public RequestCommand(GoClient client) {
+		super(client);
+	}
+	
 	public RequestCommand(GoClient client, int numberOfPlayers, String challengee) {
 		super(client);
 		this.numberOfPlayers = numberOfPlayers;
 		this.challengee = challengee;
-	}
-	
-	public RequestCommand(GoClient client) {
-		super(client);
 	}
 	
 	public RequestCommand(ClientHandler clientHandler) {

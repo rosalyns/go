@@ -2,6 +2,7 @@ package commands;
 
 import client.controller.GoClient;
 import exceptions.InvalidCommandLengthException;
+import general.Protocol;
 import server.controller.ClientHandler;
 
 /**
@@ -11,7 +12,8 @@ import server.controller.ClientHandler;
  * Voorbeeld: MOVE 1_3
  */
 public class MoveCommand extends Command {
-	protected final String commandStr = "";
+	protected final String commandStr = Protocol.Client.MOVE;
+	protected final String passStr = Protocol.Client.PASS;
 	private boolean pass;
 	private int row;
 	private int column;
@@ -42,8 +44,6 @@ public class MoveCommand extends Command {
 
 	@Override
 	public String compose(boolean toClient) {
-		String command = commandStr + delim1;
-		command += pass ? pass : row + delim1 + column;
-		return command + commandEnd;
+		return commandStr + delim1 + (pass ? passStr : row + delim1 + column) + commandEnd;
 	}
 }

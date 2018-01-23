@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.model.Board;
+import client.model.HumanPlayer;
 import client.model.Move;
 import client.model.Player;
 import client.model.Stone;
@@ -89,6 +90,7 @@ public class GoClient extends Thread {
 	//private Map<String, Command> outgoingCommands;
 	private Board board;
 	private Player player;
+	private String opponentName;
 
 	private GOGUI gogui;
 	
@@ -200,12 +202,39 @@ public class GoClient extends Thread {
 		view.showChallengeDeclined(playerName);
 	}
 	
+	public void askForSettings() {
+		view.askForSettings();
+	}
+	
+	public void handleError(String reason, String message) {
+		view.showError(reason, message);
+		if (reason.equals(ErrorCommand.INVPROTOCOL)) {
+			view.shutdown();
+			shutdown();
+		}
+	}
+	
+	public void shutdown() {
+		//TODO
+	}
+	
+	// -----game interaction methods-------
+	public void startGame(String opponent, int boardSize, Stone playerColor) {
+		this.opponentName = opponent;
+		board = new Board(boardSize);
+		//TODO: hier ergens AI aangeven?
+		this.player = new HumanPlayer(playerColor, name);
+	}
+	
 	public int getBoardDim() {
 		return board.dim();
 	}
 	
 	public Stone getColor(String playerName) {
-		return player.getColor();
+		if (playerName.equals(player.getName())) {
+			return player.getColor();
+		}
+		return player.getColor().other();
 	}
 	
 	public void makeMove(Move move) {
@@ -227,19 +256,7 @@ public class GoClient extends Thread {
 		}
 	}
 	
-	public void handleError(String reason, String message) {
-		view.showError(reason, message);
-		if (reason.equals(ErrorCommand.INVPROTOCOL)) {
-			view.shutdown();
-			shutdown();
-		}
-	}
-	
 	public void endGame(String reason, Map<String, Integer> scores) { 
-		//TODO
-	}
-	
-	public void shutdown() {
 		//TODO
 	}
 	

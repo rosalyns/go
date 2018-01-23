@@ -10,6 +10,9 @@ import java.util.Scanner;
 
 
 public class TUIView implements Observer, Runnable {
+	public final boolean toServer = false;
+	public final boolean fromServer = true;
+	
 	private GoClient controller;
 	
 	public TUIView(GoClient controller) {
@@ -25,19 +28,24 @@ public class TUIView implements Observer, Runnable {
 	public void run() {
 		boolean running = true;
 		while (running) {
-			String line = readString("What is your command? "
-					+ "Type HELP if you want to see all the commands. ").toUpperCase();
+			String line = readString("").toUpperCase();
 			
 			String[] words = line.split(" ");
 			if (words.length == 2 && words[0].equals("REQUEST")) {
-				//controller.sendRequestToServer(words[1]);
+				new RequestCommand(controller, 2, words[1]).send(toServer);
 				print("requesting a game with " + words[1]);
 			} else if (words.length == 1 && words[0].equals("IETS")) {
 				print("iets.");
 			} else {
-				print("Unknown command");
+				print("Unknown command. Type HELP to see all possible commands.");
 			}
 		}
+	}
+	
+	public void askForSettings() {
+		print("A game is starting with you as the first player. Please choose a color and "
+				+ "boardsize by entering: SETTINGS <color> <boardSize>. Possible colors are "
+				+ "BLACK or WHITE, possible boardsizes 9, 13 or 19.");
 	}
 	
 	public void showLeaderboard(Map<Integer, String> scores) {

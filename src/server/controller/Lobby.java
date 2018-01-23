@@ -59,13 +59,16 @@ public class Lobby extends Thread {
 	
 	public void challenge(ClientHandler challenger, String playerName) 
 			throws PlayerNotFoundException {
-		// if challenged player doesn't support challenges && has said RANDOM, start game.
-		// if challenged player doesn't support challenges && has not said RANDOM, decline game.
-		// if challenged player supports challenges, send REQUESTGAME command to him
-		// if playerName == RANDOM, put in randomChallenges
+		/* if challenged player doesn't support challenges && has said RANDOM, start game.
+		   if challenged player doesn't support challenges && has not said RANDOM, decline game.
+		   if challenged player supports challenges, send REQUESTGAME command to him
+		   if playerName == RANDOM, put in randomChallenges
 		ClientHandler challengee = findPlayer(playerName);
 		pendingChallenges.put(challenger, challengee);
 		new RequestCommand(challengee, challenger.getName()).send(toClient);
+		*/
+		
+		
 	}
 	
 	public void chat(String name, String message) {

@@ -4,8 +4,8 @@ import java.util.Scanner;
 
 public class HumanPlayer extends Player {
 
-    public HumanPlayer(Stone mark, String name) {
-        super(mark, name);
+    public HumanPlayer(Stone color, String name) {
+        super(color, name);
     }
 
     public void askForMove(Board board) {
