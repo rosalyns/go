@@ -1,0 +1,6 @@
+- Als iemand iemand uitdaagt die nog geen requestgame heeft gestuurd (en geen challenge ondersteunt), ong 10 seconden wachten of diegene dat nog doet.
+- ClientHandler en GoClient superklasse maken -> 2 constructors per commandclass
+- Lobby beter laten omgaan met challenges bv: 
+	+ als je iemand uitdaagt die al iemand heeft uitgedaagd
+	+ als je iemand uitdaagt die ook door iemand anders is uitgedaagd
+	+ als je twee keer iemand uitdaagt  

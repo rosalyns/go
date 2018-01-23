@@ -8,8 +8,11 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import commands.ChatCommand;
+import commands.ErrorCommand;
 import commands.RequestCommand;
 import exceptions.PlayerNotFoundException;
+import general.Extension;
+import general.Protocol;
 import server.model.NetworkPlayer;
 import server.model.Player;
 import server.model.Stone;
@@ -67,8 +70,21 @@ public class Lobby extends Thread {
 		pendingChallenges.put(challenger, challengee);
 		new RequestCommand(challengee, challenger.getName()).send(toClient);
 		*/
-		
-		
+		if (playerName.equals(Protocol.Client.RANDOM)) {
+			randomChallenges.add(challenger);
+		} else {
+			ClientHandler challengee = findPlayer(playerName);
+			if (challengee.getExtensions().contains(Extension.CHALLENGE)) {
+				new RequestCommand(challengee, challenger.getName()).send(toClient);
+				pendingChallenges.put(challenger, challengee);
+			} else if (randomChallenges.contains(challengee)) {
+				randomChallenges.remove(challengee);
+				startGame(challenger, challengee);
+			} else {
+				new ErrorCommand(challenger, ErrorCommand.OTHER, 
+						"The player you challenged can't play a game right now.");
+			}
+		}
 	}
 	
 	public void chat(String name, String message) {

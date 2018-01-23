@@ -40,7 +40,16 @@ public class ClientHandler extends Thread {
 		out = new BufferedWriter(new OutputStreamWriter(sockArg.getOutputStream()));
 		
 		incomingCommands = new HashMap<String, Command>();
-		incomingCommands.put(Protocol.Server.NAME, new NameCommand(this));
+		incomingCommands.put(Protocol.Client.NAME, new NameCommand(this));
+		incomingCommands.put(Protocol.Client.MOVE, new MoveCommand(this));
+		incomingCommands.put(Protocol.Client.SETTINGS, new SettingsCommand(this));
+		incomingCommands.put(Protocol.Client.QUIT, new QuitCommand(this));
+		incomingCommands.put(Protocol.Client.REQUESTGAME, new RequestCommand(this));
+		incomingCommands.put(Protocol.Client.ACCEPTGAME, new AcceptCommand(this));
+		incomingCommands.put(Protocol.Client.DECLINEGAME, new DeclineCommand(this));
+		incomingCommands.put(Protocol.Client.LOBBY, new LobbyCommand(this));
+		incomingCommands.put(Protocol.Client.CHAT, new ChatCommand(this));
+		incomingCommands.put(Protocol.Client.LEADERBOARD, new LeadCommand(this));
 	}
 
 	/**
@@ -54,6 +63,7 @@ public class ClientHandler extends Thread {
 		String command = "";
 		try {
 			while ((command = in.readLine()) != null) {
+				System.out.println(command);
 				for (String commandStr : incomingCommands.keySet()) {
 					if (command.startsWith(commandStr)) {
 						try {
@@ -79,6 +89,10 @@ public class ClientHandler extends Thread {
 	
 	public void setExtensions(Set<Extension> extensions) {
 		this.supportedExtensions = extensions;
+	}
+	
+	public Set<Extension> getExtensions() {
+		return supportedExtensions;
 	}
 	
 	public void makeMove(boolean pass, int row, int column) {

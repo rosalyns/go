@@ -50,9 +50,9 @@ public class RequestCommand extends Command {
 	}
 	
 	public String compose(boolean toClient) {
-		String command = commandStr + delim1;
-		command += toClient ? challenger : numberOfPlayers + delim1 + challengee;
-		return command + commandEnd;
+		return commandStr + delim1
+				+ (toClient ? challenger : numberOfPlayers + delim1 + challengee) 
+				+ commandEnd;
 	}
 
 	@Override
