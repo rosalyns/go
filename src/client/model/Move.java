@@ -1,6 +1,8 @@
 package client.model;
 
 public class Move {
+	public static final int PASS = -1;
+	
 	private int position;
 	private Stone color;
 	

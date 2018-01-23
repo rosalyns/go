@@ -88,7 +88,7 @@ public class Board {
 		return this.fields[index(row, col)] == Stone.EMPTY;
 	}
 	
-	//@ ensures geen dubbelen.
+	//ensures geen dubbelen
 	public List<Integer> getEmptyFields() {
 		List<Integer> emptyFields = new ArrayList<Integer>();
 		for (int i = 0; i < dim * dim; i++) {

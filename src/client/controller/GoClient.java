@@ -151,15 +151,15 @@ public class GoClient extends Thread {
 	}
 	
 	public void showLeaderboard(Map<Integer, String> scores) {
-		//TODO
+		view.showLeaderboard(scores);
 	}
 	
 	public void showPlayersInLobby(List<String> players) {
-		//TODO
+		view.showPlayersInLobby(players);
 	}
 	
 	public void showChatMessage(String playerName, String message) {
-		//TODO
+		view.showChatMessage(playerName, message);
 	}
 	
 	public void setServerName(String serverName) {
@@ -177,15 +177,19 @@ public class GoClient extends Thread {
 	}
 	
 	public void challengedBy(String playerName) {
-		//TODO
+		view.showChallengedBy(playerName);
 	}
 	
 	public void declined(String playerName) {
-		//TODO
+		view.showChallengeDeclined(playerName);
 	}
 	
 	public void handleError(String reason, String message) {
-		//TODO
+		view.showError(reason, message);
+		if (reason.equals(ErrorCommand.INVPROTOCOL)) {
+			view.shutdown();
+			shutdown();
+		}
 	}
 	
 	public void shutdown() {

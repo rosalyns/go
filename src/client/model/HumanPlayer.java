@@ -13,7 +13,7 @@ public class HumanPlayer extends Player {
                 + ", what is your choice? ";
         int choice = readInt(prompt);
         boolean valid = (board.isField(choice) && board.isEmptyField(choice)) 
-        		|| choice == Game.PASS;
+        		|| choice == Move.PASS;
         while (!valid) {
             System.out.println("ERROR: field " + choice
                     + " is no valid choice.");

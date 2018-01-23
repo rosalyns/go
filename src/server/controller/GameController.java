@@ -1,6 +1,5 @@
 package server.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -18,7 +17,7 @@ public class GameController extends Thread {
 		
 		
 		try {
-			game = new Game(players, 9);
+			game = new Game(this.players, 9);
 		} catch (InvalidBoardSizeException e) {
 			e.printStackTrace();
 		}

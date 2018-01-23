@@ -29,8 +29,6 @@ public class ClientHandler extends Thread {
 	private Set<Extension> supportedExtensions;
 	private Map<String, Command> incomingCommands;
 	
-	
-	
 	/**
 	 * Constructs a ClientHandler object Initialises both Data streams.
 	 */
