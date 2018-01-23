@@ -1,7 +1,9 @@
 package commands;
 
 import client.controller.GoClient;
+import client.model.Move;
 import exceptions.InvalidCommandLengthException;
+import general.Protocol;
 import server.controller.ClientHandler;
 /**
  * SERVER -> CLIENT
@@ -14,9 +16,23 @@ import server.controller.ClientHandler;
  * Voorbeeld: TURN piet 1_3 jan of TURN piet FIRST piet
  */
 public class TurnCommand extends Command {
-
+	protected final String commandStr = Protocol.Server.TURN;
+	protected final String pass = Protocol.Server.PASS;
+	protected final String first = Protocol.Server.FIRST;
+	private String currentPlayer;
+	private String turn;
+	private String nextPlayer;
+	
 	public TurnCommand(ClientHandler clientHandler) {
 		super(clientHandler);
+	}
+	
+	public TurnCommand(ClientHandler clientHandler, String currentPlayer, String turn, 
+			String nextPlayer) {
+		super(clientHandler);
+		this.currentPlayer = currentPlayer;
+		this.turn = turn;
+		this.nextPlayer = nextPlayer;
 	}
 
 	public TurnCommand(GoClient client) {
@@ -25,14 +41,29 @@ public class TurnCommand extends Command {
 
 	@Override
 	public String compose(boolean toClient) {
-		// TODO Auto-generated method stub
-		return null;
+		return commandStr + delim1 + currentPlayer + turn + nextPlayer + commandEnd;
 	}
 
 	@Override
 	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
-		// TODO Auto-generated method stub
+		String[] words = command.split("\\" + delim1);
+		if (words.length != 4) {
+			throw new InvalidCommandLengthException();
+		}
 		
+		if (words[2].equals(pass)) {
+			client.makeMove(new Move(client.getColor(words[1]), Move.PASS));
+		} else if (!words[2].equals(first)) {
+			String[] coordinatesStr = words[2].split(delim2);
+			int[] coordinates = new int[2];
+			for (int i = 0; i < 2; i++) {
+				coordinates[i] = Integer.parseInt(coordinatesStr[i]);
+			}
+			int dim = client.getBoardDim();
+			client.makeMove(new Move(client.getColor(words[1]), 
+					coordinates[0] * dim + coordinates[1]));
+		}
+		client.nextPlayer(words[3]);
 	}
 
 }

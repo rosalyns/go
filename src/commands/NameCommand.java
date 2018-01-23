@@ -47,7 +47,6 @@ public class NameCommand extends Command {
 
 	@Override
 	public String compose(boolean toClient) {
-		// commando zelfde voor server en client.
 		String command = commandStr + delim1 + name + delim1 + versionStr + delim1 + versionNumber 
 				+ delim1 + extensionStr;
 		for (Extension e : Extension.values()) {

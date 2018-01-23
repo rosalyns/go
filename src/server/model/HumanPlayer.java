@@ -8,7 +8,7 @@ public class HumanPlayer extends Player {
         super(mark, name);
     }
 
-    public Move determineMove(Board board) {
+    public void askForMove(Board board) {
         String prompt = "> " + getName() + " (" + getColor().toString() + ")"
                 + ", what is your choice? ";
         int choice = readInt(prompt);
@@ -20,7 +20,7 @@ public class HumanPlayer extends Player {
             choice = readInt(prompt);
             valid = board.isField(choice) && board.isEmptyField(choice);
         }
-        return new Move(this.getColor(), choice);
+        // new Move(this.getColor(), choice);
     }
 
     private int readInt(String prompt) {

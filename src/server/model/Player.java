@@ -22,6 +22,6 @@ public abstract class Player {
         return color;
     }
 
-    public abstract Move determineMove(Board board);
+    public abstract void askForMove(Board board);
 
 }

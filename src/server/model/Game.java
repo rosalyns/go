@@ -35,7 +35,9 @@ public class Game {
 	
 	public void start() {
 		while (!isGameOver()) {
-			Move move = players.get(currentPlayer).determineMove(board); //zend move naar clients
+			players.get(currentPlayer).askForMove(board); //zend move naar clients
+			//WAIT FOR MOVE........
+			Move move = null;
 			if (move.getPosition() == PASS) {
 				consecutivePasses++;
 			} else {

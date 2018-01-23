@@ -2,6 +2,7 @@ package client.controller;
 
 import client.model.Board;
 import client.model.Move;
+import client.model.Player;
 import client.model.Stone;
 import client.view.*;
 import commands.*;
@@ -87,6 +88,7 @@ public class GoClient extends Thread {
 	private Set<Extension> serverExtensions;
 	//private Map<String, Command> outgoingCommands;
 	private Board board;
+	private Player player;
 
 	private GOGUI gogui;
 	
@@ -185,7 +187,8 @@ public class GoClient extends Thread {
 	
 	public void checkVersion(int serverVersion) {
 		if (this.protocolVersion != serverVersion) {
-			//TODO
+			handleError(ErrorCommand.INVPROTOCOL, "Protocol versions from client and "
+					+ "server are incompatible. Update your protocol.");
 		}
 	}
 	
@@ -195,6 +198,14 @@ public class GoClient extends Thread {
 	
 	public void declined(String playerName) {
 		view.showChallengeDeclined(playerName);
+	}
+	
+	public int getBoardDim() {
+		return board.dim();
+	}
+	
+	public Stone getColor(String playerName) {
+		return player.getColor();
 	}
 	
 	public void makeMove(Move move) {
@@ -210,12 +221,22 @@ public class GoClient extends Thread {
 		}
 	}
 	
+	public void nextPlayer(String playerName) {
+		if (playerName.equals(player.getName())) {
+			player.askForMove(board);
+		}
+	}
+	
 	public void handleError(String reason, String message) {
 		view.showError(reason, message);
 		if (reason.equals(ErrorCommand.INVPROTOCOL)) {
 			view.shutdown();
 			shutdown();
 		}
+	}
+	
+	public void endGame(String reason, Map<String, Integer> scores) { 
+		//TODO
 	}
 	
 	public void shutdown() {

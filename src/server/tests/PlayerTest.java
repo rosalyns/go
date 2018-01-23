@@ -21,7 +21,7 @@ public class PlayerTest {
 
 	@Test
 	public void testComputerDetermineMove() {
-		Move move = cPlayer.determineMove(board);
+		Move move = cPlayer.askForMove(board);
 		assertTrue(0 <= move.getPosition() && move.getPosition() < board.dim() * board.dim());
 		assertTrue(board.isEmptyField(move.getPosition()));
 	}

@@ -10,8 +10,7 @@ public class Move {
 		this.position = position;
 		this.color = color;
 	}
-
-
+	
 	public int getPosition() {
 		return this.position;
 	}

@@ -1,5 +1,8 @@
 package commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import client.controller.GoClient;
 import exceptions.InvalidCommandLengthException;
 import general.Protocol;
@@ -49,8 +52,15 @@ public class EndGameCommand extends Command {
 
 	@Override
 	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
-		// TODO Auto-generated method stub
+		String[] words = command.split("\\" + delim1);
+		if (words.length != 6) {
+			throw new InvalidCommandLengthException();
+		}
 		
+		Map<String, Integer> endScores = new HashMap<String, Integer>();
+		endScores.put(words[2], Integer.parseInt(words[3]));
+		endScores.put(words[4], Integer.parseInt(words[5]));
+		client.endGame(words[1], endScores);		
 	}
 
 }

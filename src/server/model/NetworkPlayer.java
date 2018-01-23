@@ -9,9 +9,8 @@ public class NetworkPlayer extends Player {
 	}
 
 	@Override
-	public Move determineMove(Board board) {
+	public void askForMove(Board board) {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
