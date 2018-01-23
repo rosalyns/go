@@ -15,7 +15,6 @@ import exceptions.*;
 public class Game {
 	public static final int PASS = -1;
 	
-	private GOGUI gogui;
 	private List<Player> players;
 	private int currentPlayer;
 	private Board board;
@@ -24,7 +23,6 @@ public class Game {
 
 	//first player in list must be Mark.BLACK
 	public Game(List<Player> players, int boardSize) throws InvalidBoardSizeException {
-		this.gogui = new GoGUIIntegrator(false, true, 9);
 		this.currentPlayer = 0;
 		this.consecutivePasses = 0;
 		this.players = players;
@@ -36,20 +34,12 @@ public class Game {
 	}
 	
 	public void start() {
-		gogui.startGUI();
 		while (!isGameOver()) {
 			Move move = players.get(currentPlayer).determineMove(board); //zend move naar clients
 			if (move.getPosition() == PASS) {
 				consecutivePasses++;
 			} else {
 				board.setField(move);
-				try {
-					gogui.addStone(board.indexToCoordinates(move.getPosition()).y, 
-							board.indexToCoordinates(move.getPosition()).x, 
-							move.getColor() == Stone.WHITE);
-				} catch (InvalidCoordinateException e) {
-					e.printStackTrace();
-				}
 				consecutivePasses = 0;
 				doCaptures(move); 
 			}
@@ -91,12 +81,6 @@ public class Game {
 	public void removeGroup(Set<Integer> group, Stone color) {
 		for (Integer field : group) {
 			board.setField(new Move(Stone.EMPTY, field));
-			try {
-				gogui.removeStone(board.indexToCoordinates(field).y, 
-						board.indexToCoordinates(field).x);
-			} catch (InvalidCoordinateException e) {
-				e.printStackTrace();
-			}
 		}
 		board.getGroups().get(color).remove(group);
 	}
@@ -127,7 +111,6 @@ public class Game {
 			}
 		}
 	}
-	
 	
 	public void printScores() {
 		for (Player p : scores.keySet()) {

@@ -1,5 +1,8 @@
 package client.controller;
 
+import client.model.Board;
+import client.model.Move;
+import client.model.Stone;
 import client.view.*;
 import commands.*;
 import exceptions.InvalidCommandLengthException;
@@ -14,11 +17,16 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.nedap.go.gui.GOGUI;
+import com.nedap.go.gui.GoGUIIntegrator;
+import com.nedap.go.gui.InvalidCoordinateException;
 
 public class GoClient extends Thread {
 	
@@ -78,11 +86,14 @@ public class GoClient extends Thread {
 	private Set<Extension> extensions;
 	private Set<Extension> serverExtensions;
 	//private Map<String, Command> outgoingCommands;
+	private Board board;
+
+	private GOGUI gogui;
 	
 	public GoClient(String name, InetAddress host, int port) throws IOException {
 		this.protocolVersion = Protocol.Client.VERSIONNO;
 		this.extensions = new HashSet<Extension>();
-		//extensions nog toevoegen.
+		//TODO: op het eind: extensions nog toevoegen.
 		
 		this.sock = new Socket(host, port);
 		this.setName(name);
@@ -104,12 +115,14 @@ public class GoClient extends Thread {
 		incomingCommands.put(Protocol.Server.CHAT, new ChatCommand(this));
 		incomingCommands.put(Protocol.Server.LEADERBOARD, new LeadCommand(this));
 		
+		this.gogui = new GoGUIIntegrator(false, true, 9);
 		//TODO: addObservers to relevant classes (that are Observables)
 	}
 	
 	public void run() {
 		Thread viewThread = new Thread(view);
 		viewThread.start();
+		gogui.startGUI();
 		boolean keepGoing = true;
 		
 		new NameCommand(this, extensions).send(toServer);
@@ -184,6 +197,19 @@ public class GoClient extends Thread {
 		view.showChallengeDeclined(playerName);
 	}
 	
+	public void makeMove(Move move) {
+		if (move.getPosition() != Move.PASS) {
+			board.setField(move);
+			try {
+				gogui.addStone(board.indexToCoordinates(move.getPosition()).y, 
+						board.indexToCoordinates(move.getPosition()).x, 
+						move.getColor() == Stone.WHITE);
+			} catch (InvalidCoordinateException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void handleError(String reason, String message) {
 		view.showError(reason, message);
 		if (reason.equals(ErrorCommand.INVPROTOCOL)) {
@@ -194,5 +220,44 @@ public class GoClient extends Thread {
 	
 	public void shutdown() {
 		//TODO
+	}
+	
+	// ------game logic-------
+	public void doCaptures(Move move) {
+		Stone playerColor = move.getColor();
+		Stone opponentColor = playerColor.other();
+		List<Set<Integer>> groupsToRemove = new ArrayList<Set<Integer>>();
+		for (Set<Integer> group : board.getGroups().get(opponentColor)) {
+			if (!board.hasLiberties(group)) {
+				groupsToRemove.add(group);
+			}
+		}
+		
+		for (Set<Integer> group : groupsToRemove) {
+			removeGroup(group, opponentColor);
+		}
+		
+		for (Set<Integer> group : board.getGroups().get(playerColor)) {
+			if (!board.hasLiberties(group)) {
+				groupsToRemove.add(group);
+			}
+		}
+		
+		for (Set<Integer> group : groupsToRemove) {
+			removeGroup(group, opponentColor);
+		}
+	}
+	
+	public void removeGroup(Set<Integer> group, Stone color) {
+		for (Integer field : group) {
+			board.setField(new Move(Stone.EMPTY, field));
+			try {
+				gogui.removeStone(board.indexToCoordinates(field).y, 
+						board.indexToCoordinates(field).x);
+			} catch (InvalidCoordinateException e) {
+				e.printStackTrace();
+			}
+		}
+		board.getGroups().get(color).remove(group);
 	}
 }
