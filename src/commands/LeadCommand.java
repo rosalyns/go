@@ -33,7 +33,6 @@ public class LeadCommand extends Command {
 	public LeadCommand(ClientHandler clientHandler, Map<Integer, String> scores) {
 		super(clientHandler, true);
 		this.scores = scores;
-		this.toClient = true;
 	}
 
 	public LeadCommand(GoClient client) {

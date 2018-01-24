@@ -3,8 +3,8 @@ package commands;
 import client.controller.GoClient;
 import exceptions.InvalidCommandLengthException;
 import general.Protocol;
+import model.Stone;
 import server.controller.ClientHandler;
-import server.model.Stone;
 
 /**
  * CLIENT -> SERVER
@@ -43,7 +43,7 @@ public class SettingsCommand extends Command {
 		}
 		this.color = words[1].equals(Protocol.General.BLACK) ? Stone.BLACK : Stone.WHITE;
 		this.boardSize = Integer.parseInt(words[2]);
-		clientHandler.setGame(color, boardSize);
+		clientHandler.setGameSettings(color, boardSize);
 	}
 
 	@Override

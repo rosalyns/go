@@ -33,7 +33,6 @@ public class LobbyCommand extends Command {
 	public LobbyCommand(ClientHandler clientHandler, List<String> players) {
 		super(clientHandler, true);
 		this.availablePlayers = players;
-		this.toClient = true;
 	}
 	
 	public LobbyCommand(GoClient client) {

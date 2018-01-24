@@ -4,8 +4,9 @@ import java.util.List;
 import client.controller.GoClient;
 import exceptions.InvalidCommandLengthException;
 import general.Protocol;
+import model.Player;
 import server.controller.ClientHandler;
-import client.model.Stone;
+import model.Stone;
 
 /**
  * SERVER -> CLIENT
@@ -22,7 +23,7 @@ public class StartCommand extends Command {
 	private int numberOfPlayers;
 	private Stone color;
 	private int boardSize;
-	private List<String> players;
+	private List<Player> players;
 	private boolean firstPlayer;
 	
 	public StartCommand(ClientHandler clientHandler) {
@@ -33,17 +34,15 @@ public class StartCommand extends Command {
 		super(clientHandler, true);
 		this.numberOfPlayers = numberOfPlayers;
 		firstPlayer = true;
-		this.toClient = true;
 	}
 	
 	public StartCommand(ClientHandler clientHandler, int numberOfPlayers, Stone color, 
-			int boardSize, List<String> players) {
+			int boardSize, List<Player> players) {
 		super(clientHandler, true);
 		this.numberOfPlayers = numberOfPlayers;
 		this.color = color;
 		this.boardSize = boardSize;
 		this.players = players;
-		this.toClient = true;
 	}
 
 	public StartCommand(GoClient client) {
@@ -55,8 +54,8 @@ public class StartCommand extends Command {
 		String command = commandStr + delim1 + numberOfPlayers;
 		if (!firstPlayer) {
 			command += delim1 + color + delim1 + boardSize;
-			for (String player : players) {
-				command += delim1 + player;
+			for (Player player : players) {
+				command += delim1 + player.getName();
 			}
 		}
 		return command + commandEnd;

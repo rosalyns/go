@@ -33,7 +33,6 @@ public class NameCommand extends Command {
 		super(clientHandler, true);
 		this.supportedExtensions = supportedExtensions;
 		this.name = clientHandler.getName();
-		this.toClient = true;
 	}
 
 	public NameCommand(GoClient client) {
@@ -44,7 +43,6 @@ public class NameCommand extends Command {
 		super(client, false);
 		this.supportedExtensions = supportedExtensions;
 		this.name = client.getName();
-		this.toClient = false;
 	}
 
 	@Override

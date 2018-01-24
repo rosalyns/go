@@ -1,6 +1,6 @@
 package client.controller;
 
-import client.model.*;
+import model.*;
 import client.view.*;
 import commands.*;
 import exceptions.InvalidCommandLengthException;

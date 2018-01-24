@@ -13,9 +13,9 @@ import commands.RequestCommand;
 import exceptions.PlayerNotFoundException;
 import general.Extension;
 import general.Protocol;
-import server.model.NetworkPlayer;
-import server.model.Player;
-import server.model.Stone;
+import model.NetworkPlayer;
+import model.Player;
+import model.Stone;
 
 public class Lobby extends Thread {
 	public final boolean toClient = true;
@@ -62,14 +62,6 @@ public class Lobby extends Thread {
 	
 	public void challenge(ClientHandler challenger, String playerName) 
 			throws PlayerNotFoundException {
-		/* if challenged player doesn't support challenges && has said RANDOM, start game.
-		   if challenged player doesn't support challenges && has not said RANDOM, decline game.
-		   if challenged player supports challenges, send REQUESTGAME command to him
-		   if playerName == RANDOM, put in randomChallenges
-		ClientHandler challengee = findPlayer(playerName);
-		pendingChallenges.put(challenger, challengee);
-		new RequestCommand(challengee, challenger.getName()).send(toClient);
-		*/
 		if (playerName.equals(Protocol.Client.RANDOM)) {
 			randomChallenges.add(challenger);
 		} else {
@@ -126,12 +118,10 @@ public class Lobby extends Thread {
 		System.out.println(thisMoment() + "Starting a game with players " + 
 				player1.getName() + " and " + 
 				player2.getName());
-		List<Player> players = new ArrayList<Player>();
-		NetworkPlayer x = new NetworkPlayer(player1, Stone.BLACK, "noname");
-		NetworkPlayer y = new NetworkPlayer(player2, Stone.WHITE, "noname2");
-		players.add(x);
-		players.add(y);
-		GameController game = new GameController(server, players);
+		List<ClientHandler> players = new ArrayList<ClientHandler>();
+		players.add(player1);
+		players.add(player2);
+		GameController game = new GameController(this, players);
 		game.start();
 	}
 

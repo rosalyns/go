@@ -16,13 +16,16 @@ import exceptions.InvalidCommandLengthException;
 import exceptions.PlayerNotFoundException;
 import general.Extension;
 import general.Protocol;
-import server.model.Stone;
+import model.NetworkPlayer;
+import model.Stone;
 
 public class ClientHandler extends Thread {
 	public final boolean toClient = true;
 	public final boolean fromClient = true;
 	
-	private GoServer server;
+	private Lobby lobby;
+	private GameController game;
+	private NetworkPlayer player;
 	private BufferedReader in;
 	private BufferedWriter out;
 	private Socket client;
@@ -32,9 +35,9 @@ public class ClientHandler extends Thread {
 	/**
 	 * Constructs a ClientHandler object Initialises both Data streams.
 	 */
-	// @ requires serverArg != null && sockArg != null;
-	public ClientHandler(GoServer serverArg, Socket sockArg) throws IOException {
-		this.server = serverArg;
+	public ClientHandler(Lobby lobby, Socket sockArg) throws IOException {
+		this.lobby = lobby;
+		lobby.addPlayer(this);
 		this.client = sockArg;
 		in = new BufferedReader(new InputStreamReader(sockArg.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(sockArg.getOutputStream()));
@@ -81,6 +84,8 @@ public class ClientHandler extends Thread {
 		}
 	}
 
+	
+	// -------lobby interaction methods--------
 	public void checkVersion(int version) {
 		if (version != Protocol.Server.VERSIONNO) {
 			new ErrorCommand(this, ErrorCommand.INVPROTOCOL, "").send();
@@ -95,20 +100,8 @@ public class ClientHandler extends Thread {
 		return supportedExtensions;
 	}
 	
-	public void makeMove(boolean pass, int row, int column) {
-		//TODO
-	}
-	
-	public void setGame(Stone color, int boardSize) {
-		//TODO
-	}
-	
-	public void quitGame() {
-		//TODO
-	}
-	
 	public void challenge(int numberOfPlayers, String playerName) throws PlayerNotFoundException {
-		server.getLobby().challenge(this, playerName);
+		lobby.challenge(this, playerName);
 	}
 	
 	public void acceptGame(String playerName) {
@@ -120,15 +113,15 @@ public class ClientHandler extends Thread {
 	}
 	
 	public void announce() {
-		server.getLobby().announce(this.getName());
+		lobby.announce(this.getName());
 	}
 	
 	public Map<Integer, String> getLeaderboard() {
-		return this.server.getLobby().getLeaderBoard();
+		return lobby.getLeaderBoard();
 	}
 	
 	public List<String> getPlayersInLobby() {
-		return this.server.getLobby().getFreePlayers();
+		return lobby.getFreePlayers();
 	}
 	
 	public void handleChatMessage(String message) {
@@ -138,6 +131,27 @@ public class ClientHandler extends Thread {
 //			//send to players in lobby
 //			server.getLobby().chat(clientName, message);
 //		}
+	}
+	
+	// --------game interaction methods---------
+	public void makeMove(boolean pass, int row, int column) {
+		//TODO
+	}
+	
+	public void setGame(GameController game) {
+		this.game = game;
+	}
+	
+	public void setGameSettings(Stone color, int boardSize) {
+		game.setSettings(color, boardSize);
+	}
+	
+	public NetworkPlayer getPlayer() {
+		return player;
+	}
+	
+	public void quitGame() {
+		//TODO
 	}
 	
 	/**
@@ -161,9 +175,10 @@ public class ClientHandler extends Thread {
 	 * in the chat.
 	 */
 	private void shutdown() {
-		server.getLobby().removePlayer(this);
-		server.broadcast("[" + this.getName() + " has left]");
-		sendCommandToClient("Server shut down.");
+		lobby.removePlayer(this);
+		// TODO: replace with something lobby
+		// server.broadcast("[" + this.getName() + " has left]");
+		// sendCommandToClient("Server shut down.");
 		try {
 			client.close();
 		} catch (IOException e) {

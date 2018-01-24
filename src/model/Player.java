@@ -1,4 +1,4 @@
-package client.model;
+package model;
 
 /**
  * Abstract class representing a player in a Go game.

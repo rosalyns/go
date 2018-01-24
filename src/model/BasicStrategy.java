@@ -1,4 +1,4 @@
-package server.model;
+package model;
 
 public class BasicStrategy implements Strategy {
 

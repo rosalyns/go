@@ -1,4 +1,4 @@
-package client.model;
+package model;
 
 public interface Strategy {
 	public String getName();

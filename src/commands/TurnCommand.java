@@ -1,7 +1,7 @@
 package commands;
 
 import client.controller.GoClient;
-import client.model.Move;
+import model.Move;
 import exceptions.InvalidCommandLengthException;
 import general.Protocol;
 import server.controller.ClientHandler;
@@ -33,7 +33,6 @@ public class TurnCommand extends Command {
 		this.currentPlayer = currentPlayer;
 		this.turn = turn;
 		this.nextPlayer = nextPlayer;
-		this.toClient = true;
 	}
 
 	public TurnCommand(GoClient client) {

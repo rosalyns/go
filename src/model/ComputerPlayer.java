@@ -1,4 +1,4 @@
-package client.model;
+package model;
 
 public class ComputerPlayer extends Player {
 	private Strategy strategy;

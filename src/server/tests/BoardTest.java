@@ -9,7 +9,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import server.model.*;
+import model.*;
 
 public class BoardTest {
 	private Board board;

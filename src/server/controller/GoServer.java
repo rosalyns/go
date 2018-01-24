@@ -51,9 +51,8 @@ public class GoServer {
 				System.out.println("Server is waiting on client to connect...");
 				Socket client = sock.accept();
 				System.out.println("Client connected on the server.");
-				ClientHandler clientHandler = new ClientHandler(this, client);
+				ClientHandler clientHandler = new ClientHandler(lobby, client);
 				clientHandler.start();
-				lobby.addPlayer(clientHandler);
 			} catch (IOException e) {
 				//e.printStackTrace();
 				keepRunning = false;
@@ -76,10 +75,6 @@ public class GoServer {
 		for (ClientHandler ch : clients) {
 			ch.sendCommandToClient(msg);
 		}
-	}
-	
-	public Lobby getLobby() {
-		return lobby;
 	}
 	
 	public boolean isRunning() {
