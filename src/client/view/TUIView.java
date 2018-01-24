@@ -32,7 +32,7 @@ public class TUIView implements Observer, Runnable {
 			
 			String[] words = line.split(" ");
 			if (words.length == 2 && words[0].equals("REQUEST")) {
-				new RequestCommand(controller, 2, words[1]).send(toServer);
+				new RequestCommand(controller, 2, words[1]).send();
 				print("requesting a game with " + words[1]);
 			} else if (words.length == 1 && words[0].equals("IETS")) {
 				print("iets.");

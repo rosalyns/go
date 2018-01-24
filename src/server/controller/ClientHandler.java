@@ -20,7 +20,7 @@ import server.model.Stone;
 
 public class ClientHandler extends Thread {
 	public final boolean toClient = true;
-	public final boolean fromClient = false;
+	public final boolean fromClient = true;
 	
 	private GoServer server;
 	private BufferedReader in;
@@ -63,14 +63,14 @@ public class ClientHandler extends Thread {
 		String command = "";
 		try {
 			while ((command = in.readLine()) != null) {
-				System.out.println(command);
+				System.out.println(this.getName() + " received the command " + command);
 				for (String commandStr : incomingCommands.keySet()) {
 					if (command.startsWith(commandStr)) {
 						try {
-							incomingCommands.get(commandStr).parse(command, fromClient); 
+							incomingCommands.get(commandStr).parse(command); 
 						} catch (InvalidCommandLengthException e) {
 							new ErrorCommand(this, ErrorCommand.INVCOMMAND, 
-									"Number of arguments is not valid.").send(toClient);
+									"Number of arguments is not valid.").send();
 						}
 					}
 				}
@@ -83,7 +83,7 @@ public class ClientHandler extends Thread {
 
 	public void checkVersion(int version) {
 		if (version != Protocol.Server.VERSIONNO) {
-			new ErrorCommand(this, ErrorCommand.INVPROTOCOL, "").send(toClient);
+			new ErrorCommand(this, ErrorCommand.INVPROTOCOL, "").send();
 		}
 	}
 	

@@ -75,7 +75,7 @@ public class Lobby extends Thread {
 		} else {
 			ClientHandler challengee = findPlayer(playerName);
 			if (challengee.getExtensions().contains(Extension.CHALLENGE)) {
-				new RequestCommand(challengee, challenger.getName()).send(toClient);
+				new RequestCommand(challengee, challenger.getName()).send();
 				pendingChallenges.put(challenger, challengee);
 			} else if (randomChallenges.contains(challengee)) {
 				randomChallenges.remove(challengee);
@@ -89,7 +89,7 @@ public class Lobby extends Thread {
 	
 	public void chat(String name, String message) {
 		for (ClientHandler ch : clients) {
-			new ChatCommand(ch, name, message).send(toClient);
+			new ChatCommand(ch, name, message).send();
 		}
 	}
 	

@@ -33,6 +33,7 @@ public class LeadCommand extends Command {
 	public LeadCommand(ClientHandler clientHandler, Map<Integer, String> scores) {
 		super(clientHandler);
 		this.scores = scores;
+		this.toClient = true;
 	}
 
 	public LeadCommand(GoClient client) {
@@ -40,7 +41,7 @@ public class LeadCommand extends Command {
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		String command = commandStr;
 		
 		if (toClient) {
@@ -57,9 +58,9 @@ public class LeadCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
-		if (fromServer) {
+		if (toClient) {
 			if (words.length < 21) {
 				throw new InvalidCommandLengthException();
 			}
@@ -70,7 +71,7 @@ public class LeadCommand extends Command {
 			client.showLeaderboard(this.scores);
 		} else {
 			new LeadCommand(clientHandler, 
-					clientHandler.getLeaderboard()).send(clientHandler.toClient);
+					clientHandler.getLeaderboard()).send();
 		}
 		
 	}

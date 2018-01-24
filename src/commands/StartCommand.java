@@ -33,6 +33,7 @@ public class StartCommand extends Command {
 		super(clientHandler);
 		this.numberOfPlayers = numberOfPlayers;
 		firstPlayer = true;
+		this.toClient = true;
 	}
 	
 	public StartCommand(ClientHandler clientHandler, int numberOfPlayers, Stone color, 
@@ -42,6 +43,7 @@ public class StartCommand extends Command {
 		this.color = color;
 		this.boardSize = boardSize;
 		this.players = players;
+		this.toClient = true;
 	}
 
 	public StartCommand(GoClient client) {
@@ -49,7 +51,7 @@ public class StartCommand extends Command {
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		String command = commandStr + delim1 + numberOfPlayers;
 		if (!firstPlayer) {
 			command += delim1 + color + delim1 + boardSize;
@@ -61,7 +63,7 @@ public class StartCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 2 && words.length != 6) {
 			throw new InvalidCommandLengthException();

@@ -22,6 +22,7 @@ public class DeclineCommand extends Command {
 	public DeclineCommand(GoClient client, String challenger) {
 		super(client);
 		this.challenger = challenger;
+		this.toClient = false;
 	}
 
 	public DeclineCommand(ClientHandler clientHandler) {
@@ -29,7 +30,7 @@ public class DeclineCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 2) {
 			throw new InvalidCommandLengthException();
@@ -38,12 +39,12 @@ public class DeclineCommand extends Command {
 			clientHandler.declineGame(words[1]);
 		} catch (PlayerNotFoundException e) {
 			new ErrorCommand(clientHandler, ErrorCommand.INVCOMMAND, 
-					"This player is not in the lobby.").send(toClient);
+					"This player is not in the lobby.").send();
 		}
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		return commandStr + delim1 + challenger + commandEnd;
 	}
 

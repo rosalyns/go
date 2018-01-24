@@ -37,6 +37,7 @@ public class EndGameCommand extends Command {
 		this.winningScore = winningScore;
 		this.losingPlayer = losingPlayer;
 		this.losingScore = losingScore;
+		this.toClient = true;
 	}
 
 	public EndGameCommand(GoClient client) {
@@ -44,14 +45,14 @@ public class EndGameCommand extends Command {
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		String command = commandStr + delim1 + endReason + delim1 + winningPlayer + delim1 + 
 						winningScore + delim1 + losingPlayer + delim1 + losingScore + commandEnd;
 		return command;
 	}
 
 	@Override
-	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 6) {
 			throw new InvalidCommandLengthException();

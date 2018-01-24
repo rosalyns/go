@@ -29,6 +29,7 @@ public class SettingsCommand extends Command {
 		super(client);
 		this.color = color;
 		this.boardSize = boardSize;
+		this.toClient = false;
 	}
 	
 	public SettingsCommand(ClientHandler clientHandler) {
@@ -36,7 +37,7 @@ public class SettingsCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 3) {
 			throw new InvalidCommandLengthException();
@@ -47,7 +48,7 @@ public class SettingsCommand extends Command {
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		return commandStr + delim1 + color + delim1 + boardSize + commandEnd;
 	}
 }

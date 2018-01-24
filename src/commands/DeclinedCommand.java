@@ -18,6 +18,7 @@ public class DeclinedCommand extends Command {
 	public DeclinedCommand(ClientHandler clientHandler, String challengee) {
 		super(clientHandler);
 		this.challengee = challengee;
+		this.toClient = true;
 	}
 
 	public DeclinedCommand(ClientHandler clientHandler) {
@@ -29,12 +30,12 @@ public class DeclinedCommand extends Command {
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		return commandStr + delim1 + challengee + commandEnd;
 	}
 
 	@Override
-	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		// komt nooit van client.
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 2) {

@@ -33,6 +33,7 @@ public class LobbyCommand extends Command {
 	public LobbyCommand(ClientHandler clientHandler, List<String> players) {
 		super(clientHandler);
 		this.availablePlayers = players;
+		this.toClient = true;
 	}
 	
 	public LobbyCommand(GoClient client) {
@@ -40,7 +41,7 @@ public class LobbyCommand extends Command {
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		String command = commandStr;
 		if (toClient && !availablePlayers.isEmpty()) {
 			command += delim1;
@@ -55,7 +56,7 @@ public class LobbyCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (toClient) {
 			if (words.length != 2) {

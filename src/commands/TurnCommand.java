@@ -33,6 +33,7 @@ public class TurnCommand extends Command {
 		this.currentPlayer = currentPlayer;
 		this.turn = turn;
 		this.nextPlayer = nextPlayer;
+		this.toClient = true;
 	}
 
 	public TurnCommand(GoClient client) {
@@ -40,12 +41,12 @@ public class TurnCommand extends Command {
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		return commandStr + delim1 + currentPlayer + turn + nextPlayer + commandEnd;
 	}
 
 	@Override
-	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 4) {
 			throw new InvalidCommandLengthException();

@@ -1,10 +1,6 @@
 package client.controller;
 
-import client.model.Board;
-import client.model.HumanPlayer;
-import client.model.Move;
-import client.model.Player;
-import client.model.Stone;
+import client.model.*;
 import client.view.*;
 import commands.*;
 import exceptions.InvalidCommandLengthException;
@@ -126,21 +122,22 @@ public class GoClient extends Thread {
 	public void run() {
 		Thread viewThread = new Thread(view);
 		viewThread.start();
-		gogui.startGUI();
+		
 		boolean keepGoing = true;
 		
-		new NameCommand(this, extensions).send(toServer);
+		new NameCommand(this, extensions).send();
 		
 		while (keepGoing) {
 			try {
 				String socketInput = in.readLine();
+				System.out.println(this.getName() + " received the command " + socketInput);
 				if (socketInput != null) {
 					//System.out.println(message);
 					
 					for (String command : incomingCommands.keySet()) {
 						if (socketInput.startsWith(command)) {
 							try {
-								incomingCommands.get(command).parse(socketInput, fromServer);
+								incomingCommands.get(command).parse(socketInput);
 							} catch (InvalidCommandLengthException e) {
 								e.printStackTrace();
 							}
@@ -180,7 +177,7 @@ public class GoClient extends Thread {
 	}
 	
 	public void setServerName(String serverName) {
-		this.serverName = name; 
+		this.serverName = serverName;
 	}
 	
 	public void setServerExtensions(Set<Extension> supportedExtensions) {
@@ -224,6 +221,7 @@ public class GoClient extends Thread {
 		board = new Board(boardSize);
 		//TODO: hier ergens AI aangeven?
 		this.player = new HumanPlayer(playerColor, name);
+		gogui.startGUI();
 	}
 	
 	public int getBoardDim() {

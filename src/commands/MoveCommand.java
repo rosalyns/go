@@ -27,6 +27,7 @@ public class MoveCommand extends Command {
 		this.pass = pass;
 		this.row = row;
 		this.column = column;
+		this.toClient = false;
 	}
 
 	public MoveCommand(ClientHandler clientHandler) {
@@ -34,7 +35,7 @@ public class MoveCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 2) {
 			throw new InvalidCommandLengthException();
@@ -43,7 +44,7 @@ public class MoveCommand extends Command {
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		return commandStr + delim1 + (pass ? passStr : row + delim1 + column) + commandEnd;
 	}
 }

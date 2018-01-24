@@ -23,7 +23,7 @@ public class QuitCommand extends Command {
 		super(clientHandler);
 	}
 
-	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 1) {
 			throw new InvalidCommandLengthException();
@@ -32,7 +32,7 @@ public class QuitCommand extends Command {
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		return commandStr + commandEnd;
 	}
 

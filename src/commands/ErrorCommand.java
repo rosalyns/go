@@ -34,16 +34,17 @@ public class ErrorCommand extends Command {
 		super(clientHandler);
 		this.errorType = errorType;
 		this.errorMessage = message;
+		this.toClient = true;
 	}
 	
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		String command = commandStr + delim1 + errorType + delim1 + errorMessage + commandEnd;
 		return command;
 	}
 
 	@Override
-	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 3) {
 			throw new InvalidCommandLengthException();

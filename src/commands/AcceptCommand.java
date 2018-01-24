@@ -21,6 +21,7 @@ public class AcceptCommand extends Command {
 	public AcceptCommand(GoClient client, String challenger) {
 		super(client);
 		this.challenger = challenger;
+		this.toClient = false;
 	}
 	
 	public AcceptCommand(ClientHandler clientHandler) {
@@ -28,7 +29,7 @@ public class AcceptCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 2) {
 			throw new InvalidCommandLengthException();
@@ -37,7 +38,7 @@ public class AcceptCommand extends Command {
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		return commandStr + delim1 + challenger + commandEnd;
 	}
 

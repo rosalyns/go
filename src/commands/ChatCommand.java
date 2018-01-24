@@ -33,6 +33,7 @@ public class ChatCommand extends Command {
 		super(clientHandler);
 		this.name = name;
 		this.message = message;
+		this.toClient = true;
 	}
 
 	public ChatCommand(GoClient client) {
@@ -42,15 +43,16 @@ public class ChatCommand extends Command {
 	public ChatCommand(GoClient client, String message) {
 		super(client);
 		this.message = message;
+		this.toClient = false;
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		return commandStr + delim1 + (toClient ? name + delim1 : "") + message + commandEnd;
 	}
 
 	@Override
-	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (toClient) {
 			if (words.length != 3) {

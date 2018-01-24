@@ -33,6 +33,7 @@ public class NameCommand extends Command {
 		super(clientHandler);
 		this.supportedExtensions = supportedExtensions;
 		this.name = clientHandler.getName();
+		this.toClient = true;
 	}
 
 	public NameCommand(GoClient client) {
@@ -43,10 +44,11 @@ public class NameCommand extends Command {
 		super(client);
 		this.supportedExtensions = supportedExtensions;
 		this.name = client.getName();
+		this.toClient = false;
 	}
 
 	@Override
-	public String compose(boolean toClient) {
+	public String compose() {
 		String command = commandStr + delim1 + name + delim1 + versionStr + delim1 + versionNumber 
 				+ delim1 + extensionStr;
 		for (Extension e : Extension.values()) {
@@ -56,13 +58,13 @@ public class NameCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command, boolean fromServer) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (words.length != 12) {
 			throw new InvalidCommandLengthException();
 		}
 		supportedExtensions = new HashSet<Extension>();
-		if (fromServer) {
+		if (toClient) {
 			client.setServerName(words[1]);
 			client.checkVersion(Integer.parseInt(words[3]));
 			// words[ 6 t/m 12] bevatten extensions

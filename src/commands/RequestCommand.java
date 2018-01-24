@@ -38,6 +38,7 @@ public class RequestCommand extends Command {
 		super(client);
 		this.numberOfPlayers = numberOfPlayers;
 		this.challengee = challengee;
+		this.toClient = false;
 	}
 	
 	public RequestCommand(ClientHandler clientHandler) {
@@ -47,16 +48,17 @@ public class RequestCommand extends Command {
 	public RequestCommand(ClientHandler clientHandler, String challenger) {
 		super(clientHandler);
 		this.challenger = challenger;
+		this.toClient = true;
 	}
 	
-	public String compose(boolean toClient) {
+	public String compose() {
 		return commandStr + delim1
 				+ (toClient ? challenger : numberOfPlayers + delim1 + challengee) 
 				+ commandEnd;
 	}
 
 	@Override
-	public void parse(String command, boolean toClient) throws InvalidCommandLengthException {
+	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (toClient) {
 			if (words.length != 2) {
@@ -72,7 +74,7 @@ public class RequestCommand extends Command {
 				clientHandler.challenge(Integer.parseInt(words[1]), words[2]);
 			} catch (PlayerNotFoundException e) {
 				new ErrorCommand(clientHandler, ErrorCommand.INVCOMMAND, 
-						"This player is not in the lobby.").send(toClient);
+						"This player is not in the lobby.").send();
 			}
 		}
 	}
