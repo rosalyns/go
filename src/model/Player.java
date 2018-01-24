@@ -6,22 +6,25 @@ package model;
  */
 
 public abstract class Player {
-    private String name;
-    private Stone color;
-   
-    public Player(Stone color, String name) {
-        this.name = name;
-        this.color = color;
-    }
+	private String name;
+	protected Stone color;
 
-    public String getName() {
-        return name;
-    }
+	public Player(String name) {
+		this.name = name;
+	}
 
-    public Stone getColor() {
-        return color;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public abstract void askForMove(Board board);
+	public void setColor(Stone color) {
+		this.color = color;
+	}
+
+	public Stone getColor() {
+		return this.color;
+	}
+
+	public abstract void askForMove(Board board);
 
 }

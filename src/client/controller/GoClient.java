@@ -7,6 +7,7 @@ import exceptions.InvalidCommandLengthException;
 import general.Extension;
 import general.Protocol;
 
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -239,9 +240,8 @@ public class GoClient extends Thread {
 		if (move.getPosition() != Move.PASS) {
 			board.setField(move);
 			try {
-				gogui.addStone(board.indexToCoordinates(move.getPosition()).y, 
-						board.indexToCoordinates(move.getPosition()).x, 
-						move.getColor() == Stone.WHITE);
+				Point coordinates = Board.indexToCoordinates(move.getPosition(), getBoardDim());
+				gogui.addStone(coordinates.y, coordinates.x, move.getColor() == Stone.WHITE);
 			} catch (InvalidCoordinateException e) {
 				e.printStackTrace();
 			}
@@ -288,8 +288,9 @@ public class GoClient extends Thread {
 		for (Integer field : group) {
 			board.setField(new Move(Stone.EMPTY, field));
 			try {
-				gogui.removeStone(board.indexToCoordinates(field).y, 
-						board.indexToCoordinates(field).x);
+				Point coordinates = Board.indexToCoordinates(field, getBoardDim());
+				gogui.removeStone(coordinates.y, 
+						coordinates.x);
 			} catch (InvalidCoordinateException e) {
 				e.printStackTrace();
 			}

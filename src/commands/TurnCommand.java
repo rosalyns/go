@@ -17,8 +17,8 @@ import server.controller.ClientHandler;
  */
 public class TurnCommand extends Command {
 	protected final String commandStr = Protocol.Server.TURN;
-	protected final String pass = Protocol.Server.PASS;
-	protected final String first = Protocol.Server.FIRST;
+	public static final String PASS = Protocol.Server.PASS;
+	public static final String FIRST = Protocol.Server.FIRST;
 	private String currentPlayer;
 	private String turn;
 	private String nextPlayer;
@@ -41,7 +41,8 @@ public class TurnCommand extends Command {
 
 	@Override
 	public String compose() {
-		return commandStr + delim1 + currentPlayer + turn + nextPlayer + commandEnd;
+		return commandStr + delim1 + currentPlayer + delim1 + turn + delim1 
+				+ nextPlayer + commandEnd;
 	}
 
 	@Override
@@ -51,9 +52,9 @@ public class TurnCommand extends Command {
 			throw new InvalidCommandLengthException();
 		}
 		
-		if (words[2].equals(pass)) {
+		if (words[2].equals(PASS)) {
 			client.makeMove(new Move(client.getColor(words[1]), Move.PASS));
-		} else if (!words[2].equals(first)) {
+		} else if (!words[2].equals(FIRST)) {
 			String[] coordinatesStr = words[2].split(delim2);
 			int[] coordinates = new int[2];
 			for (int i = 0; i < 2; i++) {

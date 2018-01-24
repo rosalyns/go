@@ -2,6 +2,9 @@ package client.view;
 
 import client.controller.GoClient;
 import commands.*;
+import general.Protocol;
+import model.Stone;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -40,25 +43,48 @@ public class TUIView implements Observer, Runnable {
 	public void run() {
 		boolean running = true;
 		while (running) {
-			String line = readString("").toUpperCase();
-			
+			boolean wrongInput = false;
+			String line = readString("");
 			String[] words = line.split(" ");
 			if (words.length == 2 && words[0].equals("REQUEST")) {
 				new RequestCommand(controller, 2, words[1]).send();
 				print("requesting a game with " + words[1]);
-			} else if (words.length == 1 && words[0].equals("IETS")) {
-				print("iets.");
+			} else if (words.length == 3 && words[0].equals("SETTINGS")) {
+				Stone color = null;
+				if (words[1].toUpperCase().equals(Protocol.General.BLACK)) {
+					color = Stone.BLACK;
+				} else if (words[1].toUpperCase().equals(Protocol.General.WHITE)) {
+					color = Stone.WHITE;
+				} else {
+					print("Specify the color as BLACK or WHITE.");
+					wrongInput = true;
+				}
+				int boardSize = Integer.parseInt(words[2]);
+				if (boardSize != 9 && boardSize != 13 && boardSize != 19) {
+					print("Possible boardsizes are: 9, 13, 19.");
+					wrongInput = true;
+				}
+				if (!wrongInput) {
+					new SettingsCommand(controller, color, boardSize).send();
+				}
 			} else if (words.length == 1 && words[0].equals("LOBBY")) {
 				new LobbyCommand(controller, false).send();
 			} else if (words.length == 1 && words[0].equals("MENU")) {
 				showMenu();
 			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+				print("iets");
 			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+				print("iets");
 			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+				print("iets");
 			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+				print("iets");
 			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+				print("iets");
 			} else if (words.length == 1 && words[0].equals("LOBBY")) {
-			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+				print("iets");
+			} else if (words.length == 1 && words[0].equals("HELP")) {
+				print(helpText);
 			} else {
 				print("Unknown command. Type HELP to see all possible commands.");
 			}

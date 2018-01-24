@@ -5,18 +5,18 @@ import server.controller.ClientHandler;
 public class NetworkPlayer extends Player {
 	private ClientHandler clientHandler;
 	
-	public NetworkPlayer(ClientHandler ch, Stone color, String name) {
-		super(color, name);
+	public NetworkPlayer(ClientHandler ch, String name) {
+		super(name);
 		this.clientHandler = ch;
-	}
-
-	@Override
-	public void askForMove(Board board) {
-		//
 	}
 	
 	public ClientHandler getClientHandler() {
 		return this.clientHandler;
+	}
+	
+	@Override
+	public void askForMove(Board board) {
+		// nothing TODO
 	}
 
 }

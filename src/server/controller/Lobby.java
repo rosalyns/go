@@ -14,8 +14,6 @@ import exceptions.PlayerNotFoundException;
 import general.Extension;
 import general.Protocol;
 import model.NetworkPlayer;
-import model.Player;
-import model.Stone;
 
 public class Lobby extends Thread {
 	public final boolean toClient = true;
@@ -35,12 +33,13 @@ public class Lobby extends Thread {
 		this.randomChallenges = new ArrayList<ClientHandler>();
 	}
 	
-	public void addPlayer(ClientHandler player) {
-		this.clients.add(player);
+	public void addPlayer(ClientHandler client) {
+		client.setPlayer(new NetworkPlayer(client, client.getName()));
+		this.clients.add(client);
 	}
 	
-	public void removePlayer(ClientHandler player) {
-		this.clients.remove(player);
+	public void removePlayer(ClientHandler client) {
+		this.clients.remove(client);
 	}
 
 	private String thisMoment() {

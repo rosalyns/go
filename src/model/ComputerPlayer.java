@@ -4,7 +4,7 @@ public class ComputerPlayer extends Player {
 	private Strategy strategy;
 	
 	public ComputerPlayer(Stone mark, Strategy strategy) {
-		super(mark, strategy.getName() + "-computer-" + mark.toString());
+		super(strategy.getName() + "-computer-" + mark.toString());
 		this.strategy = strategy;
 	}
 	

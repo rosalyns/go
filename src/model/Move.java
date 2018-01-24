@@ -11,7 +11,6 @@ public class Move {
 		this.color = color;
 	}
 
-
 	public int getPosition() {
 		return this.position;
 	}

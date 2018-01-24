@@ -33,61 +33,24 @@ public class Game {
 		}
 	}
 	
-	public void start() {
-		while (!isGameOver()) {
-			players.get(currentPlayer).askForMove(board); //zend move naar clients
-			//WAIT FOR MOVE........
-			Move move = null;
-			if (move.getPosition() == PASS) {
-				consecutivePasses++;
-			} else {
-				board.setField(move);
-				consecutivePasses = 0;
-				doCaptures(move); 
-			}
-			currentPlayer = (currentPlayer + 1) % players.size();
+	public void doMove(Move move) {
+		if (move.getPosition() == PASS) {
+			consecutivePasses++;
+		} else {
+			board.setField(move);
+			consecutivePasses = 0;
 		}
-		this.calculateScores();
-		this.printScores();
 	}
 	
 	public boolean isGameOver() {
 		return consecutivePasses == 2;
 	}
 	
-	public void doCaptures(Move move) {
-		Stone playerColor = move.getColor();
-		Stone opponentColor = playerColor.other();
-		List<Set<Integer>> groupsToRemove = new ArrayList<Set<Integer>>();
-		for (Set<Integer> group : board.getGroups().get(opponentColor)) {
-			if (!board.hasLiberties(group)) {
-				groupsToRemove.add(group);
-			}
-		}
+	public void end() {
 		
-		for (Set<Integer> group : groupsToRemove) {
-			removeGroup(group, opponentColor);
-		}
-		
-		for (Set<Integer> group : board.getGroups().get(playerColor)) {
-			if (!board.hasLiberties(group)) {
-				groupsToRemove.add(group);
-			}
-		}
-		
-		for (Set<Integer> group : groupsToRemove) {
-			removeGroup(group, opponentColor);
-		}
 	}
 	
-	public void removeGroup(Set<Integer> group, Stone color) {
-		for (Integer field : group) {
-			board.setField(new Move(Stone.EMPTY, field));
-		}
-		board.getGroups().get(color).remove(group);
-	}
-	
-	public void calculateScores() {
+	public Map<Player, Integer> calculateScores() {
 		board.recalculateGroups(true);
 		scores = new HashMap<Player, Integer>(); 
 		scores.put(players.get(0), 0);
@@ -112,11 +75,10 @@ public class Game {
 				}
 			}
 		}
+		return scores;
 	}
 	
-	public void printScores() {
-		for (Player p : scores.keySet()) {
-			System.out.println("Player " + p.getName() + " has " + scores.get(p) + " points.");
-		}
+	public int getBoardDim() {
+		return board.dim();
 	}
 }

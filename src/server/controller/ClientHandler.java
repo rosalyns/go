@@ -16,6 +16,7 @@ import exceptions.InvalidCommandLengthException;
 import exceptions.PlayerNotFoundException;
 import general.Extension;
 import general.Protocol;
+import model.Move;
 import model.NetworkPlayer;
 import model.Stone;
 
@@ -25,6 +26,7 @@ public class ClientHandler extends Thread {
 	
 	private Lobby lobby;
 	private GameController game;
+	private boolean inGame;
 	private NetworkPlayer player;
 	private BufferedReader in;
 	private BufferedWriter out;
@@ -37,8 +39,10 @@ public class ClientHandler extends Thread {
 	 */
 	public ClientHandler(Lobby lobby, Socket sockArg) throws IOException {
 		this.lobby = lobby;
-		lobby.addPlayer(this);
+		
 		this.client = sockArg;
+		this.inGame = false;
+		
 		in = new BufferedReader(new InputStreamReader(sockArg.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(sockArg.getOutputStream()));
 		
@@ -113,6 +117,7 @@ public class ClientHandler extends Thread {
 	}
 	
 	public void announce() {
+		lobby.addPlayer(this);
 		lobby.announce(this.getName());
 	}
 	
@@ -135,15 +140,20 @@ public class ClientHandler extends Thread {
 	
 	// --------game interaction methods---------
 	public void makeMove(boolean pass, int row, int column) {
-		//TODO
+		game.doMove(this, new Move(player.getColor(), row * game.getBoardDim() + column));
 	}
 	
 	public void setGame(GameController game) {
 		this.game = game;
+		this.inGame = true;
 	}
 	
 	public void setGameSettings(Stone color, int boardSize) {
 		game.setSettings(color, boardSize);
+	}
+	
+	public void setPlayer(NetworkPlayer player) {
+		this.player = player;
 	}
 	
 	public NetworkPlayer getPlayer() {
@@ -151,7 +161,13 @@ public class ClientHandler extends Thread {
 	}
 	
 	public void quitGame() {
-		//TODO
+		this.inGame = false;
+		//TODO en nog wat
+	}
+	
+	//-------other methods------
+	public boolean isInGame() {
+		return this.inGame;
 	}
 	
 	/**

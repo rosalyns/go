@@ -70,13 +70,21 @@ public class StartCommand extends Command {
 		if (words.length == 2) {
 			client.askForSettings();
 		} else if (words.length == 6) {
-			boardSize = Integer.parseInt(words[2]);
-			if (words[3].equals(black)) {
+			boardSize = Integer.parseInt(words[1]);
+			if (words[2].equals(black)) {
 				color = Stone.BLACK;
 			} else {
 				color = Stone.WHITE;
 			}
-			client.startGame(words[1], boardSize, color);
+			String opponent = "";
+			if (words[4].equals(client.getName())) {
+				opponent = words[5];
+			} else if (words[5].equals(client.getName())) {
+				opponent = words[4];
+			} else {
+				//TODO Not this player Exception?
+			}
+			client.startGame(opponent, boardSize, color);
 		}
 	}
 }
