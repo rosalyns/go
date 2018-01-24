@@ -25,23 +25,22 @@ public class EndGameCommand extends Command {
 	private int losingScore;
 	
 	public EndGameCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 	
 	public EndGameCommand(ClientHandler clientHandler, String reason, 
 			String winningPlayer, int winningScore, 
 			String losingPlayer, int losingScore) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.endReason = reason;
 		this.winningPlayer = winningPlayer;
 		this.winningScore = winningScore;
 		this.losingPlayer = losingPlayer;
 		this.losingScore = losingScore;
-		this.toClient = true;
 	}
 
 	public EndGameCommand(GoClient client) {
-		super(client);
+		super(client, true);
 	}
 
 	@Override

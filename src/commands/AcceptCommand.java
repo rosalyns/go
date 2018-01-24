@@ -15,17 +15,16 @@ public class AcceptCommand extends Command {
 	private String challenger;
 	
 	public AcceptCommand(GoClient client) {
-		super(client);
+		super(client, true);
 	}
 
 	public AcceptCommand(GoClient client, String challenger) {
-		super(client);
+		super(client, false);
 		this.challenger = challenger;
-		this.toClient = false;
 	}
 	
 	public AcceptCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 
 	@Override

@@ -23,18 +23,17 @@ public class ErrorCommand extends Command {
 	private String errorMessage;
 	
 	public ErrorCommand(ClientHandler clientHandler) {
-		super(clientHandler);
-	}
-
-	public ErrorCommand(GoClient client) {
-		super(client);
+		super(clientHandler, false);
 	}
 
 	public ErrorCommand(ClientHandler clientHandler, String errorType, String message) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.errorType = errorType;
 		this.errorMessage = message;
-		this.toClient = true;
+	}
+	
+	public ErrorCommand(GoClient client) {
+		super(client, true);
 	}
 	
 	@Override

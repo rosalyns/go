@@ -14,14 +14,14 @@ public abstract class Command {
 	protected ClientHandler clientHandler;
 	protected boolean toClient;
 	
-	public Command(GoClient client) {
+	public Command(GoClient client, boolean toClient) {
 		this.client = client;
-		this.toClient = true;
+		this.toClient = toClient;
 	}
 	
-	public Command(ClientHandler clientHandler) {
+	public Command(ClientHandler clientHandler, boolean toClient) {
 		this.clientHandler = clientHandler;
-		this.toClient = false;
+		this.toClient = toClient;
 	}
 	
 	public abstract void parse(String command) throws InvalidCommandLengthException;

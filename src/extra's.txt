@@ -4,3 +4,4 @@
 	+ als je iemand uitdaagt die al iemand heeft uitgedaagd
 	+ als je iemand uitdaagt die ook door iemand anders is uitgedaagd
 	+ als je twee keer iemand uitdaagt  
+- ERROR types fancy afhandelen

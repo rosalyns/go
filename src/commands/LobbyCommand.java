@@ -27,17 +27,21 @@ public class LobbyCommand extends Command {
 	private List<String> availablePlayers;
 	
 	public LobbyCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 
 	public LobbyCommand(ClientHandler clientHandler, List<String> players) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.availablePlayers = players;
 		this.toClient = true;
 	}
 	
 	public LobbyCommand(GoClient client) {
-		super(client);
+		super(client, true);
+	}
+	
+	public LobbyCommand(GoClient client, boolean toClient) {
+		super(client, false);
 	}
 
 	@Override
@@ -69,7 +73,7 @@ public class LobbyCommand extends Command {
 			}
 			client.showPlayersInLobby(availablePlayers);
 		} else {
-			new LobbyCommand(clientHandler, clientHandler.getPlayersInLobby());
+			new LobbyCommand(clientHandler, clientHandler.getPlayersInLobby()).send();
 		}
 		
 	}

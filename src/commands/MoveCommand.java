@@ -19,19 +19,18 @@ public class MoveCommand extends Command {
 	private int column;
 	
 	public MoveCommand(GoClient client) {
-		super(client);
+		super(client, true);
 	}
 	
 	public MoveCommand(GoClient client, boolean pass, int row, int column) {
-		super(client);
+		super(client, false);
 		this.pass = pass;
 		this.row = row;
 		this.column = column;
-		this.toClient = false;
 	}
 
 	public MoveCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 
 	@Override

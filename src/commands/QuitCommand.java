@@ -16,11 +16,11 @@ public class QuitCommand extends Command {
 	public final String commandStr = Protocol.Client.QUIT;
 	
 	public QuitCommand(GoClient client) {
-		super(client);
+		super(client, true);
 	}
 	
 	public QuitCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 
 	public void parse(String command) throws InvalidCommandLengthException {

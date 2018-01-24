@@ -26,11 +26,11 @@ public class StartCommand extends Command {
 	private boolean firstPlayer;
 	
 	public StartCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 	
 	public StartCommand(ClientHandler clientHandler, int numberOfPlayers) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.numberOfPlayers = numberOfPlayers;
 		firstPlayer = true;
 		this.toClient = true;
@@ -38,7 +38,7 @@ public class StartCommand extends Command {
 	
 	public StartCommand(ClientHandler clientHandler, int numberOfPlayers, Stone color, 
 			int boardSize, List<String> players) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.numberOfPlayers = numberOfPlayers;
 		this.color = color;
 		this.boardSize = boardSize;
@@ -47,7 +47,7 @@ public class StartCommand extends Command {
 	}
 
 	public StartCommand(GoClient client) {
-		super(client);
+		super(client, false);
 	}
 
 	@Override

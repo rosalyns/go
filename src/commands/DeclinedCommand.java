@@ -16,17 +16,16 @@ public class DeclinedCommand extends Command {
 	private String challengee;
 	
 	public DeclinedCommand(ClientHandler clientHandler, String challengee) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.challengee = challengee;
-		this.toClient = true;
 	}
 
 	public DeclinedCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 	
 	public DeclinedCommand(GoClient client) {
-		super(client);
+		super(client, true);
 	}
 
 	@Override

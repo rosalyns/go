@@ -26,24 +26,22 @@ public class ChatCommand extends Command {
 	private String message;
 	
 	public ChatCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 	
 	public ChatCommand(ClientHandler clientHandler, String name, String message) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.name = name;
 		this.message = message;
-		this.toClient = true;
 	}
 
 	public ChatCommand(GoClient client) {
-		super(client);
+		super(client, true);
 	}
 	
 	public ChatCommand(GoClient client, String message) {
-		super(client);
+		super(client, false);
 		this.message = message;
-		this.toClient = false;
 	}
 
 	@Override

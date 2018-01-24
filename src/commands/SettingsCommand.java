@@ -22,18 +22,17 @@ public class SettingsCommand extends Command {
 	private int boardSize;
 	
 	public SettingsCommand(GoClient client) {
-		super(client);
+		super(client, true);
 	}
 
 	public SettingsCommand(GoClient client, Stone color, int boardSize) {
-		super(client);
+		super(client, false);
 		this.color = color;
 		this.boardSize = boardSize;
-		this.toClient = false;
 	}
 	
 	public SettingsCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 
 	@Override

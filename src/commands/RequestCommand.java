@@ -31,24 +31,22 @@ public class RequestCommand extends Command {
 	private String challenger;
 	
 	public RequestCommand(GoClient client) {
-		super(client);
+		super(client, true);
 	}
 	
 	public RequestCommand(GoClient client, int numberOfPlayers, String challengee) {
-		super(client);
+		super(client, false);
 		this.numberOfPlayers = numberOfPlayers;
 		this.challengee = challengee;
-		this.toClient = false;
 	}
 	
 	public RequestCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 	
 	public RequestCommand(ClientHandler clientHandler, String challenger) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.challenger = challenger;
-		this.toClient = true;
 	}
 	
 	public String compose() {

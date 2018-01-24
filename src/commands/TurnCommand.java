@@ -24,12 +24,12 @@ public class TurnCommand extends Command {
 	private String nextPlayer;
 	
 	public TurnCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 	
 	public TurnCommand(ClientHandler clientHandler, String currentPlayer, String turn, 
 			String nextPlayer) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.currentPlayer = currentPlayer;
 		this.turn = turn;
 		this.nextPlayer = nextPlayer;
@@ -37,7 +37,7 @@ public class TurnCommand extends Command {
 	}
 
 	public TurnCommand(GoClient client) {
-		super(client);
+		super(client, true);
 	}
 
 	@Override

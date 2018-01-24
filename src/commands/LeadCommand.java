@@ -27,17 +27,21 @@ public class LeadCommand extends Command {
 	private Map<Integer, String> scores;
 	
 	public LeadCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 	
 	public LeadCommand(ClientHandler clientHandler, Map<Integer, String> scores) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.scores = scores;
 		this.toClient = true;
 	}
 
 	public LeadCommand(GoClient client) {
-		super(client);
+		super(client, true);
+	}
+	
+	public LeadCommand(GoClient client, boolean toClient) {
+		super(client, false);
 	}
 
 	@Override

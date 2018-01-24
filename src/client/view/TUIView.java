@@ -15,6 +15,18 @@ public class TUIView implements Observer, Runnable {
 	
 	private GoClient controller;
 	
+	private String helpText = "You can use the following commands....";
+	
+	private String menuText = "MENU\n"
+			+ "1: Start a new Game\n"
+			+ "2: Options\n"
+			+ "3: Show leaderboard\n"
+			+ "4: Chat\n"
+			+ "5: Quit";
+	
+	
+	
+	
 	public TUIView(GoClient controller) {
 		this.controller = controller;
 	}
@@ -36,6 +48,17 @@ public class TUIView implements Observer, Runnable {
 				print("requesting a game with " + words[1]);
 			} else if (words.length == 1 && words[0].equals("IETS")) {
 				print("iets.");
+			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+				new LobbyCommand(controller, false).send();
+			} else if (words.length == 1 && words[0].equals("MENU")) {
+				showMenu();
+			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+			} else if (words.length == 1 && words[0].equals("LOBBY")) {
+			} else if (words.length == 1 && words[0].equals("LOBBY")) {
 			} else {
 				print("Unknown command. Type HELP to see all possible commands.");
 			}
@@ -75,8 +98,12 @@ public class TUIView implements Observer, Runnable {
 	}
 
 	public void showError(String type, String message) {
-		//Als errortype is INVNAME, kun je om nieuwe naam vragen en opnieuw hallo zeggen. 
+		//TODO: Als errortype is INVNAME, kun je om nieuwe naam vragen en opnieuw hallo zeggen. 
 		print(message);
+	}
+	
+	public void showMenu() {
+		print(menuText);
 	}
 	
 	private static Scanner in = new Scanner(System.in);

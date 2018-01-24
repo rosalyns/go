@@ -26,22 +26,22 @@ public class NameCommand extends Command {
 	private Set<Extension> supportedExtensions;
 
 	public NameCommand(ClientHandler clientHandler) {
-		super(clientHandler);
+		super(clientHandler, false);
 	}
 
 	public NameCommand(ClientHandler clientHandler, Set<Extension> supportedExtensions) {
-		super(clientHandler);
+		super(clientHandler, true);
 		this.supportedExtensions = supportedExtensions;
 		this.name = clientHandler.getName();
 		this.toClient = true;
 	}
 
 	public NameCommand(GoClient client) {
-		super(client);
+		super(client, true);
 	}
 
 	public NameCommand(GoClient client, Set<Extension> supportedExtensions) {
-		super(client);
+		super(client, false);
 		this.supportedExtensions = supportedExtensions;
 		this.name = client.getName();
 		this.toClient = false;
