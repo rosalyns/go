@@ -42,17 +42,18 @@ public class GameController extends Thread {
 			players.add(client.getPlayer());
 		}
 		
-		
 		try {
 			game = new Game(players, boardSize);
 		} catch (InvalidBoardSizeException e) {
 			e.printStackTrace();
 		}
 		
+		playersTurn = firstPlayer();
 		
 		for (ClientHandler client : clients) {
 			new StartCommand(client, 2, client.getPlayer().getColor(), boardSize, players).send();
-			new TurnCommand(client, firstPlayer().getName(), TurnCommand.FIRST, firstPlayer().getName()).send();
+			new TurnCommand(client, firstPlayer().getName(), TurnCommand.FIRST, 
+					firstPlayer().getName()).send();
 		}
 	}
 	
@@ -70,10 +71,10 @@ public class GameController extends Thread {
 	private ClientHandler firstPlayer() {
 		for (ClientHandler ch : clients) {
 			if (ch.getPlayer().getColor() == Stone.BLACK) {
+				System.out.println("FIrst player is " + ch.getName() + " with color "+ ch.getPlayer().getColor());
 				return ch;
 			}
 		}
-		System.out.println("hjelp");
 		return null;
 	}
 	
@@ -91,7 +92,8 @@ public class GameController extends Thread {
 			}
 			
 			for (ClientHandler client : clients) {
-				new TurnCommand(client, playersTurn.getName(), moveStr, otherPlayer(playersTurn).getName()).send();
+				new TurnCommand(client, playersTurn.getName(), moveStr, 
+						otherPlayer(playersTurn).getName()).send();
 			}
 			playersTurn = otherPlayer(playersTurn);
 			if (game.isGameOver()) {

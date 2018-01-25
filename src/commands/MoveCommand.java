@@ -39,11 +39,21 @@ public class MoveCommand extends Command {
 		if (words.length != 2) {
 			throw new InvalidCommandLengthException();
 		}
+		if (words[1].equals(passStr)) {
+			pass = true;
+			row = 0;
+			column = 0;
+		} else {
+			pass = false;
+			String[] move = words[1].split(delim2);
+			row = Integer.parseInt(move[0]);
+			column = Integer.parseInt(move[1]);
+		}
 		clientHandler.makeMove(pass, row, column);
 	}
 
 	@Override
 	public String compose() {
-		return commandStr + delim1 + (pass ? passStr : row + delim1 + column) + commandEnd;
+		return commandStr + delim1 + (pass ? passStr : row + delim2 + column) + commandEnd;
 	}
 }

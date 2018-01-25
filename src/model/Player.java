@@ -7,14 +7,14 @@ package model;
 
 public abstract class Player {
 	private String name;
-	protected Stone color;
+	private Stone color;
 
 	public Player(String name) {
 		this.name = name;
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setColor(Stone color) {

@@ -4,4 +4,9 @@
 	+ als je iemand uitdaagt die al iemand heeft uitgedaagd
 	+ als je iemand uitdaagt die ook door iemand anders is uitgedaagd
 	+ als je twee keer iemand uitdaagt  
-- ERROR types fancy afhandelen
+	
+Nog fixen:
+- Om naam vragen in het begin in plaats van $string_prompt
+- Laten zien dat andere player heeft gepasst
+- getalletjes toevoegen aan GUI
+- als iemand passt wordt de steen 0,0 de kleur van degene die passt.

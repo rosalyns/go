@@ -16,6 +16,7 @@ import exceptions.InvalidCommandLengthException;
 import exceptions.PlayerNotFoundException;
 import general.Extension;
 import general.Protocol;
+import model.Board;
 import model.Move;
 import model.NetworkPlayer;
 import model.Stone;
@@ -140,7 +141,12 @@ public class ClientHandler extends Thread {
 	
 	// --------game interaction methods---------
 	public void makeMove(boolean pass, int row, int column) {
-		game.doMove(this, new Move(player.getColor(), row * game.getBoardDim() + column));
+		if (pass) {
+			game.doMove(this, new Move(player.getColor(), Move.PASS));
+		} else {
+			game.doMove(this, new Move(player.getColor(), 
+					Board.index(row, column, game.getBoardDim())));
+		}
 	}
 	
 	public void setGame(GameController game) {

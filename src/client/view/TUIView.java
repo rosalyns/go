@@ -5,12 +5,12 @@ import commands.*;
 import general.Protocol;
 import model.Board;
 import model.Move;
+import model.Player;
+import model.HumanPlayer;
 import model.Stone;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Scanner;
 
 
@@ -21,16 +21,14 @@ public class TUIView implements Runnable {
 	
 	private GoClient controller;
 	private boolean inGame = false;
-	private Stone playerColor;
-	private int boardSize;
+	private Player player;
+	private int boardDim;
 	private String helpText = "You can use the following commands....";
 	
 	private String menuText = "MENU\n"
 			+ "1: Start a new Game\n"
 			+ "2: Show leaderboard\n"
 			+ "3: Quit";
-	
-	private String inGameText;
 	
 	public TUIView(GoClient controller) {
 		this.controller = controller;
@@ -67,9 +65,7 @@ public class TUIView implements Runnable {
 					}
 					if (!wrongInput) {
 						new SettingsCommand(controller, color, boardSize).send();
-						this.boardSize = boardSize;
 					}
-					
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("1")) {
 					print("Do you want to use a computerplayer? y/n");
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("2")) {
@@ -87,17 +83,23 @@ public class TUIView implements Runnable {
 					print("Unknown command. Type HELP to see all possible commands.");
 				}
 			} else if (!isAI) {
-				print(inGameText);
+				HumanPlayer hPlayer = (HumanPlayer) player;
 				if ((words.length == 2 || words.length == 3) && words[0].equalsIgnoreCase("MOVE")) {
-					if (words.length == 2 && words[1].equalsIgnoreCase("PASS")) {
-						controller.makeMove(new Move(playerColor, Move.PASS));
-						new MoveCommand(controller, true, 0, 0).send();
+					if (hPlayer.hasToTakeTurn()) {
+						if (words.length == 2 && words[1].equalsIgnoreCase("PASS")) {
+							controller.makeMove(new Move(hPlayer.getColor(), Move.PASS));
+							hPlayer.madeMove();
+							new MoveCommand(controller, true, 0, 0).send();
+						} else {
+							int row = Integer.parseInt(words[1]); 
+							int column = Integer.parseInt(words[2]);
+							//TODO check if valid Move....
+							controller.makeMove(new Move(hPlayer.getColor(), Board.index(row, column, boardDim)));
+							hPlayer.madeMove();
+							new MoveCommand(controller, false, row, column).send();
+						}
 					} else {
-						int row = Integer.parseInt(words[1]); 
-						int column = Integer.parseInt(words[2]);
-						//TODO check if valid Move....
-						new MoveCommand(controller, false, row, column).send();
-						controller.makeMove(new Move(playerColor, Board.index(row, column, boardSize)));
+						print("Wait till it is your turn.");
 					}
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
 					controller.quitGame();
@@ -114,12 +116,10 @@ public class TUIView implements Runnable {
 		}
 	}
 	
-	public void startGame(Stone playerColor) {
+	public void startGame(Player thisPlayer, int boardSize) {
+		this.boardDim = boardSize;
 		inGame = true;
-		this.playerColor = playerColor;
-		inGameText = "You are " + playerColor + ". Where do you want to place a stone? "
-				+ "Specify by MOVE <row> <column> or MOVE PASS.";
-		print(inGameText);
+		this.player = thisPlayer;
 	}
 	
 	public void endGame(String reason, Map<String, Integer> scores) {
@@ -136,17 +136,17 @@ public class TUIView implements Runnable {
 		int result = 0;
 		String winner = "";
 		
-		for (String player : scores.keySet()) {
-			int score = scores.get(player);
-			print(player + " ended with " + scores.get(player) + " points");
+		for (String playerName : scores.keySet()) {
+			int score = scores.get(playerName);
+			print(playerName + " ended with " + scores.get(playerName) + " points");
 			if (score > highestScore) {
 				highestScore = score;
-				if (controller.getName().equals(player)) {
+				if (controller.getName().equals(playerName)) {
 					result = THISPLAYER;
-					winner = player;
+					winner = playerName;
 				} else {
 					result = OTHERPLAYER;
-					winner = player;
+					winner = playerName;
 				}
 			} else if (score == highestScore) {
 				result = NONE;
@@ -155,7 +155,7 @@ public class TUIView implements Runnable {
 			if (result == THISPLAYER) {
 				print("You won!");
 			} else if (result == OTHERPLAYER) {
-				print(player + " won.");
+				print(playerName + " won.");
 			}
 		}
 		
@@ -178,8 +178,8 @@ public class TUIView implements Runnable {
 	
 	public void showPlayersInLobby(List<String> players) {
 		print("Players in lobby: ");
-		for (String player : players) {
-			print(player);
+		for (String playerName : players) {
+			print(playerName);
 		}
 	}
 	

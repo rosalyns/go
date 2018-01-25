@@ -78,13 +78,11 @@ public class GoClient extends Thread {
 	private BufferedReader in;
 	private BufferedWriter out;
 	private TUIView view;
-	private String name;
 	private String serverName;
 	private int protocolVersion;
 	private Map<String, Command> incomingCommands;
 	private Set<Extension> extensions;
 	private Set<Extension> serverExtensions;
-	//private Map<String, Command> outgoingCommands;
 	private Board board;
 	private Player player;
 	private String opponentName;
@@ -116,8 +114,7 @@ public class GoClient extends Thread {
 		incomingCommands.put(Protocol.Server.CHAT, new ChatCommand(this));
 		incomingCommands.put(Protocol.Server.LEADERBOARD, new LeadCommand(this));
 		
-		this.gogui = new GoGUIIntegrator(false, true, 9);
-		//TODO: addObservers to relevant classes (that are Observables)
+		
 	}
 	
 	public void run() {
@@ -220,8 +217,9 @@ public class GoClient extends Thread {
 	public void startGame(String opponent, int boardSize, Stone playerColor) {
 		this.opponentName = opponent;
 		board = new Board(boardSize);
-		this.player = new HumanPlayer(playerColor, name);
-		view.startGame(playerColor);
+		this.player = new HumanPlayer(playerColor, this.getName());
+		view.startGame(player, boardSize);
+		this.gogui = new GoGUIIntegrator(false, true, boardSize);
 		gogui.startGUI();
 	}
 	
@@ -241,7 +239,7 @@ public class GoClient extends Thread {
 			board.setField(move);
 			try {
 				Point coordinates = Board.indexToCoordinates(move.getPosition(), getBoardDim());
-				gogui.addStone(coordinates.y, coordinates.x, move.getColor() == Stone.WHITE);
+				gogui.addStone(coordinates.x, coordinates.y, move.getColor() == Stone.WHITE);
 			} catch (InvalidCoordinateException e) {
 				e.printStackTrace();
 			}
@@ -293,8 +291,8 @@ public class GoClient extends Thread {
 			board.setField(new Move(Stone.EMPTY, field));
 			try {
 				Point coordinates = Board.indexToCoordinates(field, getBoardDim());
-				gogui.removeStone(coordinates.y, 
-						coordinates.x);
+				gogui.removeStone(coordinates.x, 
+						coordinates.y);
 			} catch (InvalidCoordinateException e) {
 				e.printStackTrace();
 			}

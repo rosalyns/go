@@ -1,43 +1,27 @@
 package model;
 
-import java.util.Scanner;
-
 public class HumanPlayer extends Player {
+	private boolean isTurn;
 
-    public HumanPlayer(Stone color, String name) {
-        super(name);
-    }
+	public HumanPlayer(Stone color, String name) {
+		super(name);
+		this.setColor(color);
+		this.isTurn = false;
+	}
 
-    public void askForMove(Board board) {
-        String prompt = "> " + getName() + " (" + getColor().toString() + ")"
-                + ", what is your choice? ";
-        int choice = readInt(prompt);
-        boolean valid = (board.isField(choice) && board.isEmptyField(choice)) 
-        		|| choice == Game.PASS;
-        while (!valid) {
-            System.out.println("ERROR: field " + choice
-                    + " is no valid choice.");
-            choice = readInt(prompt);
-            valid = board.isField(choice) && board.isEmptyField(choice);
-        }
-        // new Move(this.getColor(), choice);
-    }
+	public void askForMove(Board board) {
+		System.out.println("You are " + this.getColor() + " and it's your turn. "
+				+ "Where do you want to place a stone? " 
+				+ "Specify by MOVE <row> <column> or MOVE PASS.");
+		isTurn = true;
+	}
 
-    private int readInt(String prompt) {
-        int value = 0;
-        boolean intRead = false;
-        @SuppressWarnings("resource")
-        Scanner line = new Scanner(System.in);
-        do {
-            System.out.print(prompt);
-            try (Scanner scannerLine = new Scanner(line.nextLine());) {
-                if (scannerLine.hasNextInt()) {
-                    intRead = true;
-                    value = scannerLine.nextInt();
-                }
-            }
-        } while (!intRead);
-        return value;
-    }
+	public void madeMove() {
+		isTurn = false;
+	}
+
+	public boolean hasToTakeTurn() {
+		return isTurn;
+	}
 
 }

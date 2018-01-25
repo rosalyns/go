@@ -1,15 +1,9 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.nedap.go.gui.GOGUI;
-import com.nedap.go.gui.GoGUIIntegrator;
-import com.nedap.go.gui.InvalidCoordinateException;
-
 import exceptions.*;
 
 public class Game {
@@ -38,6 +32,7 @@ public class Game {
 			consecutivePasses++;
 		} else {
 			board.setField(move);
+			board.doCaptures(move); 
 			consecutivePasses = 0;
 		}
 	}

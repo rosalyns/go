@@ -43,7 +43,7 @@ public class Board {
 	}
 	
 	public static Point indexToCoordinates(int index, int boardDim) {
-		return new Point(index / boardDim, index % boardDim);
+		return new Point(index % boardDim, index / boardDim);
 	}
 	
 	public static int index(int row, int col, int boardDim) {
@@ -53,7 +53,7 @@ public class Board {
 	public void setField(Move move) {
 		this.fields[move.getPosition()] = move.getColor();
 		recalculateGroups(false);
-		doCaptures(move); 
+		
 	}
 	
 	public Stone getField(int index) {
