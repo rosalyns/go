@@ -220,8 +220,8 @@ public class GoClient extends Thread {
 	public void startGame(String opponent, int boardSize, Stone playerColor) {
 		this.opponentName = opponent;
 		board = new Board(boardSize);
-		//TODO: hier ergens AI aangeven?
 		this.player = new HumanPlayer(playerColor, name);
+		view.startGame(playerColor);
 		gogui.startGUI();
 	}
 	
@@ -255,6 +255,10 @@ public class GoClient extends Thread {
 	}
 	
 	public void endGame(String reason, Map<String, Integer> scores) { 
+		view.endGame(reason, scores);
+	}
+	
+	public void quitGame() {
 		//TODO
 	}
 	

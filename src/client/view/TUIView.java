@@ -3,6 +3,8 @@ package client.view;
 import client.controller.GoClient;
 import commands.*;
 import general.Protocol;
+import model.Board;
+import model.Move;
 import model.Stone;
 
 import java.util.List;
@@ -12,83 +14,152 @@ import java.util.Observer;
 import java.util.Scanner;
 
 
-public class TUIView implements Observer, Runnable {
-	public final boolean toServer = false;
-	public final boolean fromServer = true;
+public class TUIView implements Runnable {
+	private static final int THISPLAYER = 1;
+	private static final int NONE = 0;
+	private static final int OTHERPLAYER = -1;
 	
 	private GoClient controller;
-	
+	private boolean inGame = false;
+	private Stone playerColor;
+	private int boardSize;
 	private String helpText = "You can use the following commands....";
 	
 	private String menuText = "MENU\n"
 			+ "1: Start a new Game\n"
-			+ "2: Options\n"
-			+ "3: Show leaderboard\n"
-			+ "4: Chat\n"
-			+ "5: Quit";
+			+ "2: Show leaderboard\n"
+			+ "3: Quit";
 	
-	
-	
+	private String inGameText;
 	
 	public TUIView(GoClient controller) {
 		this.controller = controller;
 	}
 
 	@Override
-	public void update(Observable o, Object arg) {
-		System.out.println("Action of type \"" + arg.toString() + "\" was done.");
-	}
-
-	@Override
 	public void run() {
 		boolean running = true;
+		inGame = false;
+		boolean isAI = false;
+		showMenu();
 		while (running) {
 			boolean wrongInput = false;
 			String line = readString("");
 			String[] words = line.split(" ");
-			if (words.length == 2 && words[0].equals("REQUEST")) {
-				new RequestCommand(controller, 2, words[1]).send();
-				print("requesting a game with " + words[1]);
-			} else if (words.length == 3 && words[0].equals("SETTINGS")) {
-				Stone color = null;
-				if (words[1].toUpperCase().equals(Protocol.General.BLACK)) {
-					color = Stone.BLACK;
-				} else if (words[1].toUpperCase().equals(Protocol.General.WHITE)) {
-					color = Stone.WHITE;
+			
+			if (!inGame) {
+				if (words.length == 2 && words[0].equalsIgnoreCase("REQUEST")) {
+					new RequestCommand(controller, 2, words[1]).send();
+				} else if (words.length == 3 && words[0].equalsIgnoreCase("SETTINGS")) {
+					Stone color = null;
+					if (words[1].equalsIgnoreCase(Protocol.General.BLACK)) {
+						color = Stone.BLACK;
+					} else if (words[1].equalsIgnoreCase(Protocol.General.WHITE)) {
+						color = Stone.WHITE;
+					} else {
+						print("Specify the color as BLACK or WHITE.");
+						wrongInput = true;
+					}
+					int boardSize = Integer.parseInt(words[2]);
+					if (boardSize != 9 && boardSize != 13 && boardSize != 19) {
+						print("Possible boardsizes are: 9, 13, 19.");
+						wrongInput = true;
+					}
+					if (!wrongInput) {
+						new SettingsCommand(controller, color, boardSize).send();
+						this.boardSize = boardSize;
+					}
+					
+				} else if (words.length == 1 && words[0].equalsIgnoreCase("1")) {
+					print("Do you want to use a computerplayer? y/n");
+				} else if (words.length == 1 && words[0].equalsIgnoreCase("2")) {
+					new LeadCommand(controller).send();
+				} else if (words.length == 1 && words[0].equalsIgnoreCase("3")) {
+					controller.shutdown();
+					new QuitCommand(controller).send();
+				} else if (words.length == 1 && words[0].equalsIgnoreCase("y")) {
+					isAI = true;
+					new LobbyCommand(controller, false).send();
+				} else if (words.length == 1 && words[0].equalsIgnoreCase("n")) {
+					isAI = false;
+					new LobbyCommand(controller, false).send();
 				} else {
-					print("Specify the color as BLACK or WHITE.");
-					wrongInput = true;
+					print("Unknown command. Type HELP to see all possible commands.");
 				}
-				int boardSize = Integer.parseInt(words[2]);
-				if (boardSize != 9 && boardSize != 13 && boardSize != 19) {
-					print("Possible boardsizes are: 9, 13, 19.");
-					wrongInput = true;
+			} else if (!isAI) {
+				print(inGameText);
+				if ((words.length == 2 || words.length == 3) && words[0].equalsIgnoreCase("MOVE")) {
+					if (words.length == 2 && words[1].equalsIgnoreCase("PASS")) {
+						controller.makeMove(new Move(playerColor, Move.PASS));
+						new MoveCommand(controller, true, 0, 0).send();
+					} else {
+						int row = Integer.parseInt(words[1]); 
+						int column = Integer.parseInt(words[2]);
+						//TODO check if valid Move....
+						new MoveCommand(controller, false, row, column).send();
+						controller.makeMove(new Move(playerColor, Board.index(row, column, boardSize)));
+					}
+				} else if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
+					controller.quitGame();
+					new QuitCommand(controller).send();
+				} else {
+					print("Unknown command. Type HELP to see all possible commands.");
 				}
-				if (!wrongInput) {
-					new SettingsCommand(controller, color, boardSize).send();
-				}
-			} else if (words.length == 1 && words[0].equals("LOBBY")) {
-				new LobbyCommand(controller, false).send();
-			} else if (words.length == 1 && words[0].equals("MENU")) {
-				showMenu();
-			} else if (words.length == 1 && words[0].equals("LOBBY")) {
-				print("iets");
-			} else if (words.length == 1 && words[0].equals("LOBBY")) {
-				print("iets");
-			} else if (words.length == 1 && words[0].equals("LOBBY")) {
-				print("iets");
-			} else if (words.length == 1 && words[0].equals("LOBBY")) {
-				print("iets");
-			} else if (words.length == 1 && words[0].equals("LOBBY")) {
-				print("iets");
-			} else if (words.length == 1 && words[0].equals("LOBBY")) {
-				print("iets");
-			} else if (words.length == 1 && words[0].equals("HELP")) {
-				print(helpText);
 			} else {
-				print("Unknown command. Type HELP to see all possible commands.");
+				if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
+					controller.quitGame();
+					new QuitCommand(controller).send();
+				} 
 			}
 		}
+	}
+	
+	public void startGame(Stone playerColor) {
+		inGame = true;
+		this.playerColor = playerColor;
+		inGameText = "You are " + playerColor + ". Where do you want to place a stone? "
+				+ "Specify by MOVE <row> <column> or MOVE PASS.";
+		print(inGameText);
+	}
+	
+	public void endGame(String reason, Map<String, Integer> scores) {
+		inGame = false;
+		if (reason.equalsIgnoreCase(EndGameCommand.ABORTED)) {
+			print("The other player quit unexpectedly.");
+		} else if (reason.equalsIgnoreCase(EndGameCommand.FINISHED)) {
+			print("The game has finished.");
+		} else if (reason.equalsIgnoreCase(EndGameCommand.TIMEOUT)) {
+			print("The other player didn't respond and the game ended.");
+		}
+		
+		int highestScore = -1;
+		int result = 0;
+		String winner = "";
+		
+		for (String player : scores.keySet()) {
+			int score = scores.get(player);
+			print(player + " ended with " + scores.get(player) + " points");
+			if (score > highestScore) {
+				highestScore = score;
+				if (controller.getName().equals(player)) {
+					result = THISPLAYER;
+					winner = player;
+				} else {
+					result = OTHERPLAYER;
+					winner = player;
+				}
+			} else if (score == highestScore) {
+				result = NONE;
+			}
+			
+			if (result == THISPLAYER) {
+				print("You won!");
+			} else if (result == OTHERPLAYER) {
+				print(player + " won.");
+			}
+		}
+		
+		showMenu();
 	}
 	
 	public void askForSettings() {
@@ -148,7 +219,7 @@ public class TUIView implements Observer, Runnable {
 	}
 	
 	public void shutdown() {
-		print("Quitting game, closing connection to server");
+		print("Closing connection to server.");
 	}
 
 }

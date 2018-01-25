@@ -46,8 +46,8 @@ public class Board {
 		return new Point(index / boardDim, index % boardDim);
 	}
 	
-	public int index(int row, int col) {
-		return row * dim + col; 
+	public static int index(int row, int col, int boardDim) {
+		return row * boardDim + col; 
 	}
 	
 	public void setField(Move move) {
@@ -61,7 +61,7 @@ public class Board {
 	}
 	
 	public Stone getField(int row, int col) {
-		return this.fields[index(row, col)];
+		return this.fields[Board.index(row, col, dim)];
 	}
 	
 	public boolean isField(int index) {
@@ -86,7 +86,7 @@ public class Board {
 	}
 	
 	public boolean isEmptyField(int row, int col) {
-		return this.fields[index(row, col)] == Stone.EMPTY;
+		return this.fields[Board.index(row, col, dim)] == Stone.EMPTY;
 	}
 	
 	//ensures geen dubbelen
