@@ -19,6 +19,10 @@ public class QuitCommand extends Command {
 		super(client, true);
 	}
 	
+	public QuitCommand(GoClient client, boolean toClient) {
+		super(client, false);
+	}
+	
 	public QuitCommand(ClientHandler clientHandler) {
 		super(clientHandler, false);
 	}

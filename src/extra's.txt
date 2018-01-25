@@ -9,4 +9,6 @@ Nog fixen:
 - Om naam vragen in het begin in plaats van $string_prompt
 - Laten zien dat andere player heeft gepasst
 - getalletjes toevoegen aan GUI
-- als iemand passt wordt de steen 0,0 de kleur van degene die passt.
+- stop gui when game ends
+- stones capturen werkt nog niet.
+- In menu flow bij lobby players zeggen wat je moet typen. (REQUEST RANDOM bv)

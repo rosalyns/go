@@ -15,7 +15,7 @@ public class InvalidBoardSizeException extends Exception {
 	}
 
 	public InvalidBoardSizeException(int boardSize) {
-		super(boardSize + " is not a valid boardsize. Should be between 9 and 19");
+		super(boardSize + " is not a valid boardsize. Should be between 9, 13 or 19");
 	}
 
 }

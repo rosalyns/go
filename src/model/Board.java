@@ -53,7 +53,6 @@ public class Board {
 	public void setField(Move move) {
 		this.fields[move.getPosition()] = move.getColor();
 		recalculateGroups(false);
-		
 	}
 	
 	public Stone getField(int index) {
@@ -206,35 +205,5 @@ public class Board {
 		return this.groups;
 	}
 	
-	public void doCaptures(Move move) {
-		Stone playerColor = move.getColor();
-		Stone opponentColor = playerColor.other();
-		List<Set<Integer>> groupsToRemove = new ArrayList<Set<Integer>>();
-		for (Set<Integer> group : groups.get(opponentColor)) {
-			if (!hasLiberties(group)) {
-				groupsToRemove.add(group);
-			}
-		}
-		
-		for (Set<Integer> group : groupsToRemove) {
-			removeGroup(group, opponentColor);
-		}
-		
-		for (Set<Integer> group : groups.get(playerColor)) {
-			if (!hasLiberties(group)) {
-				groupsToRemove.add(group);
-			}
-		}
-		
-		for (Set<Integer> group : groupsToRemove) {
-			removeGroup(group, opponentColor);
-		}
-	}
 	
-	public void removeGroup(Set<Integer> group, Stone color) {
-		for (Integer field : group) {
-			setField(new Move(Stone.EMPTY, field));
-		}
-		groups.get(color).remove(group);
-	}
 }

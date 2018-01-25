@@ -40,7 +40,6 @@ public class ClientHandler extends Thread {
 	 */
 	public ClientHandler(Lobby lobby, Socket sockArg) throws IOException {
 		this.lobby = lobby;
-		
 		this.client = sockArg;
 		this.inGame = false;
 		
@@ -110,11 +109,11 @@ public class ClientHandler extends Thread {
 	}
 	
 	public void acceptGame(String playerName) {
-		//TODO: start new game
+		//TODO: Challenge extension
 	}
 	
 	public void declineGame(String playerName) throws PlayerNotFoundException {
-		//TODO
+		//TODO: Challenge extension
 	}
 	
 	public void announce() {
@@ -137,18 +136,10 @@ public class ClientHandler extends Thread {
 //			//send to players in lobby
 //			server.getLobby().chat(clientName, message);
 //		}
+		//TODO: Chat extension
 	}
 	
 	// --------game interaction methods---------
-	public void makeMove(boolean pass, int row, int column) {
-		if (pass) {
-			game.doMove(this, new Move(player.getColor(), Move.PASS));
-		} else {
-			game.doMove(this, new Move(player.getColor(), 
-					Board.index(row, column, game.getBoardDim())));
-		}
-	}
-	
 	public void setGame(GameController game) {
 		this.game = game;
 		this.inGame = true;
@@ -166,9 +157,18 @@ public class ClientHandler extends Thread {
 		return player;
 	}
 	
+	public void makeMove(boolean pass, int row, int column) {
+		if (pass) {
+			game.doMove(this, new Move(player.getColor(), Move.PASS));
+		} else {
+			game.doMove(this, new Move(player.getColor(), 
+					Board.index(row, column, game.getBoardDim())));
+		}
+	}
+	
 	public void quitGame() {
 		this.inGame = false;
-		//TODO en nog wat
+		game.endGameNormal();
 	}
 	
 	//-------other methods------

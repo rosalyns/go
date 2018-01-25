@@ -71,7 +71,6 @@ public class GameController extends Thread {
 	private ClientHandler firstPlayer() {
 		for (ClientHandler ch : clients) {
 			if (ch.getPlayer().getColor() == Stone.BLACK) {
-				System.out.println("FIrst player is " + ch.getName() + " with color "+ ch.getPlayer().getColor());
 				return ch;
 			}
 		}
@@ -97,16 +96,34 @@ public class GameController extends Thread {
 			}
 			playersTurn = otherPlayer(playersTurn);
 			if (game.isGameOver()) {
-				endGame();
+				endGameNormal();
 			}
 		}
 		
 	}
 	
-	public void endGame() {
+	public void endGameNormal() {
 		game.end();
 		Map<Player, Integer> scores = game.calculateScores();
-		//TODO: new EndGameCommand
+		
+		int highestScore = -1;
+		ClientHandler winner = null;
+		ClientHandler loser = null;
+		
+		for (int i = 0; i < clients.size(); i++) {
+			int score = scores.get(clients.get(i).getPlayer());
+			if (score > highestScore) {
+				highestScore = score;
+				winner = clients.get(i);
+				loser = clients.get(Math.abs(i - 1)); // 0 becomes 1, 1 becomes 0
+			}
+		}
+		
+		for (ClientHandler client : clients) {
+			new EndGameCommand(client, EndGameCommand.FINISHED, 
+					winner.getName(), scores.get(winner.getPlayer()), 
+					loser.getName(), scores.get(loser.getPlayer())).send();
+		}
 	}
 	
 	public int getBoardDim() {

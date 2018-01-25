@@ -42,7 +42,7 @@ public class TUIView implements Runnable {
 		showMenu();
 		while (running) {
 			boolean wrongInput = false;
-			String line = readString("");
+			String line = readString();
 			String[] words = line.split(" ");
 			
 			if (!inGame) {
@@ -69,12 +69,13 @@ public class TUIView implements Runnable {
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("1")) {
 					print("Do you want to use a computerplayer? y/n");
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("2")) {
-					new LeadCommand(controller).send();
+					new LeadCommand(controller, false).send();
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("3")) {
 					controller.shutdown();
-					new QuitCommand(controller).send();
+					new QuitCommand(controller, false).send();
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("y")) {
 					isAI = true;
+					controller.useAI();
 					new LobbyCommand(controller, false).send();
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("n")) {
 					isAI = false;
@@ -94,7 +95,8 @@ public class TUIView implements Runnable {
 							int row = Integer.parseInt(words[1]); 
 							int column = Integer.parseInt(words[2]);
 							//TODO check if valid Move....
-							controller.makeMove(new Move(hPlayer.getColor(), Board.index(row, column, boardDim)));
+							controller.makeMove(new Move(hPlayer.getColor(), 
+									Board.index(row, column, boardDim)));
 							hPlayer.madeMove();
 							new MoveCommand(controller, false, row, column).send();
 						}
@@ -103,7 +105,7 @@ public class TUIView implements Runnable {
 					}
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
 					controller.quitGame();
-					new QuitCommand(controller).send();
+					new QuitCommand(controller, false).send();
 				} else {
 					print("Unknown command. Type HELP to see all possible commands.");
 				}
@@ -151,12 +153,14 @@ public class TUIView implements Runnable {
 			} else if (score == highestScore) {
 				result = NONE;
 			}
-			
-			if (result == THISPLAYER) {
-				print("You won!");
-			} else if (result == OTHERPLAYER) {
-				print(playerName + " won.");
-			}
+		}
+		
+		if (result == THISPLAYER) {
+			print("You won! :)");
+		} else if (result == OTHERPLAYER) {
+			print("You didn't win. :(");
+		} else if (result == NONE) {
+			print("It was a draw.");
 		}
 		
 		showMenu();
@@ -205,9 +209,8 @@ public class TUIView implements Runnable {
 	
 	private static Scanner in = new Scanner(System.in);
 
-	private static String readString(String prompt) {
+	private static String readString() {
 		String result = null;
-		System.out.println(prompt);
 		if (in.hasNextLine()) {
 			result = in.nextLine();
 		}

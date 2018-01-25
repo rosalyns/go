@@ -52,7 +52,7 @@ public class Lobby extends Thread {
 	
 	private ClientHandler findPlayer(String playerName) throws PlayerNotFoundException {
 		for (ClientHandler client : clients) {
-			if (client.getName().equals(playerName)) {
+			if (client.getName().equalsIgnoreCase(playerName)) {
 				return client;
 			}
 		}
@@ -61,7 +61,7 @@ public class Lobby extends Thread {
 	
 	public void challenge(ClientHandler challenger, String playerName) 
 			throws PlayerNotFoundException {
-		if (playerName.equals(Protocol.Client.RANDOM)) {
+		if (playerName.equalsIgnoreCase(Protocol.Client.RANDOM)) {
 			randomChallenges.add(challenger);
 		} else {
 			ClientHandler challengee = findPlayer(playerName);

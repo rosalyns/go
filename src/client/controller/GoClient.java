@@ -71,27 +71,24 @@ public class GoClient extends Thread {
 	
 	// --------------- CLASS METHODS ---------------
 	
-	public final boolean toServer = false;
-	public final boolean fromServer = true;
-	
 	private Socket sock;
 	private BufferedReader in;
 	private BufferedWriter out;
 	private TUIView view;
+	private GOGUI gogui;
 	private String serverName;
-	private int protocolVersion;
-	private Map<String, Command> incomingCommands;
-	private Set<Extension> extensions;
-	private Set<Extension> serverExtensions;
+	private String opponentName;
 	private Board board;
 	private Player player;
-	private String opponentName;
-
-	private GOGUI gogui;
+	private boolean useAI;
+	private Map<String, Command> incomingCommands;
+	private int protocolVersion;
+	private Set<Extension> supportedExtensions;
+	private Set<Extension> supportedServerExtensions;
 	
 	public GoClient(String name, InetAddress host, int port) throws IOException {
 		this.protocolVersion = Protocol.Client.VERSIONNO;
-		this.extensions = new HashSet<Extension>();
+		this.supportedExtensions = new HashSet<Extension>();
 		//TODO: op het eind: extensions nog toevoegen.
 		
 		this.sock = new Socket(host, port);
@@ -113,25 +110,19 @@ public class GoClient extends Thread {
 		incomingCommands.put(Protocol.Server.LOBBY, new LobbyCommand(this));
 		incomingCommands.put(Protocol.Server.CHAT, new ChatCommand(this));
 		incomingCommands.put(Protocol.Server.LEADERBOARD, new LeadCommand(this));
-		
-		
 	}
 	
 	public void run() {
 		Thread viewThread = new Thread(view);
 		viewThread.start();
-		
 		boolean keepGoing = true;
-		
-		new NameCommand(this, extensions).send();
+		new NameCommand(this, supportedExtensions).send();
 		
 		while (keepGoing) {
 			try {
 				String socketInput = in.readLine();
 				System.out.println(this.getName() + " received the command " + socketInput);
 				if (socketInput != null) {
-					//System.out.println(message);
-					
 					for (String command : incomingCommands.keySet()) {
 						if (socketInput.startsWith(command)) {
 							try {
@@ -178,8 +169,12 @@ public class GoClient extends Thread {
 		this.serverName = serverName;
 	}
 	
-	public void setServerExtensions(Set<Extension> supportedExtensions) {
-		this.serverExtensions = supportedExtensions;
+	public void setServerExtensions(Set<Extension> serverExtensions) {
+		this.supportedServerExtensions = serverExtensions;
+	}
+	
+	public void useAI() {
+		useAI = true;
 	}
 	
 	public void checkVersion(int serverVersion) {
@@ -217,7 +212,12 @@ public class GoClient extends Thread {
 	public void startGame(String opponent, int boardSize, Stone playerColor) {
 		this.opponentName = opponent;
 		board = new Board(boardSize);
-		this.player = new HumanPlayer(playerColor, this.getName());
+		if (useAI) {
+			this.player = new ComputerPlayer(playerColor, this.getName(), this);
+		} else {
+			this.player = new HumanPlayer(playerColor, this.getName());
+		}
+		
 		view.startGame(player, boardSize);
 		this.gogui = new GoGUIIntegrator(false, true, boardSize);
 		gogui.startGUI();
@@ -243,6 +243,7 @@ public class GoClient extends Thread {
 			} catch (InvalidCoordinateException e) {
 				e.printStackTrace();
 			}
+			doCaptures(move);
 		}
 	}
 	
@@ -286,7 +287,7 @@ public class GoClient extends Thread {
 		}
 	}
 	
-	public void removeGroup(Set<Integer> group, Stone color) {
+	private void removeGroup(Set<Integer> group, Stone color) {
 		for (Integer field : group) {
 			board.setField(new Move(Stone.EMPTY, field));
 			try {
