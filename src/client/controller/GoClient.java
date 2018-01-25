@@ -292,8 +292,7 @@ public class GoClient extends Thread {
 			board.setField(new Move(Stone.EMPTY, field));
 			try {
 				Point coordinates = Board.indexToCoordinates(field, getBoardDim());
-				gogui.removeStone(coordinates.x, 
-						coordinates.y);
+				gogui.removeStone(coordinates.x, coordinates.y);
 			} catch (InvalidCoordinateException e) {
 				e.printStackTrace();
 			}
