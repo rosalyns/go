@@ -3,9 +3,7 @@ package server.controller;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -59,7 +57,6 @@ public class GoServer {
 	// --------------- CLASS METHODS ---------------
 	
 	private int port;
-	private List<ClientHandler> clients;
 	private ServerSocket sock;
 	private Lobby lobby;
 	private String name;
@@ -67,7 +64,6 @@ public class GoServer {
 	
 	/** Constructs a new Server object. */
 	public GoServer(String name, int portArg) {
-		clients = new ArrayList<ClientHandler>();
 		this.port = portArg;
 		this.name = name;
 		this.supportedExtensions = new HashSet<Extension>();

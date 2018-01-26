@@ -116,9 +116,8 @@ public class ClientHandler extends Thread {
 		//TODO: Challenge extension
 	}
 	
-	public void announce() {
+	public void addPlayerToLobby() {
 		lobby.addPlayer(this);
-		lobby.announce(this.getName());
 	}
 	
 	public Map<Integer, String> getLeaderboard() {

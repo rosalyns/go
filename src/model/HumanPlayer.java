@@ -1,6 +1,6 @@
 package model;
 
-public class HumanPlayer extends Player {
+public class HumanPlayer extends LocalPlayer {
 	private boolean isTurn;
 
 	public HumanPlayer(Stone color, String name) {
@@ -8,7 +8,8 @@ public class HumanPlayer extends Player {
 		this.setColor(color);
 		this.isTurn = false;
 	}
-
+	
+	@Override
 	public void askForMove(Board board) {
 		System.out.println("You are " + this.getColor() + " and it's your turn. "
 				+ "Where do you want to place a stone? " 

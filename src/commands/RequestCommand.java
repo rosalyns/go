@@ -24,7 +24,7 @@ import server.controller.ClientHandler;
  */
 public class RequestCommand extends Command {
 	protected final String commandStr = Protocol.Client.REQUESTGAME;
-	protected final String randomPlayer = Protocol.Client.RANDOM;
+	public static final String RANDOM = Protocol.Client.RANDOM;
 	private int numberOfPlayers;
 	//only challengee can be RANDOM
 	private String challengee;

@@ -24,7 +24,4 @@ public abstract class Player {
 	public Stone getColor() {
 		return this.color;
 	}
-
-	public abstract void askForMove(Board board);
-
 }

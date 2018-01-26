@@ -22,9 +22,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-
 public class GOGUIImpl extends Application {
 
 	private final static int INITIAL_BOARD_SIZE = 19;
@@ -179,7 +176,7 @@ public class GOGUIImpl extends Application {
 
 		// Draw horizontal lines
 		for (int i = 1; i <= height; i++) {
-			boardNumbers.add(new Text("" + (i - 1)));
+			boardNumbers.add(new Text(squareSize / 4, i * squareSize + 4, "" + (i - 1)));
 			boardLines.add(new Line(squareSize, 
 					i * squareSize, 
 					width * squareSize, 
@@ -188,7 +185,7 @@ public class GOGUIImpl extends Application {
 
 		// Draw vertical lines
 		for (int i = 1; i <= width; i++) {
-			boardNumbers.add(new Text("" + (i - 1)));
+			boardNumbers.add(new Text(i * squareSize - 4, squareSize / 2 - 5, "" + (i - 1)));
 			boardLines.add(new Line(i * squareSize, 
 					squareSize, 
 					i * squareSize, 

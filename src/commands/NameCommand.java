@@ -132,7 +132,7 @@ public class NameCommand extends Command {
 				}
 			}
 			clientHandler.setExtensions(supportedExtensions);
-			clientHandler.announce();
+			clientHandler.addPlayerToLobby();
 		}
 	}
 

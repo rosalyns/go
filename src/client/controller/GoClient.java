@@ -91,7 +91,7 @@ public class GoClient extends Thread {
 	private String serverName;
 	private String opponentName;
 	private Board board;
-	private Player player;
+	private LocalPlayer player;
 	private boolean useAI;
 	private Map<String, Command> incomingCommands;
 	private int protocolVersion;

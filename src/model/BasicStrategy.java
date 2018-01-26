@@ -9,7 +9,7 @@ public class BasicStrategy implements Strategy {
 
 	@Override
 	public int determineMove(Board b, Stone m) {
-		// TODO Auto-generated method stub
+		// TODO slimmere AI
 		return 0;
 	}
 

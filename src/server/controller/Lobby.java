@@ -35,14 +35,17 @@ public class Lobby extends Thread {
 	}
 	
 	public void addPlayer(ClientHandler client) {
-		if (nameInUse(client.getName())) {
+		if (nameInUse(client.getName()) || 
+				client.getName().equalsIgnoreCase(RequestCommand.RANDOM)) {
 			new ErrorCommand(client, ErrorCommand.INVNAME, 
-					"Somebody else already uses that name.").send();
+					"Name cannot be \"Random\" or the same as someone else's .").send();
 		} else {
 			client.setPlayer(new NetworkPlayer(client, client.getName()));
 			this.clients.add(client);
+			announce(client.getName());
 			new NameCommand(client, server.getName(), server.getExtensions()).send();
 		}
+		
 	}
 	
 	public void removePlayer(ClientHandler client) {

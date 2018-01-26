@@ -81,8 +81,6 @@ public class StartCommand extends Command {
 				opponent = words[5];
 			} else if (words[5].equals(client.getName())) {
 				opponent = words[4];
-			} else {
-				//TODO Not this player Exception?
 			}
 			client.startGame(opponent, boardSize, color);
 		}

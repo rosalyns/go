@@ -23,7 +23,7 @@ public class TUIView implements Runnable {
 	private boolean inGame = false;
 	private Player player;
 	private int boardDim;
-	private String helpText = "You can use the following commands....";
+	//private String helpText = "You can use the following commands....";
 	
 	private String menuText = "MENU\n"
 			+ "1: Start a new Game\n"
@@ -47,7 +47,11 @@ public class TUIView implements Runnable {
 			
 			if (!inGame) {
 				if (words.length == 2 && words[0].equalsIgnoreCase("REQUEST")) {
-					new RequestCommand(controller, 2, words[1]).send();
+					if (words[1].equalsIgnoreCase(RequestCommand.RANDOM)) {
+						new RequestCommand(controller, 2, RequestCommand.RANDOM).send();
+					} else {
+						new RequestCommand(controller, 2, words[1]).send();
+					}
 				} else if (words.length == 3 && words[0].equalsIgnoreCase("SETTINGS")) {
 					Stone color = null;
 					if (words[1].equalsIgnoreCase(Protocol.General.BLACK)) {
@@ -137,7 +141,7 @@ public class TUIView implements Runnable {
 		
 		int highestScore = -1;
 		int result = 0;
-		String winner = "";
+		//String winner = "";
 		
 		for (String playerName : scores.keySet()) {
 			int score = scores.get(playerName);
@@ -146,10 +150,10 @@ public class TUIView implements Runnable {
 				highestScore = score;
 				if (controller.getName().equals(playerName)) {
 					result = THISPLAYER;
-					winner = playerName;
+					//winner = playerName;
 				} else {
 					result = OTHERPLAYER;
-					winner = playerName;
+					//winner = playerName;
 				}
 			} else if (score == highestScore) {
 				result = NONE;
@@ -203,8 +207,7 @@ public class TUIView implements Runnable {
 		print(playerName + " declined your challenge.");
 	}
 
-	public void showError(String type, String message) {
-		//TODO: Als errortype is INVNAME, kun je om nieuwe naam vragen en opnieuw hallo zeggen. 
+	public void showError(String type, String message) { 
 		print(message);
 	}
 	

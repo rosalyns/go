@@ -13,10 +13,4 @@ public class NetworkPlayer extends Player {
 	public ClientHandler getClientHandler() {
 		return this.clientHandler;
 	}
-	
-	@Override
-	public void askForMove(Board board) {
-		// nothing TODO
-	}
-
 }

@@ -5,7 +5,7 @@ import java.awt.Point;
 import client.controller.GoClient;
 import commands.MoveCommand;
 
-public class ComputerPlayer extends Player {
+public class ComputerPlayer extends LocalPlayer {
 	private Strategy strategy;
 	private GoClient client;
 	

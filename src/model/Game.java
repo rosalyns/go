@@ -11,14 +11,12 @@ public class Game {
 	public static final int PASS = -1;
 	
 	private List<Player> players;
-	private int currentPlayer;
 	private Board board;
 	private int consecutivePasses;
 	private Map<Player, Integer> scores;
 
 	//first player in list must be Stone.BLACK
 	public Game(List<Player> players, int boardSize) throws InvalidBoardSizeException {
-		this.currentPlayer = 0;
 		this.consecutivePasses = 0;
 		this.players = players;
 		if (boardSize != 9 && boardSize != 13 && boardSize != 19) {
