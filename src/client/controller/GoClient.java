@@ -88,7 +88,7 @@ public class GoClient extends Thread {
 	private BufferedWriter out;
 	private TUIView view;
 	private GOGUI gogui;
-	private String serverName;
+	private String currentPlayer;
 	private String opponentName;
 	private Board board;
 	private LocalPlayer player;
@@ -125,6 +125,9 @@ public class GoClient extends Thread {
 	}
 	
 	public void run() {
+		
+		Thread viewThread = new Thread(view);
+		viewThread.start();
 		
 		boolean keepGoing = true;
 		new NameCommand(this, supportedExtensions).send();
@@ -176,17 +179,19 @@ public class GoClient extends Thread {
 		view.showChatMessage(playerName, message);
 	}
 	
-	public void setServerSettings(String name, int serverVersion, 
+	public void setServerSettings(String serverName, int serverVersion, 
 			Set<Extension> serverExtensions) {
-		this.serverName = name;
 		this.supportedServerExtensions = serverExtensions;
 		if (this.protocolVersion != serverVersion) {
 			handleError(ErrorCommand.INVPROTOCOL, "Protocol versions from client and "
 					+ "server are incompatible. Update your protocol.");
 		}
-		Thread viewThread = new Thread(view);
-		viewThread.start();
-		view.showConnectedTo(name);
+		
+		view.showConnectedTo(serverName);
+	}
+	
+	public Set<Extension> getExtensions() {
+		return this.supportedExtensions;
 	}
 	
 	public void useAI(boolean ai) {
@@ -205,19 +210,13 @@ public class GoClient extends Thread {
 		view.askForSettings();
 	}
 	
-	public void askForNewName() {
-		print("The name you entered is already in use on the server. Enter a different name: ");
-		this.setName(readString());
-		new NameCommand(this, supportedExtensions).send();
-	}
-	
 	public void handleError(String reason, String message) {
 		//view.showError(reason, message);
 		if (reason.equals(ErrorCommand.INVPROTOCOL)) {
 			view.shutdown();
 			shutdown();
 		} else if (reason.equals(ErrorCommand.INVNAME)) {
-			askForNewName();
+			view.askForName();
 		}
 	}
 	
@@ -235,7 +234,7 @@ public class GoClient extends Thread {
 			this.player = new HumanPlayer(playerColor, this.getName());
 		}
 		
-		view.startGame(player, boardSize);
+		view.startGame(player);
 		this.gogui = new GoGUIIntegrator(false, true, boardSize);
 		gogui.startGUI();
 	}
@@ -261,6 +260,10 @@ public class GoClient extends Thread {
 				e.printStackTrace();
 			}
 			doCaptures(move);
+		} else {
+			if (currentPlayer.equalsIgnoreCase(opponentName)) {
+				view.showPass(opponentName);
+			}
 		}
 	}
 	
@@ -268,6 +271,7 @@ public class GoClient extends Thread {
 		if (playerName.equals(player.getName())) {
 			player.askForMove(board);
 		}
+		currentPlayer = playerName;
 	}
 	
 	public void endGame(String reason, Map<String, Integer> scores) { 

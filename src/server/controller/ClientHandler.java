@@ -170,7 +170,8 @@ public class ClientHandler extends Thread {
 		game.endGameNormal();
 	}
 	
-	//-------other methods------
+	//-----------other methods----------
+	
 	public boolean isInGame() {
 		return this.inGame;
 	}
@@ -190,11 +191,6 @@ public class ClientHandler extends Thread {
 		}
 	}
 
-	/**
-	 * This ClientHandler signs off from the Server and subsequently sends a last
-	 * broadcast to the Server to inform that the Client is no longer participating
-	 * in the chat.
-	 */
 	private void shutdown() {
 		lobby.removePlayer(this);
 		// TODO: replace with something lobby
