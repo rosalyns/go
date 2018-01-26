@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import commands.ChatCommand;
 import commands.ErrorCommand;
+import commands.NameCommand;
 import commands.RequestCommand;
 import exceptions.PlayerNotFoundException;
 import general.Extension;
@@ -34,8 +35,14 @@ public class Lobby extends Thread {
 	}
 	
 	public void addPlayer(ClientHandler client) {
-		client.setPlayer(new NetworkPlayer(client, client.getName()));
-		this.clients.add(client);
+		if (nameInUse(client.getName())) {
+			new ErrorCommand(client, ErrorCommand.INVNAME, 
+					"Somebody else already uses that name.").send();
+		} else {
+			client.setPlayer(new NetworkPlayer(client, client.getName()));
+			this.clients.add(client);
+			new NameCommand(client, server.getName(), server.getExtensions()).send();
+		}
 	}
 	
 	public void removePlayer(ClientHandler client) {
@@ -89,6 +96,14 @@ public class Lobby extends Thread {
 		System.out.println(thisMoment() + "\"" + playerName + "\" entered the lobby.");
 	}
 	
+	private boolean nameInUse(String name) {
+		for (ClientHandler client : clients) {
+			if (client.getName().equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	public List<String> getFreePlayers() {
 		List<String> playerNames = new ArrayList<String>();

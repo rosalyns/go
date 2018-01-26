@@ -75,10 +75,11 @@ public class TUIView implements Runnable {
 					new QuitCommand(controller, false).send();
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("y")) {
 					isAI = true;
-					controller.useAI();
+					controller.useAI(true);
 					new LobbyCommand(controller, false).send();
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("n")) {
 					isAI = false;
+					controller.useAI(false);
 					new LobbyCommand(controller, false).send();
 				} else {
 					print("Unknown command. Type HELP to see all possible commands.");
@@ -170,6 +171,10 @@ public class TUIView implements Runnable {
 		print("A game is starting with you as the first player. Please choose a color and "
 				+ "boardsize by entering: SETTINGS <color> <boardSize>. Possible colors are "
 				+ "BLACK or WHITE, possible boardsizes 9, 13 or 19.");
+	}
+	
+	public void showConnectedTo(String serverName) {
+		print("You are connected to server \"" + serverName + "\".");
 	}
 	
 	public void showLeaderboard(Map<Integer, String> scores) {

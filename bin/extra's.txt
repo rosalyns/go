@@ -6,9 +6,11 @@
 	+ als je twee keer iemand uitdaagt  
 	
 Nog fixen:
-- Om naam vragen in het begin in plaats van $string_prompt
 - Laten zien dat andere player heeft gepasst
 - getalletjes toevoegen aan GUI
 - stop gui when game ends
-- stones capturen werkt nog niet.
 - In menu flow bij lobby players zeggen wat je moet typen. (REQUEST RANDOM bv)
+- stenen niet op dezelfde plek kunnen zetten
+- niet zelfde bordsituatie kunnen creëren.
+- NumberFormatExceptions bij alle parseInts
+- checken voor extensions

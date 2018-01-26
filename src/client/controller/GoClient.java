@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 
 import com.nedap.go.gui.GOGUI;
@@ -31,38 +32,49 @@ public class GoClient extends Thread {
 	
 	// --------------- MAIN METHOD ---------------
 	
-	private static final String USAGE = "usage: java week7.cmdchat.Client <name> <address> <port>";
-
 	public static void main(String[] args) {
-		if (args.length != 3) {
-			System.out.println(USAGE);
-			System.exit(0);
-		}
+		print("Enter your name: ");
+		String clientName = readString();
 		
+		print("On which IP Address do you want to connect?");
 		InetAddress host = null;
-		int port = 0;
-
+		
 		try {
-			host = InetAddress.getByName(args[1]);
+			host = InetAddress.getByName(readString());
 		} catch (UnknownHostException e) {
 			print("ERROR: invalid hostname!");
 			System.exit(0);
 		}
-
+		
+		print("On which port do you want to connect? Enter 0 to use the default port.");
+		int port = -1;
 		try {
-			port = Integer.parseInt(args[2]);
+			port = Integer.parseInt(readString());
+			if (port == 0) {
+				port = Protocol.General.DEFAULT_PORT;
+			}
 		} catch (NumberFormatException e) {
 			print("ERROR: invalid portnummer!");
 			System.exit(0);
 		}
 		
 		try {
-			GoClient client = new GoClient(args[0], host, port);
-			client.start();
+			GoClient client = new GoClient(clientName, host, port);
+			client.run();
 		} catch (IOException e) {
 			print("ERROR: couldn't construct a client object!");
 			System.exit(0);
 		}
+	}
+	
+	private static Scanner consoleIn = new Scanner(System.in);
+
+	private static String readString() {
+		String result = null;
+		if (consoleIn.hasNextLine()) {
+			result = consoleIn.nextLine();
+		}
+		return result;
 	}
 	
 	private static void print(String msg) {
@@ -113,8 +125,7 @@ public class GoClient extends Thread {
 	}
 	
 	public void run() {
-		Thread viewThread = new Thread(view);
-		viewThread.start();
+		
 		boolean keepGoing = true;
 		new NameCommand(this, supportedExtensions).send();
 		
@@ -165,23 +176,21 @@ public class GoClient extends Thread {
 		view.showChatMessage(playerName, message);
 	}
 	
-	public void setServerName(String serverName) {
-		this.serverName = serverName;
-	}
-	
-	public void setServerExtensions(Set<Extension> serverExtensions) {
+	public void setServerSettings(String name, int serverVersion, 
+			Set<Extension> serverExtensions) {
+		this.serverName = name;
 		this.supportedServerExtensions = serverExtensions;
-	}
-	
-	public void useAI() {
-		useAI = true;
-	}
-	
-	public void checkVersion(int serverVersion) {
 		if (this.protocolVersion != serverVersion) {
 			handleError(ErrorCommand.INVPROTOCOL, "Protocol versions from client and "
 					+ "server are incompatible. Update your protocol.");
 		}
+		Thread viewThread = new Thread(view);
+		viewThread.start();
+		view.showConnectedTo(name);
+	}
+	
+	public void useAI(boolean ai) {
+		this.useAI = ai;
 	}
 	
 	public void challengedBy(String playerName) {
@@ -196,11 +205,19 @@ public class GoClient extends Thread {
 		view.askForSettings();
 	}
 	
+	public void askForNewName() {
+		print("The name you entered is already in use on the server. Enter a different name: ");
+		this.setName(readString());
+		new NameCommand(this, supportedExtensions).send();
+	}
+	
 	public void handleError(String reason, String message) {
-		view.showError(reason, message);
+		//view.showError(reason, message);
 		if (reason.equals(ErrorCommand.INVPROTOCOL)) {
 			view.shutdown();
 			shutdown();
+		} else if (reason.equals(ErrorCommand.INVNAME)) {
+			askForNewName();
 		}
 	}
 	

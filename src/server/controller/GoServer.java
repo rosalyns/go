@@ -4,47 +4,87 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
+import java.util.Set;
+
+import general.Extension;
+import general.Protocol;
 
 public class GoServer {
 
-	private static final String USAGE = "usage: " + GoServer.class.getName() + " <port>";
-
-	/** Start een Server-applicatie op. */
 	public static void main(String[] args) {
-		if (args.length != 1) {
-			System.out.println(USAGE);
-			System.exit(0);
+		print("Enter a name for the server: ");
+		String name = readString();
+		
+		print("On which port do you want to connect? Enter 0 to use the default port.");
+		int port = -1;
+		boolean validPort = false;
+		
+		while (!validPort) {
+			try {
+				port = Integer.parseInt(readString());
+				if (port == 0) {
+					port = Protocol.General.DEFAULT_PORT;
+				}
+			} catch (NumberFormatException e) {
+				print("Enter a number.");
+				continue;
+			}
+			
+			try {
+				GoServer server = new GoServer(name, port);
+				server.run();
+			} catch (IOException e) {
+				print("This port is already in use or doesn't exist. Try another one.");
+			}
 		}
+	}
+	
+	private static Scanner consoleIn = new Scanner(System.in);
 
-		GoServer server = new GoServer(Integer.parseInt(args[0]));
-		server.run();
+	private static String readString() {
+		String result = null;
+		if (consoleIn.hasNextLine()) {
+			result = consoleIn.nextLine();
+		}
+		return result;
+	}
+	
+	private static void print(String msg) {
+		System.out.println(msg);
 	}
 
+	// --------------- CLASS METHODS ---------------
+	
 	private int port;
 	private List<ClientHandler> clients;
 	private ServerSocket sock;
 	private Lobby lobby;
+	private String name;
+	private Set<Extension> supportedExtensions;
 	
 	/** Constructs a new Server object. */
-	public GoServer(int portArg) {
+	public GoServer(String name, int portArg) {
 		clients = new ArrayList<ClientHandler>();
 		this.port = portArg;
-		lobby = new Lobby(this);
-		lobby.start();
+		this.name = name;
+		this.supportedExtensions = new HashSet<Extension>();
+		//TODO: op het eind: extensions nog toevoegen.
 	}
 	/**
 	 * Listens to a port of this Server if there are any Clients that would like to
 	 * connect. For every new socket connection a new ClientHandler thread is
 	 * started that takes care of the further communication with the Client.
 	 */
-	public void run() {
-		try {
-			System.out.println("Opening a socket on port " + port);
-			sock = new ServerSocket(port);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void run() throws IOException {
+		System.out.println("Opening a socket on port " + port);
+		sock = new ServerSocket(port);
+		
+		lobby = new Lobby(this);
+		lobby.start();
+		
 		boolean keepRunning = true;
 		while (keepRunning) {
 			try {
@@ -54,27 +94,17 @@ public class GoServer {
 				ClientHandler clientHandler = new ClientHandler(lobby, client);
 				clientHandler.start();
 			} catch (IOException e) {
-				//e.printStackTrace();
 				keepRunning = false;
 			}
 		}
 	}
-
-	public void print(String message) {
-		System.out.println(message);
+	
+	public String getName() {
+		return this.name;
 	}
-
-	/**
-	 * Sends a message using the collection of connected ClientHandlers to all
-	 * connected Clients.
-	 * 
-	 * @param msg message that is send
-	 */
-	public synchronized void broadcast(String msg) {
-		print(msg);
-		for (ClientHandler ch : clients) {
-			ch.sendCommandToClient(msg);
-		}
+	
+	public Set<Extension> getExtensions() {
+		return this.supportedExtensions;
 	}
 	
 	public boolean isRunning() {

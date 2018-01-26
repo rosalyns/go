@@ -29,10 +29,11 @@ public class NameCommand extends Command {
 		super(clientHandler, false);
 	}
 
-	public NameCommand(ClientHandler clientHandler, Set<Extension> supportedExtensions) {
+	public NameCommand(ClientHandler clientHandler, String serverName, 
+			Set<Extension> supportedExtensions) {
 		super(clientHandler, true);
 		this.supportedExtensions = supportedExtensions;
-		this.name = clientHandler.getName();
+		this.name = serverName;
 	}
 
 	public NameCommand(GoClient client) {
@@ -63,8 +64,7 @@ public class NameCommand extends Command {
 		}
 		supportedExtensions = new HashSet<Extension>();
 		if (toClient) {
-			client.setServerName(words[1]);
-			client.checkVersion(Integer.parseInt(words[3]));
+			int version = Integer.parseInt(words[3]);
 			// words[ 6 t/m 12] bevatten extensions
 			for (int i = 5; i < 12; i++) {
 				boolean extension = Boolean.parseBoolean(words[i]);
@@ -96,7 +96,7 @@ public class NameCommand extends Command {
 					}
 				}
 			}
-			client.setServerExtensions(supportedExtensions);
+			client.setServerSettings(words[1], version, supportedExtensions);
 		} else {
 			clientHandler.setName(words[1]);
 			clientHandler.checkVersion(Integer.parseInt(words[3]));
