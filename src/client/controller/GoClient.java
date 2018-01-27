@@ -268,7 +268,7 @@ public class GoClient extends Thread {
 	}
 	
 	public boolean isValidMove(Move move) {
-		return !board.isEmptyField(move.getPosition()) && !board.recreatesPrevious(move);
+		return !board.isEmptyField(move.getPosition()) && !recreatesPrevious(move);
 	}
 	
 	public void nextPlayer(String playerName) {

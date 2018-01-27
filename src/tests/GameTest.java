@@ -1,11 +1,11 @@
-package server.tests;
+package tests;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class ClientTest {
+public class GameTest {
 
 	@Before
 	public void setUp() throws Exception {
@@ -14,6 +14,11 @@ public class ClientTest {
 	@Test
 	public void test() {
 		fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testCalculateScores() {
+		fail("Not yet implmeneted");
 	}
 
 }

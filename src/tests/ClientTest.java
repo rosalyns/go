@@ -1,11 +1,11 @@
-package server.tests;
+package tests;
 
 import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class MoveTest {
+public class ClientTest {
 
 	@Before
 	public void setUp() throws Exception {

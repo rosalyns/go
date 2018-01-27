@@ -1,4 +1,4 @@
-package server.tests;
+package tests;
 
 import static org.junit.Assert.*;
 
@@ -8,8 +8,8 @@ import org.junit.Test;
 import model.*;
 
 public class PlayerTest {
-	private Player hPlayer;
-	private Player cPlayer;
+	private LocalPlayer hPlayer;
+	private LocalPlayer cPlayer;
 	private Board board;
 	
 	@Before

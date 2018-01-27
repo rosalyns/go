@@ -38,11 +38,6 @@ public class Board {
 		return copyBoard;
 	}
 	
-	public boolean recreatesPrevious(Move move) {
-		//TODO
-		return false;
-	}
-	
 	public int dim() {
 		return this.dim;
 	}
@@ -210,5 +205,16 @@ public class Board {
 		return this.groups;
 	}
 	
-	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Board)) {
+			return false;
+		}
+		for (int i = 0; i < dim * dim; i++) {
+			if (fields[i] != ((Board) o).getField(i)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

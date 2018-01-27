@@ -14,6 +14,7 @@ public class Game {
 	private Board board;
 	private int consecutivePasses;
 	private Map<Player, Integer> scores;
+	private List<Move> moves;
 
 	//first player in list must be Stone.BLACK
 	public Game(List<Player> players, int boardSize) throws InvalidBoardSizeException {
@@ -26,14 +27,19 @@ public class Game {
 		}
 	}
 	
-	public void doMove(Move move) {
+	public void doMove(Move move) throws KoException {
 		if (move.getPosition() == PASS) {
 			consecutivePasses++;
 		} else {
-			board.setField(move);
-			doCaptures(move); 
-			consecutivePasses = 0;
+			if (recreatesPreviousSituation(move)) {
+				throw new KoException();
+			} else {
+				board.setField(move);
+				doCaptures(board, move); 
+				consecutivePasses = 0;
+			}
 		}
+		moves.add(move);
 	}
 	
 	public boolean isGameOver() {
@@ -44,7 +50,7 @@ public class Game {
 		
 	}
 	
-	public void doCaptures(Move move) {
+	public void doCaptures(Board board, Move move) {
 		Stone playerColor = move.getColor();
 		Stone opponentColor = playerColor.other();
 		List<Set<Integer>> groupsToRemove = new ArrayList<Set<Integer>>();
@@ -102,6 +108,24 @@ public class Game {
 			}
 		}
 		return scores;
+	}
+	
+	public boolean recreatesPreviousSituation(Move move) {
+		Board simulationBoard = new Board(board.dim());
+		Board copiedBoard = board.deepCopy();
+		
+		copiedBoard.setField(move);
+		doCaptures(copiedBoard, move);
+		
+		for (Move m : moves) {
+			simulationBoard.setField(m);
+			doCaptures(simulationBoard, m);
+			
+			if (simulationBoard.equals(board)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public int getBoardDim() {
