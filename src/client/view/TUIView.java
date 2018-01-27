@@ -4,7 +4,9 @@ import client.controller.GoClient;
 import commands.*;
 import general.Protocol;
 import model.Player;
+import model.Board;
 import model.HumanPlayer;
+import model.Move;
 import model.Stone;
 
 import java.util.List;
@@ -17,21 +19,26 @@ public class TUIView implements Runnable {
 	private static final int OTHERPLAYER = -1;
 
 	public enum State {
-		INVALIDNAME, INMENU, PICKPLAYERTYPE, WAITFORREQUEST, ASKFORSETTINGS, INGAME
+		INVALIDNAME, INMENU, INOPTIONMENU, PICKPLAYERTYPE, WAITFORREQUEST, ASKFORSETTINGS, INGAME
 	}
 
 	private State state;
 	private GoClient controller;
 	private Player player;
-	private String thisPlayerName; // you need the player's name before there is even a player.
+	private String thisPlayerName; // you need the player's name before there even is a player.
 	// private String helpText = "You can use the following commands....";
+	private int boardDim;
 
 	private String menuText = "MENU\n" 
 			+ "1: Start a new Game\n" 
 			+ "2: Options\n" 
 			+ "3: Show leaderboard\n" 
 			+ "4: Quit";
-
+	
+	private String optionMenuText = "OPTIONS\n"
+			+ "1: Set timeout time"
+			+ "2: Back";
+			
 	public TUIView(GoClient controller) {
 		this.controller = controller;
 		this.thisPlayerName = controller.getName();
@@ -56,13 +63,21 @@ public class TUIView implements Runnable {
 					print("Do you want to use a computerplayer? y/n");
 					state = State.PICKPLAYERTYPE;
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("2")) {
-					// TODO: change timeout time
+					state = State.INOPTIONMENU;
+					showOptionMenu();
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("3")) {
 					new LeadCommand(controller, false).send();
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("4")) {
 					controller.shutdown();
 					clientRunning = false;
 					new QuitCommand(controller, false).send();
+				}
+			} else if (state == State.INOPTIONMENU) {
+				if (words.length == 1 && words[0].equalsIgnoreCase("1")) {
+					//TODO timeout Time;
+				} else if (words.length == 1 && words[0].equalsIgnoreCase("2")) {
+					state = State.INMENU;
+					showMenu();
 				}
 			} else if (state == State.PICKPLAYERTYPE) {
 				if (words.length == 1 && words[0].equalsIgnoreCase("y")) {
@@ -118,9 +133,13 @@ public class TUIView implements Runnable {
 							} else {
 								int row = Integer.parseInt(words[1]);
 								int column = Integer.parseInt(words[2]);
-								// TODO check if valid Move....
-								new MoveCommand(controller, false, row, column).send();
-								hPlayer.madeMove();
+								if (controller.isValidMove(new Move(player.getColor(), 
+										Board.index(row, column, boardDim)))) {
+									new MoveCommand(controller, false, row, column).send();
+									hPlayer.madeMove();
+								} else {
+									print("This is not a valid move. Try again.");
+								}
 							}
 						} else {
 							print("Wait till it is your turn.");
@@ -141,8 +160,9 @@ public class TUIView implements Runnable {
 		}
 	}
 
-	public void startGame(Player thisPlayer) {
+	public void startGame(Player thisPlayer, int boardSize) {
 		state = State.INGAME;
+		this.boardDim = boardSize;
 		this.player = thisPlayer;
 	}
 
@@ -251,6 +271,10 @@ public class TUIView implements Runnable {
 
 	public void showMenu() {
 		print(menuText);
+	}
+	
+	public void showOptionMenu() {
+		print(optionMenuText);
 	}
 
 	private static Scanner in = new Scanner(System.in);

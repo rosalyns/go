@@ -38,6 +38,11 @@ public class Board {
 		return copyBoard;
 	}
 	
+	public boolean recreatesPrevious(Move move) {
+		//TODO
+		return false;
+	}
+	
 	public int dim() {
 		return this.dim;
 	}

@@ -234,7 +234,7 @@ public class GoClient extends Thread {
 			this.player = new HumanPlayer(playerColor, this.getName());
 		}
 		
-		view.startGame(player);
+		view.startGame(player, boardSize);
 		this.gogui = new GoGUIIntegrator(false, true, boardSize);
 		gogui.startGUI();
 	}
@@ -265,6 +265,10 @@ public class GoClient extends Thread {
 				view.showPass(opponentName);
 			}
 		}
+	}
+	
+	public boolean isValidMove(Move move) {
+		return !board.isEmptyField(move.getPosition()) && !board.recreatesPrevious(move);
 	}
 	
 	public void nextPlayer(String playerName) {

@@ -11,4 +11,3 @@ Nog fixen:
 - niet zelfde bordsituatie kunnen creëren.
 - NumberFormatExceptions bij alle parseInts
 - checken voor extensions
-- andere speler kan nu ook SETTINGS sturen en dan gaat het ook goed...
