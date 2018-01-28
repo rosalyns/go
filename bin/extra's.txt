@@ -7,7 +7,7 @@
 	
 Nog fixen:
 - stop gui when game ends
-- stenen niet op dezelfde plek kunnen zetten
-- niet zelfde bordsituatie kunnen creëren.
 - NumberFormatExceptions bij alle parseInts
 - checken voor extensions
+- als je verkeerd commando intypt in TUI goeie output geven
+- server TUI ?

@@ -9,37 +9,50 @@ import exceptions.*;
 
 public class Game {
 	public static final int PASS = -1;
+	public static final int NO_OF_PLAYERS = 2;
 	
 	private List<Player> players;
-	private Board board;
+	private Board gameBoard;
 	private int consecutivePasses;
 	private Map<Player, Integer> scores;
 	private List<Move> moves;
+	private int currentPlayerIndex;
 
 	//first player in list must be Stone.BLACK
 	public Game(List<Player> players, int boardSize) throws InvalidBoardSizeException {
 		this.consecutivePasses = 0;
+		this.currentPlayerIndex = 0;
 		this.players = players;
+		this.moves = new ArrayList<Move>();
 		if (boardSize != 9 && boardSize != 13 && boardSize != 19) {
 			throw new InvalidBoardSizeException(boardSize);
 		} else { 
-			this.board = new Board(boardSize);
+			this.gameBoard = new Board(boardSize);
 		}
 	}
 	
-	public void doMove(Move move) throws KoException {
+	public void doTurn(Move move) throws KoException, NotYourTurnException {
+		if (move.getColor() != players.get(currentPlayerIndex).getColor()) {
+			throw new NotYourTurnException("It's " + players.get(currentPlayerIndex).getName() 
+					+ "'s turn.");
+		}
 		if (move.getPosition() == PASS) {
 			consecutivePasses++;
 		} else {
 			if (recreatesPreviousSituation(move)) {
-				throw new KoException();
+				throw new KoException("This move recreates a previous board situation.");
 			} else {
-				board.setField(move);
-				doCaptures(board, move); 
+				placeStone(gameBoard, move); 
 				consecutivePasses = 0;
+				moves.add(move);
 			}
 		}
-		moves.add(move);
+		currentPlayerIndex = (currentPlayerIndex + 1) % NO_OF_PLAYERS;
+	}
+
+	private void placeStone(Board board, Move move) {
+		board.setField(move);
+		doCaptures(board, move);
 	}
 	
 	public boolean isGameOver() {
@@ -61,7 +74,7 @@ public class Game {
 		}
 		
 		for (Set<Integer> group : groupsToRemove) {
-			removeGroup(group, opponentColor);
+			removeGroup(board, group, opponentColor);
 		}
 		
 		for (Set<Integer> group : board.getGroups().get(playerColor)) {
@@ -71,11 +84,11 @@ public class Game {
 		}
 		
 		for (Set<Integer> group : groupsToRemove) {
-			removeGroup(group, opponentColor);
+			removeGroup(board, group, opponentColor);
 		}
 	}
 	
-	private void removeGroup(Set<Integer> group, Stone color) {
+	private void removeGroup(Board board, Set<Integer> group, Stone color) {
 		for (Integer field : group) {
 			board.setField(new Move(Stone.EMPTY, field));
 		}
@@ -83,22 +96,22 @@ public class Game {
 	}
 	
 	public Map<Player, Integer> calculateScores() {
-		board.recalculateGroups(true);
+		gameBoard.recalculateGroups(true);
 		scores = new HashMap<Player, Integer>(); 
 		scores.put(players.get(0), 0);
 		scores.put(players.get(1), 0);
 		
-		List<Set<Integer>> emptyGroups = board.getGroups().get(Stone.EMPTY);
+		List<Set<Integer>> emptyGroups = gameBoard.getGroups().get(Stone.EMPTY);
 		for (Player p : players) {
-			List<Set<Integer>> groups = board.getGroups().get(p.getColor());
+			List<Set<Integer>> groups = gameBoard.getGroups().get(p.getColor());
 			for (Set<Integer> group : groups) {
 				scores.put(p, scores.get(p) + group.size());
 			}
 			for (Set<Integer> emptyGroup : emptyGroups) {
 				boolean captured = true;
-				Set<Integer> neighbours = board.getNeighbours(emptyGroup);
+				Set<Integer> neighbours = gameBoard.getNeighbours(emptyGroup);
 				for (Integer neighbour : neighbours) {
-					if (board.getField(neighbour) != p.getColor()) {
+					if (gameBoard.getField(neighbour) != p.getColor()) {
 						captured = false;
 					}
 				}
@@ -111,24 +124,30 @@ public class Game {
 	}
 	
 	public boolean recreatesPreviousSituation(Move move) {
-		Board simulationBoard = new Board(board.dim());
-		Board copiedBoard = board.deepCopy();
+		Board copiedBoard = gameBoard.deepCopy();
+		Board simulationBoard = new Board(gameBoard.dim());
 		
-		copiedBoard.setField(move);
-		doCaptures(copiedBoard, move);
+		placeStone(copiedBoard, move);
 		
 		for (Move m : moves) {
-			simulationBoard.setField(m);
-			doCaptures(simulationBoard, m);
+			placeStone(simulationBoard, m);
 			
-			if (simulationBoard.equals(board)) {
+			if (simulationBoard.equals(copiedBoard)) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
+	public String getFirstPlayer() {
+		return players.get(0).getName();
+	}
+	
+	public String getCurrentPlayer() {
+		return players.get(currentPlayerIndex).getName();
+	}
+	
 	public int getBoardDim() {
-		return board.dim();
+		return gameBoard.dim();
 	}
 }

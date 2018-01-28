@@ -90,7 +90,7 @@ public class GoClient extends Thread {
 	private GOGUI gogui;
 	private String currentPlayer;
 	private String opponentName;
-	private Board board;
+	private Board gameBoard;
 	private LocalPlayer player;
 	private boolean useAI;
 	private Map<String, Command> incomingCommands;
@@ -211,12 +211,15 @@ public class GoClient extends Thread {
 	}
 	
 	public void handleError(String reason, String message) {
-		//view.showError(reason, message);
 		if (reason.equals(ErrorCommand.INVPROTOCOL)) {
+			view.showError(reason, message);
 			view.shutdown();
 			shutdown();
 		} else if (reason.equals(ErrorCommand.INVNAME)) {
 			view.askForName();
+		} else if (reason.equals(ErrorCommand.INVMOVE)) {
+			view.showError(reason, message);
+			player.askForMove(gameBoard);
 		}
 	}
 	
@@ -227,7 +230,7 @@ public class GoClient extends Thread {
 	// -----game interaction methods-------
 	public void startGame(String opponent, int boardSize, Stone playerColor) {
 		this.opponentName = opponent;
-		board = new Board(boardSize);
+		gameBoard = new Board(boardSize);
 		if (useAI) {
 			this.player = new ComputerPlayer(playerColor, this.getName(), this);
 		} else {
@@ -240,7 +243,7 @@ public class GoClient extends Thread {
 	}
 	
 	public int getBoardDim() {
-		return board.dim();
+		return gameBoard.dim();
 	}
 	
 	public Stone getColor(String playerName) {
@@ -252,28 +255,28 @@ public class GoClient extends Thread {
 	
 	public void makeMove(Move move) {
 		if (move.getPosition() != Move.PASS) {
-			board.setField(move);
 			try {
 				Point coordinates = Board.indexToCoordinates(move.getPosition(), getBoardDim());
 				gogui.addStone(coordinates.x, coordinates.y, move.getColor() == Stone.WHITE);
 			} catch (InvalidCoordinateException e) {
 				e.printStackTrace();
 			}
-			doCaptures(move);
+			placeStone(gameBoard, move);
 		} else {
 			if (currentPlayer.equalsIgnoreCase(opponentName)) {
 				view.showPass(opponentName);
 			}
 		}
+		player.madeMove();
 	}
 	
 	public boolean isValidMove(Move move) {
-		return !board.isEmptyField(move.getPosition()) && !recreatesPrevious(move);
+		return gameBoard.isEmptyField(move.getPosition());
 	}
 	
 	public void nextPlayer(String playerName) {
 		if (playerName.equals(player.getName())) {
-			player.askForMove(board);
+			player.askForMove(gameBoard);
 		}
 		currentPlayer = playerName;
 	}
@@ -287,7 +290,12 @@ public class GoClient extends Thread {
 	}
 	
 	// ------game logic-------
-	public void doCaptures(Move move) {
+	private void placeStone(Board board, Move move) {
+		board.setField(move);
+		doCaptures(board, move);
+	}
+	
+	public void doCaptures(Board board, Move move) {
 		Stone playerColor = move.getColor();
 		Stone opponentColor = playerColor.other();
 		List<Set<Integer>> groupsToRemove = new ArrayList<Set<Integer>>();
@@ -298,7 +306,7 @@ public class GoClient extends Thread {
 		}
 		
 		for (Set<Integer> group : groupsToRemove) {
-			removeGroup(group, opponentColor);
+			removeGroup(board, group, opponentColor);
 		}
 		
 		for (Set<Integer> group : board.getGroups().get(playerColor)) {
@@ -308,11 +316,11 @@ public class GoClient extends Thread {
 		}
 		
 		for (Set<Integer> group : groupsToRemove) {
-			removeGroup(group, opponentColor);
+			removeGroup(board, group, opponentColor);
 		}
 	}
 	
-	private void removeGroup(Set<Integer> group, Stone color) {
+	private void removeGroup(Board board, Set<Integer> group, Stone color) {
 		for (Integer field : group) {
 			board.setField(new Move(Stone.EMPTY, field));
 			try {

@@ -1,10 +1,22 @@
 package model;
 
 public abstract class LocalPlayer extends Player {
+	private boolean isTurn;
 	
 	public LocalPlayer(String name) {
 		super(name);
+		this.isTurn = false;
+	}
+	
+	public void madeMove() {
+		isTurn = false;
 	}
 
-	public abstract void askForMove(Board board);
+	public boolean hasTurn() {
+		return isTurn;
+	}
+
+	public void askForMove(Board board) {
+		isTurn = true;
+	}
 }

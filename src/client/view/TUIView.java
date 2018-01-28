@@ -3,9 +3,8 @@ package client.view;
 import client.controller.GoClient;
 import commands.*;
 import general.Protocol;
-import model.Player;
 import model.Board;
-import model.HumanPlayer;
+import model.LocalPlayer;
 import model.Move;
 import model.Stone;
 
@@ -24,7 +23,7 @@ public class TUIView implements Runnable {
 
 	private State state;
 	private GoClient controller;
-	private Player player;
+	private LocalPlayer player;
 	private String thisPlayerName; // you need the player's name before there even is a player.
 	// private String helpText = "You can use the following commands....";
 	private int boardDim;
@@ -123,20 +122,17 @@ public class TUIView implements Runnable {
 				}
 			} else if (state == State.INGAME) {
 				if (!isAI) {
-					HumanPlayer hPlayer = (HumanPlayer) player;
 					if ((words.length == 2 || words.length == 3) 
 							&& words[0].equalsIgnoreCase("MOVE")) {
-						if (hPlayer.hasToTakeTurn()) {
+						if (player.hasTurn()) {
 							if (words.length == 2 && words[1].equalsIgnoreCase("PASS")) {
 								new MoveCommand(controller, true, 0, 0).send();
-								hPlayer.madeMove();
 							} else {
 								int row = Integer.parseInt(words[1]);
 								int column = Integer.parseInt(words[2]);
 								if (controller.isValidMove(new Move(player.getColor(), 
 										Board.index(row, column, boardDim)))) {
 									new MoveCommand(controller, false, row, column).send();
-									hPlayer.madeMove();
 								} else {
 									print("This is not a valid move. Try again.");
 								}
@@ -160,7 +156,7 @@ public class TUIView implements Runnable {
 		}
 	}
 
-	public void startGame(Player thisPlayer, int boardSize) {
+	public void startGame(LocalPlayer thisPlayer, int boardSize) {
 		state = State.INGAME;
 		this.boardDim = boardSize;
 		this.player = thisPlayer;
@@ -294,5 +290,4 @@ public class TUIView implements Runnable {
 	public void shutdown() {
 		print("Closing connection to server.");
 	}
-
 }
