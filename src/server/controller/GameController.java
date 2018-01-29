@@ -1,6 +1,5 @@
 package server.controller;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import commands.*;
 import exceptions.InvalidBoardSizeException;
 import exceptions.KoException;
 import exceptions.NotYourTurnException;
-import general.Protocol;
 import model.*;
 
 public class GameController extends Thread {
@@ -51,8 +49,8 @@ public class GameController extends Thread {
 		
 		for (ClientHandler client : clients) {
 			new StartCommand(client, 2, client.getPlayer().getColor(), boardSize, players).send();
-			new TurnCommand(client, game.getCurrentPlayer(), TurnCommand.FIRST, 
-					game.getCurrentPlayer()).send();
+			new TurnCommand(client, game.getCurrentPlayer(), new Move(Stone.BLACK, Move.FIRST), 
+					getBoardDim(), game.getCurrentPlayer()).send();
 		}
 	}
 	
@@ -67,17 +65,9 @@ public class GameController extends Thread {
 			return;
 		}
 		
-		String moveStr = "";
-		if (move.getPosition() == Move.PASS) {
-			moveStr = Protocol.Server.PASS;
-		} else {
-			int dim = this.getBoardDim();
-			Point coordinates = Board.indexToCoordinates(move.getPosition(), dim);
-			moveStr = coordinates.y + Protocol.General.DELIMITER2 + coordinates.x;
-		}
 		
 		for (ClientHandler client : clients) {
-			new TurnCommand(client, clientPlayer.getName(), moveStr, 
+			new TurnCommand(client, clientPlayer.getName(), move, getBoardDim(),
 					game.getCurrentPlayer()).send();
 		}
 		

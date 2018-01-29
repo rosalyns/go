@@ -1,6 +1,9 @@
 package commands;
 
+import java.awt.Point;
+
 import client.controller.GoClient;
+import model.Board;
 import model.Move;
 import exceptions.InvalidCommandLengthException;
 import general.Protocol;
@@ -20,18 +23,20 @@ public class TurnCommand extends Command {
 	public static final String PASS = Protocol.Server.PASS;
 	public static final String FIRST = Protocol.Server.FIRST;
 	private String currentPlayer;
-	private String turn;
+	private Move move;
+	private int boardDim;
 	private String nextPlayer;
 	
 	public TurnCommand(ClientHandler clientHandler) {
 		super(clientHandler, false);
 	}
 	
-	public TurnCommand(ClientHandler clientHandler, String currentPlayer, String turn, 
+	public TurnCommand(ClientHandler clientHandler, String currentPlayer, Move move, int boardDim, 
 			String nextPlayer) {
 		super(clientHandler, true);
 		this.currentPlayer = currentPlayer;
-		this.turn = turn;
+		this.move = move;
+		this.boardDim = boardDim;
 		this.nextPlayer = nextPlayer;
 	}
 
@@ -41,7 +46,17 @@ public class TurnCommand extends Command {
 
 	@Override
 	public String compose() {
-		return commandStr + delim1 + currentPlayer + delim1 + turn + delim1 
+		String moveStr;
+		if (move.getPosition() == Move.PASS) {
+			moveStr = PASS;
+		} else if (move.getPosition() == Move.FIRST) {
+			moveStr = FIRST;
+		} else {
+			Point coordinates = Board.indexToCoordinates(move.getPosition(), boardDim);
+			moveStr = coordinates.y + delim2 + coordinates.x;
+		}
+		
+		return commandStr + delim1 + currentPlayer + delim1 + moveStr + delim1 
 				+ nextPlayer + commandEnd;
 	}
 

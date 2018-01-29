@@ -2,6 +2,7 @@ package model;
 
 public class Move {
 	public static final int PASS = -1;
+	public static final int FIRST = -2;
 	
 	private int position;
 	private Stone color;

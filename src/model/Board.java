@@ -59,16 +59,8 @@ public class Board {
 		return this.fields[index];
 	}
 	
-	public Stone getField(int row, int col) {
-		return this.fields[Board.index(row, col, dim)];
-	}
-	
 	public boolean isField(int index) {
 		return 0 <= index && index < this.dim * this.dim;
-	}
-	
-	public boolean isField(int row, int col) {
-		return 0 <= row && row < dim && 0 <= col && col < dim;
 	}
 	
 	public boolean isEmpty() {
@@ -84,10 +76,6 @@ public class Board {
 		return this.fields[index] == Stone.EMPTY;
 	}
 	
-	public boolean isEmptyField(int row, int col) {
-		return this.fields[Board.index(row, col, dim)] == Stone.EMPTY;
-	}
-	
 	//ensures geen dubbelen
 	public List<Integer> getEmptyFields() {
 		List<Integer> emptyFields = new ArrayList<Integer>();
@@ -97,12 +85,6 @@ public class Board {
 			}
 		}
 		return emptyFields;
-	}
-	
-	public void reset() {
-		for (int i = 0; i < dim * dim; i++) {
-			this.fields[i] = Stone.EMPTY;
-		}
 	}
 	
 	public boolean hasLiberties(Set<Integer> group) {
