@@ -51,8 +51,8 @@ public class GameController extends Thread {
 		
 		for (ClientHandler client : clients) {
 			new StartCommand(client, 2, client.getPlayer().getColor(), boardSize, players).send();
-			new TurnCommand(client, game.getFirstPlayer(), TurnCommand.FIRST, 
-					game.getFirstPlayer()).send();
+			new TurnCommand(client, game.getCurrentPlayer(), TurnCommand.FIRST, 
+					game.getCurrentPlayer()).send();
 		}
 	}
 	

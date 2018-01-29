@@ -20,12 +20,17 @@ public class Game {
 	private int blackStonesLeft;
 	private int whiteStonesLeft;
 
-	//first player in list must be Stone.BLACK
 	public Game(List<Player> players, int boardSize) throws InvalidBoardSizeException {
 		this.consecutivePasses = 0;
-		this.currentPlayerIndex = 0;
 		this.players = players;
 		this.moves = new ArrayList<Move>();
+		
+		if (players.get(0).getColor() == Stone.BLACK) {
+			this.currentPlayerIndex = 0;
+		} else {
+			this.currentPlayerIndex = 1;
+		}
+		
 		if (boardSize < 5 || boardSize > 19) {
 			throw new InvalidBoardSizeException(boardSize);
 		} else { 
@@ -160,10 +165,6 @@ public class Game {
 			}
 		}
 		return false;
-	}
-	
-	public String getFirstPlayer() {
-		return players.get(0).getName();
 	}
 	
 	public String getCurrentPlayer() {
