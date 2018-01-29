@@ -103,6 +103,9 @@ public class GoClient extends Thread {
 		this.supportedExtensions = new HashSet<Extension>();
 		//TODO: op het eind: extensions nog toevoegen.
 		
+		this.gogui = new GoGUIIntegrator(false, true, 9);
+		gogui.startGUI();
+		
 		this.sock = new Socket(host, port);
 		this.setName(name);
 		this.view = new TUIView(this);
@@ -125,36 +128,31 @@ public class GoClient extends Thread {
 	}
 	
 	public void run() {
-		
 		Thread viewThread = new Thread(view);
+		viewThread.setName(this.getName() + "-view");
 		viewThread.start();
 		
-		boolean keepGoing = true;
 		new NameCommand(this, supportedExtensions).send();
 		
-		while (keepGoing) {
-			try {
-				String socketInput = in.readLine();
+		try {
+			String socketInput = "";
+			while ((socketInput = in.readLine()) != null && this.isRunning()) {
 				System.out.println(this.getName() + " received the command " + socketInput);
-				if (socketInput != null) {
-					for (String command : incomingCommands.keySet()) {
-						if (socketInput.startsWith(command)) {
-							try {
-								incomingCommands.get(command).parse(socketInput);
-							} catch (InvalidCommandLengthException e) {
-								e.printStackTrace();
-							}
+				for (String command : incomingCommands.keySet()) {
+					if (socketInput.startsWith(command)) {
+						try {
+							incomingCommands.get(command).parse(socketInput);
+						} catch (InvalidCommandLengthException e) {
+							e.printStackTrace();
 						}
 					}
-				} else {
-					System.out.println("stahp it");
-					keepGoing = false;
 				}
-			} catch (IOException e) {
-				keepGoing = false;
 			}
-		}
-		shutdown();
+			System.out.println("stahp it");
+			shutDown();
+		} catch (IOException e) {
+			shutDown();
+		}	
 	}
 	
 	public void sendCommandToServer(String command) {
@@ -163,7 +161,7 @@ public class GoClient extends Thread {
 			out.write(command);
 			out.flush();
 		} catch (IOException e) {
-			System.out.println("In sendCommandToServer: There is no server to send a message to.");
+			shutDown();
 		}
 	}
 	
@@ -214,7 +212,7 @@ public class GoClient extends Thread {
 		if (reason.equals(ErrorCommand.INVPROTOCOL)) {
 			view.showError(reason, message);
 			view.shutdown();
-			shutdown();
+			shutDown();
 		} else if (reason.equals(ErrorCommand.INVNAME)) {
 			view.askForName();
 		} else if (reason.equals(ErrorCommand.INVMOVE)) {
@@ -223,8 +221,18 @@ public class GoClient extends Thread {
 		}
 	}
 	
-	public void shutdown() {
-		//TODO
+	public boolean isRunning() {
+		return !sock.isClosed();
+	}
+	
+	public void shutDown() {
+		gogui.stopGUI();
+		try {
+			sock.close();
+		} catch (IOException e) {
+		} finally {
+			System.exit(0);
+		}
 	}
 	
 	// -----game interaction methods-------
@@ -236,10 +244,15 @@ public class GoClient extends Thread {
 		} else {
 			this.player = new HumanPlayer(playerColor, this.getName());
 		}
+
+		gogui.clearBoard();
+		try {
+			gogui.setBoardSize(boardSize);
+		} catch (InvalidCoordinateException e) {
+		}
 		
 		view.startGame(player, boardSize);
-		this.gogui = new GoGUIIntegrator(false, true, boardSize);
-		gogui.startGUI();
+		
 	}
 	
 	public int getBoardDim() {
@@ -271,7 +284,7 @@ public class GoClient extends Thread {
 	}
 	
 	public boolean isValidMove(Move move) {
-		return gameBoard.isEmptyField(move.getPosition());
+		return gameBoard.isField(move.getPosition()) && gameBoard.isEmptyField(move.getPosition());
 	}
 	
 	public void nextPlayer(String playerName) {

@@ -67,24 +67,23 @@ public class ClientHandler extends Thread {
 	 * connection is broken and shutdown() will be called.
 	 */
 	public void run() {
-		String command = "";
 		try {
-			while ((command = in.readLine()) != null) {
+			String command = "";
+			while ((command = in.readLine()) != null && lobby.isAlive()) {
 				System.out.println(this.getName() + " received the command " + command);
 				for (String commandStr : incomingCommands.keySet()) {
 					if (command.startsWith(commandStr)) {
 						try {
-							incomingCommands.get(commandStr).parse(command); 
+							incomingCommands.get(commandStr).parse(command);
 						} catch (InvalidCommandLengthException e) {
-							new ErrorCommand(this, ErrorCommand.INVCOMMAND, 
-									"Number of arguments is not valid.").send();
+							new ErrorCommand(this, ErrorCommand.INVCOMMAND, "Number of arguments is not valid.").send();
 						}
 					}
 				}
 			}
-			shutdown();
+			clientShutDown();
 		} catch (IOException e) {
-			shutdown();
+			clientShutDown();
 		}
 	}
 
@@ -167,7 +166,7 @@ public class ClientHandler extends Thread {
 	
 	public void quitGame() {
 		this.inGame = false;
-		game.endGameNormal();
+		game.endGame(this);
 	}
 	
 	//-----------other methods----------
@@ -187,16 +186,23 @@ public class ClientHandler extends Thread {
 			out.write(command);
 			out.flush();
 		} catch (IOException e) {
-			shutdown();
+			clientShutDown();
 		}
 	}
-
-	private void shutdown() {
+	
+	public void clientShutDown() {
+		if (inGame) {
+			quitGame();
+		}
+		System.out.println("Waarom?");
 		lobby.removePlayer(this);
-		// TODO: replace with something lobby
-		// server.broadcast("[" + this.getName() + " has left]");
-		// sendCommandToClient("Server shut down.");
+		shutDown();
+	}
+
+	private void shutDown() {
 		try {
+			in.close();
+			out.close();
 			client.close();
 		} catch (IOException e) {
 		}

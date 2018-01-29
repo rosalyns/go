@@ -82,13 +82,31 @@ public class GameController extends Thread {
 		}
 		
 		if (game.isGameOver()) {
-			endGameNormal();
+			endGame();
 		}
 		
 	}
 	
-	public void endGameNormal() {
-		game.end();
+	public void endGame(ClientHandler quitter) {
+		Map<Player, Integer> scores = game.calculateScores();
+		
+		ClientHandler winner = null;
+		ClientHandler loser = quitter;
+		
+		for (ClientHandler client : clients) {
+			if (!client.getName().equals(loser.getName())) {
+				winner = client;
+			}	
+		}
+		
+		for (ClientHandler client : clients) {
+			new EndGameCommand(client, EndGameCommand.ABORTED, 
+					winner.getName(), scores.get(winner.getPlayer()), 
+					loser.getName(), scores.get(loser.getPlayer())).send();
+		}
+	}
+	
+	public void endGame() {
 		Map<Player, Integer> scores = game.calculateScores();
 		
 		int highestScore = -1;
@@ -100,7 +118,7 @@ public class GameController extends Thread {
 			if (score > highestScore) {
 				highestScore = score;
 				winner = clients.get(i);
-				loser = clients.get(Math.abs(i - 1)); // 0 becomes 1, 1 becomes 0
+				loser = getOtherClient(winner);
 			}
 		}
 		
@@ -113,5 +131,13 @@ public class GameController extends Thread {
 	
 	public int getBoardDim() {
 		return game.getBoardDim();
+	}
+	
+	private ClientHandler getOtherClient(ClientHandler client) {
+		if (clients.get(0).equals(client)) {
+			return clients.get(1);
+		} else {
+			return clients.get(0);
+		}
 	}
 }

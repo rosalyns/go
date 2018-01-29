@@ -91,6 +91,7 @@ public class GoServer {
 				clientHandler.start();
 			} catch (IOException e) {
 				keepRunning = false;
+				System.out.println("Hier?");
 			}
 		}
 	}

@@ -6,8 +6,20 @@
 	+ als je twee keer iemand uitdaagt  
 	
 Nog fixen:
-- stop gui when game ends
 - NumberFormatExceptions bij alle parseInts
 - checken voor extensions
 - als je verkeerd commando intypt in TUI goeie output geven
 - server TUI ?
+- Geen "left lobby" sturen als je stopt in een game. "left lobby" sturen als twee mensen een spel beginnen.
+- max aantal zetten
+- als je weggaat uit lobby niet meer loopen over alle clientHandlers (concurrent modification)
+
+
+
+
+Maandag 29 januari 2017 Afspraken Protocol
+EXIT is helemaal weg, QUIT is alleen uit het spel
+TIMEOUT moet je kunnen ontvangen
+Boardsize van 5 t/m 19
+Janine stuurt code voor andere kleuren lijntjes GUI
+Degene die opgeeft in een spel (QUIT) krijgt 0 punten.

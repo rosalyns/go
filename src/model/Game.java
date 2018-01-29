@@ -17,6 +17,8 @@ public class Game {
 	private Map<Player, Integer> scores;
 	private List<Move> moves;
 	private int currentPlayerIndex;
+	private int blackStonesLeft;
+	private int whiteStonesLeft;
 
 	//first player in list must be Stone.BLACK
 	public Game(List<Player> players, int boardSize) throws InvalidBoardSizeException {
@@ -24,11 +26,21 @@ public class Game {
 		this.currentPlayerIndex = 0;
 		this.players = players;
 		this.moves = new ArrayList<Move>();
-		if (boardSize != 9 && boardSize != 13 && boardSize != 19) {
+		if (boardSize < 5 || boardSize > 19) {
 			throw new InvalidBoardSizeException(boardSize);
 		} else { 
 			this.gameBoard = new Board(boardSize);
 		}
+		
+		int totalStones = boardSize * boardSize; 
+		if (totalStones % 2 == 0) {
+			blackStonesLeft = totalStones / 2;
+			whiteStonesLeft = totalStones / 2;
+		} else {
+			whiteStonesLeft = totalStones / 2;
+			blackStonesLeft = totalStones - whiteStonesLeft;
+		}
+		
 	}
 	
 	public void doTurn(Move move) throws KoException, NotYourTurnException {
@@ -43,6 +55,9 @@ public class Game {
 				throw new KoException("This move recreates a previous board situation.");
 			} else {
 				placeStone(gameBoard, move); 
+				if (move.getPosition() != Move.PASS) {
+					reduceStone(move.getColor());
+				}
 				consecutivePasses = 0;
 				moves.add(move);
 			}
@@ -55,12 +70,16 @@ public class Game {
 		doCaptures(board, move);
 	}
 	
-	public boolean isGameOver() {
-		return consecutivePasses == 2;
-	}
+	private void reduceStone(Stone color) {
+		if (color == Stone.BLACK) {
+			blackStonesLeft--;
+		} else if (color == Stone.WHITE) {
+			whiteStonesLeft--;
+		}
+	}	
 	
-	public void end() {
-		
+	public boolean isGameOver() {
+		return consecutivePasses == 2 || blackStonesLeft == 0 || whiteStonesLeft == 0;
 	}
 	
 	public void doCaptures(Board board, Move move) {
@@ -100,6 +119,10 @@ public class Game {
 		scores = new HashMap<Player, Integer>(); 
 		scores.put(players.get(0), 0);
 		scores.put(players.get(1), 0);
+		
+		if (gameBoard.isEmpty()) {
+			return scores;
+		}
 		
 		List<Set<Integer>> emptyGroups = gameBoard.getGroups().get(Stone.EMPTY);
 		for (Player p : players) {

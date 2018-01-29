@@ -17,14 +17,13 @@ import general.Protocol;
 import model.NetworkPlayer;
 
 public class Lobby extends Thread {
-	public final boolean toClient = true;
-	public final boolean fromClient = false;
 	
 	private GoServer server;
 	private List<ClientHandler> clients;
 	private SortedMap<Integer, String> leaderboard;
 	private Map<ClientHandler, ClientHandler> pendingChallenges;
 	private List<ClientHandler> randomChallenges;
+	private List<GameController> games;
 	
 	public Lobby(GoServer server) {
 		this.clients = new ArrayList<ClientHandler>();
@@ -32,6 +31,7 @@ public class Lobby extends Thread {
 		this.leaderboard = new TreeMap<Integer, String>();
 		this.pendingChallenges = new HashMap<ClientHandler, ClientHandler>();
 		this.randomChallenges = new ArrayList<ClientHandler>();
+		this.games = new ArrayList<GameController>();
 	}
 	
 	public void addPlayer(ClientHandler client) {
@@ -42,14 +42,15 @@ public class Lobby extends Thread {
 		} else {
 			client.setPlayer(new NetworkPlayer(client, client.getName()));
 			this.clients.add(client);
-			announce(client.getName());
+			announceEnter(client.getName());
 			new NameCommand(client, server.getName(), server.getExtensions()).send();
 		}
 		
 	}
 	
 	public void removePlayer(ClientHandler client) {
-		this.clients.remove(client);
+		clients.remove(client);
+		announceLeave(client.getName());
 	}
 
 	private String thisMoment() {
@@ -94,9 +95,14 @@ public class Lobby extends Thread {
 		}
 	}
 	
-	public void announce(String playerName) {
+	public void announceEnter(String playerName) {
 		chat("[Lobby]", "\"" + playerName + "\" entered the lobby.");
 		System.out.println(thisMoment() + "\"" + playerName + "\" entered the lobby.");
+	}
+	
+	public void announceLeave(String playerName) {
+		chat("[Lobby]", "\"" + playerName + "\" left the lobby.");
+		System.out.println(thisMoment() + "\"" + playerName + "\" left the lobby.");
 	}
 	
 	private boolean nameInUse(String name) {
@@ -139,6 +145,7 @@ public class Lobby extends Thread {
 		players.add(player1);
 		players.add(player2);
 		GameController game = new GameController(this, players);
+		games.add(game);
 		game.start();
 	}
 

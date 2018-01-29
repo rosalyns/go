@@ -46,9 +46,8 @@ public class TUIView implements Runnable {
 
 	@Override
 	public void run() {
-		boolean clientRunning = true;
 		boolean isAI = false;
-		while (clientRunning) {
+		while (controller.isRunning()) {
 			boolean wrongInput = false;
 			String line = readString();
 			String[] words = line.split(" ");
@@ -67,8 +66,7 @@ public class TUIView implements Runnable {
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("3")) {
 					new LeadCommand(controller, false).send();
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("4")) {
-					controller.shutdown();
-					clientRunning = false;
+					controller.shutDown();
 					new QuitCommand(controller, false).send();
 				}
 			} else if (state == State.INOPTIONMENU) {
@@ -112,8 +110,8 @@ public class TUIView implements Runnable {
 						wrongInput = true;
 					}
 					int boardSize = Integer.parseInt(words[2]);
-					if (boardSize != 9 && boardSize != 13 && boardSize != 19) {
-						print("Possible boardsizes are: 9, 13, 19.");
+					if (boardSize < 5 || boardSize > 19) {
+						print("Pick a size between 5 and 19.");
 						wrongInput = true;
 					}
 					if (!wrongInput) {
@@ -127,7 +125,7 @@ public class TUIView implements Runnable {
 						if (player.hasTurn()) {
 							if (words.length == 2 && words[1].equalsIgnoreCase("PASS")) {
 								new MoveCommand(controller, true, 0, 0).send();
-							} else {
+							} else if (words.length == 3) {
 								int row = Integer.parseInt(words[1]);
 								int column = Integer.parseInt(words[2]);
 								if (controller.isValidMove(new Move(player.getColor(), 
