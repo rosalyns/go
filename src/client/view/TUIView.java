@@ -139,14 +139,12 @@ public class TUIView implements Runnable {
 							print("Wait till it is your turn.");
 						}
 					} else if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
-						controller.quitGame();
 						new QuitCommand(controller, false).send();
 					} else {
 						print("Unknown command. Type HELP to see all possible commands.");
 					}
 				} else {
 					if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
-						controller.quitGame();
 						new QuitCommand(controller).send();
 					}
 				}

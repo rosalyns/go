@@ -3,6 +3,7 @@ package client.controller;
 import model.*;
 import client.view.*;
 import commands.*;
+import exceptions.InvalidBoardSizeException;
 import exceptions.InvalidCommandLengthException;
 import general.Extension;
 import general.Protocol;
@@ -238,7 +239,11 @@ public class GoClient extends Thread {
 	// -----game interaction methods-------
 	public void startGame(String opponent, int boardSize, Stone playerColor) {
 		this.opponentName = opponent;
-		gameBoard = new Board(boardSize);
+		try {
+			gameBoard = new Board(boardSize);
+		} catch (InvalidBoardSizeException e1) {
+			//comes from server, not likely
+		}
 		if (useAI) {
 			this.player = new ComputerPlayer(playerColor, this.getName(), this);
 		} else {
@@ -296,10 +301,6 @@ public class GoClient extends Thread {
 	
 	public void endGame(String reason, Map<String, Integer> scores) { 
 		view.endGame(reason, scores);
-	}
-	
-	public void quitGame() {
-		//TODO
 	}
 	
 	// ------game logic-------

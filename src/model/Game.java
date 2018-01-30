@@ -8,7 +8,6 @@ import java.util.Set;
 import exceptions.*;
 
 public class Game {
-	public static final int PASS = -1;
 	public static final int NO_OF_PLAYERS = 2;
 	
 	private List<Player> players;
@@ -20,7 +19,8 @@ public class Game {
 	private int blackStonesLeft;
 	private int whiteStonesLeft;
 
-	public Game(List<Player> players, int boardSize) throws InvalidBoardSizeException {
+	public Game(List<Player> players, Board board) throws InvalidBoardSizeException {
+		this.gameBoard = board;
 		this.consecutivePasses = 0;
 		this.players = players;
 		this.moves = new ArrayList<Move>();
@@ -31,13 +31,9 @@ public class Game {
 			this.currentPlayerIndex = 1;
 		}
 		
-		if (boardSize < 5 || boardSize > 19) {
-			throw new InvalidBoardSizeException(boardSize);
-		} else { 
-			this.gameBoard = new Board(boardSize);
-		}
 		
-		int totalStones = boardSize * boardSize; 
+		
+		int totalStones = gameBoard.dim() * gameBoard.dim(); 
 		if (totalStones % 2 == 0) {
 			blackStonesLeft = totalStones / 2;
 			whiteStonesLeft = totalStones / 2;
@@ -53,7 +49,7 @@ public class Game {
 			throw new NotYourTurnException("It's " + players.get(currentPlayerIndex).getName() 
 					+ "'s turn.");
 		}
-		if (move.getPosition() == PASS) {
+		if (move.getPosition() == Move.PASS) {
 			consecutivePasses++;
 		} else {
 			if (recreatesPreviousSituation(move)) {
@@ -153,7 +149,12 @@ public class Game {
 	
 	public boolean recreatesPreviousSituation(Move move) {
 		Board copiedBoard = gameBoard.deepCopy();
-		Board simulationBoard = new Board(gameBoard.dim());
+		Board simulationBoard = null;
+		try {
+			simulationBoard = new Board(gameBoard.dim());
+		} catch (InvalidBoardSizeException e) {
+			// not possible
+		}
 		
 		placeStone(copiedBoard, move);
 		
@@ -174,4 +175,5 @@ public class Game {
 	public int getBoardDim() {
 		return gameBoard.dim();
 	}
+	
 }

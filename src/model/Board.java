@@ -10,16 +10,18 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import exceptions.InvalidBoardSizeException;
+
 public class Board {
 	private int dim;
 	private Stone[] fields;
 	private Map<Stone, List<Set<Integer>>> groups;
 	
-	public Board() {
-		this(9);
-	}
-	
-	public Board(int dim) {
+	public Board(int dim) throws InvalidBoardSizeException {
+		if (dim < 5 || dim > 19) {
+			throw new InvalidBoardSizeException(dim);
+		}
+		
 		this.dim = dim;
 		this.fields = new Stone[dim * dim];
 		for (int i = 0; i < dim * dim; i++) {
@@ -31,7 +33,12 @@ public class Board {
 	}
 	
 	public Board deepCopy() {
-		Board copyBoard = new Board(this.dim);
+		Board copyBoard = null;
+		try {
+			copyBoard = new Board(this.dim);
+		} catch (InvalidBoardSizeException e) {
+			//not possible
+		}
 		for (int i = 0; i < dim * dim; i++) {
 			copyBoard.setField(new Move(fields[i], i));
 		}
@@ -87,17 +94,29 @@ public class Board {
 		return emptyFields;
 	}
 	
+//	public Set<Integer> getLiberties(Set<Integer> group) {
+//		Set<Integer> liberties = new HashSet<Integer>();
+//		for (Integer stone : group) {
+//			Set<Integer> neighbours = getNeighbours(stone);
+//			for (Integer neighbour : neighbours) {
+//				if (isEmptyField(neighbour)) {
+//					liberties.add(neighbour);
+//				}
+//			}
+//		}
+//		return liberties;
+//	}
+	
 	public boolean hasLiberties(Set<Integer> group) {
-		Set<Integer> liberties = new HashSet<Integer>();
 		for (Integer stone : group) {
 			Set<Integer> neighbours = getNeighbours(stone);
 			for (Integer neighbour : neighbours) {
 				if (isEmptyField(neighbour)) {
-					liberties.add(neighbour);
+					return true;
 				}
 			}
 		}
-		return liberties.size() > 0;
+		return false;
 	}
 	
 	public Set<Integer> getNeighbours(Set<Integer> group) {

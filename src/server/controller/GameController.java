@@ -42,7 +42,7 @@ public class GameController extends Thread {
 		}
 		
 		try {
-			game = new Game(players, boardSize);
+			game = new Game(players, new Board(boardSize));
 		} catch (InvalidBoardSizeException e) {
 			e.printStackTrace();
 		}

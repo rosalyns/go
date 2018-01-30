@@ -18,17 +18,9 @@ public class BoardTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		board = new Board();
+		board = new Board(9);
 		dim = board.dim();
 		board2 = new Board(11);
-	}
-
-	@Test
-	public void testSetupNoArguments() {
-		assertTrue(board.isEmpty());
-		int minDim = 9;
-		int maxDim = 19;
-		assertTrue(minDim <= dim && dim <= maxDim);
 	}
 	
 	@Test
@@ -39,14 +31,9 @@ public class BoardTest {
 	
 	@Test
 	public void testIndex() {
-		assertEquals(board.dim() * 3 + 3, board.index(3, 3));
+		assertEquals(board.dim() * 3 + 3, Board.index(3, 3, board.dim()));
 	}
 	
-	@Test
-	public void testGetFieldRowCol() {
-		board.setField(new Move(Stone.BLACK, board.index(3, 3)));
-		assertEquals(Stone.BLACK, board.getField(3, 3));
-	}
 	
 	@Test
 	public void testGetFieldIndex() {
@@ -73,29 +60,10 @@ public class BoardTest {
 	}
 	
 	@Test
-	public void testIsEmptyFieldRowCol() {
-		board.setField(new Move(Stone.BLACK, board.index(3, 3)));
-		assertFalse(board.isEmptyField(3, 3));
-		assertTrue(board.isEmptyField(2, 2));
-	}
-	
-	@Test
 	public void testIsFieldIndex() {
 		assertFalse(board.isField(1234));
 		assertFalse(board.isField(dim * dim));
 		assertTrue(board.isField((dim * dim) - 1));
-	}
-	
-	@Test
-	public void testIsFieldRowCol() {
-		assertFalse(board.isField(dim + 1, dim + 5));
-		assertFalse(board.isField(dim, dim));
-		assertFalse(board.isField(dim, dim - 1));
-		assertFalse(board.isField(dim - 1, dim));
-		assertTrue(board.isField(dim - 1, dim - 1));
-		assertFalse(board.isField(-5, 1));
-		assertFalse(board.isField(5, -1));
-		assertTrue(board.isField(0, 0));
 	}
 	
 	@Test
@@ -111,36 +79,25 @@ public class BoardTest {
 	}
 	
 	@Test
-	public void testReset() {
-		board.setField(new Move(Stone.BLACK, 0));
-		board.setField(new Move(Stone.WHITE, 1));
-		board.setField(new Move(Stone.BLACK, 2));
-		board.reset();
-		assertEquals(Stone.EMPTY, board.getField(0));
-		assertEquals(Stone.EMPTY, board.getField(1));
-		assertEquals(Stone.EMPTY, board.getField(2)); 
-	}
-	
-	@Test
 	public void testRecalculateGroups() {
 		/*
 		 * oooo
 		 * oxxxo
 		 *  ooo
 		 */
-		
-		board.setField(new Move(Stone.BLACK, board.index(0, 1)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 2)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 3)));
-		board.setField(new Move(Stone.BLACK, board.index(1, 0)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 1)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 2)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 3)));
-		board.setField(new Move(Stone.BLACK, board.index(1, 4)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 0)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 1)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
+
+		board.setField(new Move(Stone.BLACK, 0));
+		board.setField(new Move(Stone.BLACK, 1));
+		board.setField(new Move(Stone.BLACK, 2));
+		board.setField(new Move(Stone.BLACK, 3));
+		board.setField(new Move(Stone.BLACK, 9));
+		board.setField(new Move(Stone.BLACK, 13));
+		board.setField(new Move(Stone.BLACK, 19));
+		board.setField(new Move(Stone.BLACK, 20));
+		board.setField(new Move(Stone.BLACK, 21));
+		board.setField(new Move(Stone.WHITE, 10));
+		board.setField(new Move(Stone.WHITE, 11));
+		board.setField(new Move(Stone.WHITE, 12));
 		
 		board.recalculateGroups(false);
 		List<Set<Integer>> blackgroups = board.getGroups().get(Stone.BLACK);
@@ -158,105 +115,69 @@ public class BoardTest {
 	
 	@Test
 	public void testHasLiberties() {
-		fail("Not yet implemented");
-	}
-	
-	@Test
-	public void testGetNeighboursField() {
-		fail("Not yet implemented");
+		/*
+		 * oooo
+		 * oxxxo
+		 *  ooo
+		 */
+
+		board.setField(new Move(Stone.BLACK, 0));
+		board.setField(new Move(Stone.BLACK, 1));
+		board.setField(new Move(Stone.BLACK, 2));
+		board.setField(new Move(Stone.BLACK, 3));
+		board.setField(new Move(Stone.BLACK, 9));
+		board.setField(new Move(Stone.BLACK, 13));
+		board.setField(new Move(Stone.BLACK, 19));
+		board.setField(new Move(Stone.BLACK, 20));
+		board.setField(new Move(Stone.BLACK, 21));
+		board.setField(new Move(Stone.WHITE, 10));
+		board.setField(new Move(Stone.WHITE, 11));
+		board.setField(new Move(Stone.WHITE, 12));
+		
+		List<Set<Integer>> blackgroups = board.getGroups().get(Stone.BLACK);
+		List<Set<Integer>> whitegroups = board.getGroups().get(Stone.WHITE);
+		Set<Integer> blackgroup1 = blackgroups.get(0);
+		Set<Integer> blackgroup2 = blackgroups.get(1);
+		Set<Integer> blackgroup3 = blackgroups.get(2);
+		Set<Integer> whitegroup1 = whitegroups.get(0);
+		
+		assertTrue(board.hasLiberties(blackgroup1));
+		assertTrue(board.hasLiberties(blackgroup2));
+		assertTrue(board.hasLiberties(blackgroup3));
+		assertFalse(board.hasLiberties(whitegroup1));
 	}
 	
 	@Test
 	public void testGetNeighboursGroup() {
-		fail("Not yet implmemented");
-	}
-	
-	@Test
-	public void testDoCapturesSuicide() {
 		/*
 		 * oooo
 		 * oxxxo
 		 *  ooo
 		 */
-		board.setField(new Move(Stone.BLACK, board.index(0, 1)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 2)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 3)));
-		board.setField(new Move(Stone.BLACK, board.index(1, 0)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 1)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 2)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 3)));
-		board.setField(new Move(Stone.BLACK, board.index(1, 4)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 0)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 1)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
-		
-		board.recalculateGroups(false);
-		board.doCaptures(new Move(Stone.WHITE, board.index(1, 1)));
-		
-		assertEquals(Stone.EMPTY, board.getField(1, 1));
-		assertEquals(Stone.EMPTY, board.getField(1, 2));
-		assertEquals(Stone.EMPTY, board.getField(1, 3));
-	}
-	
-	@Test
-	public void testDoCapturesOpponent() {
-		/*
-		 * oooo
-		 * oxxxo
-		 *  ooo
-		 */
-		board.setField(new Move(Stone.BLACK, board.index(0, 1)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 2)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 3)));
-		board.setField(new Move(Stone.BLACK, board.index(1, 0)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 1)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 2)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 3)));
-		board.setField(new Move(Stone.BLACK, board.index(1, 4)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 0)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 1)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
-		
-		board.recalculateGroups(false);
-		board.doCaptures(new Move(Stone.BLACK, board.index(1, 4)));
-		
-		assertEquals(Stone.EMPTY, board.getField(1, 1));
-		assertEquals(Stone.EMPTY, board.getField(1, 2));
-		assertEquals(Stone.EMPTY, board.getField(1, 3));
-	}
-	
-	@Test
-	public void testDoCapturesAlmostSuicide() {
-		/*
-		 * oooox
-		 * oxxXox
-		 *  ooox
-		 */
-		board.setField(new Move(Stone.BLACK, board.index(0, 0)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 1)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 2)));
-		board.setField(new Move(Stone.BLACK, board.index(0, 3)));
-		board.setField(new Move(Stone.WHITE, board.index(0, 4)));
-		board.setField(new Move(Stone.BLACK, board.index(1, 0)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 1)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 2)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 3)));
-		board.setField(new Move(Stone.BLACK, board.index(1, 4)));
-		board.setField(new Move(Stone.WHITE, board.index(1, 5)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 1)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 2)));
-		board.setField(new Move(Stone.BLACK, board.index(2, 3)));
-		board.setField(new Move(Stone.WHITE, board.index(2, 4)));
-		
-		board.recalculateGroups(false);
-		board.doCaptures(new Move(Stone.WHITE, board.index(1, 3)));
-		
-		assertEquals(Stone.EMPTY, board.getField(1, 4));
-		assertEquals(Stone.WHITE, board.getField(1, 1));
-		assertEquals(Stone.WHITE, board.getField(1, 2));
-		assertEquals(Stone.WHITE, board.getField(1, 3));
-	}
 
+		board.setField(new Move(Stone.BLACK, 0));
+		board.setField(new Move(Stone.BLACK, 1));
+		board.setField(new Move(Stone.BLACK, 2));
+		board.setField(new Move(Stone.BLACK, 3));
+		board.setField(new Move(Stone.BLACK, 9));
+		board.setField(new Move(Stone.BLACK, 13));
+		board.setField(new Move(Stone.BLACK, 19));
+		board.setField(new Move(Stone.BLACK, 20));
+		board.setField(new Move(Stone.BLACK, 21));
+		board.setField(new Move(Stone.WHITE, 10));
+		board.setField(new Move(Stone.WHITE, 11));
+		board.setField(new Move(Stone.WHITE, 12));
+		
+		List<Set<Integer>> blackgroups = board.getGroups().get(Stone.BLACK);
+		List<Set<Integer>> whitegroups = board.getGroups().get(Stone.WHITE);
+		Set<Integer> blackgroup1 = blackgroups.get(0);
+		Set<Integer> blackgroup2 = blackgroups.get(1);
+		Set<Integer> blackgroup3 = blackgroups.get(2);
+		Set<Integer> whitegroup1 = whitegroups.get(0);
+		
+		assertEquals(5, board.getNeighbours(blackgroup1).size());
+		assertEquals(4, board.getNeighbours(blackgroup2).size());
+		assertEquals(8, board.getNeighbours(blackgroup3).size());
+		assertEquals(8, board.getNeighbours(whitegroup1).size());
+	}
 }
