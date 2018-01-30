@@ -105,6 +105,7 @@ public class GoClient extends Thread {
 	
 	public GoClient(Socket socket, String name) throws IOException {
 		this(System.in, socket.getOutputStream(), socket.getInputStream(), name);
+		this.sock = socket;
 	}
 	
 	public GoClient(InputStream systemIn, OutputStream socketOut, InputStream socketIn, String name) {
