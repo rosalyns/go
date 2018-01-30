@@ -15,64 +15,41 @@ import client.controller.GoClient;
 class GoClientTest {
 	
 	private GoClient client;
+	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+	InputStream socketInput;
+	OutputStream socketOutput;
+	InputStream consoleInput;
+	String wrongDataServer = "NAME$Rosalyn-Server$VERSION$6$EXTENSIONS$0$0$0$0$0$0$0\n";
+	String correctDataServer = "NAME$Rosalyn-Server$VERSION$3$EXTENSIONS$0$0$0$0$0$0$0\n";
+	String dataTUI = "1\nn\nrequestrandom\n";
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		
-	}
-
-	@Test
-	void testSetServerSettings() {
-		String dataServer = "NAME$Rosalyn-Server$VERSION$3$EXTENSIONS$0$0$0$0$0$0$0\n";
-		String dataClient = "NAME$Rosalyn$VERSION$3$EXTENSIONS$0$0$0$0$0$0$0\n";
-		String dataTUI = "1\n";
-		dataTUI += "n\n";
-		dataTUI += "request random\n";
-		
-		InputStream socketInput = new ByteArrayInputStream(dataServer.getBytes());
-		OutputStream socketOutput = new ByteArrayOutputStream();
-		InputStream consoleInput = new ByteArrayInputStream(dataTUI.getBytes());
+		//System.setOut(new PrintStream(outContent))
+		socketInput = new ByteArrayInputStream(correctDataServer.getBytes());
+		socketOutput = new ByteArrayOutputStream();
+		consoleInput = new ByteArrayInputStream(dataTUI.getBytes());
 		client = new GoClient(consoleInput, socketOutput, socketInput, "Rosalyn");
 	}
-
+	
+	
 	@Test
-	void testUseAI() {
-		fail("Not yet implemented"); // TODO
+	void testSetUpCorrect() {
+		client.start();
+		System.out.println("voorbij de start");
+		String dataClient = "NAME$Rosalyn$VERSION$3$EXTENSIONS$0$0$0$0$0$0$0\n";
+		assertEquals(dataClient, socketOutput.toString());
+		assertTrue(outContent.toString().contains("Rosalyn-serverkklhkljh"));
+	}
+	
+	@Test
+	void testCommandName() {
+		client.start();
+		System.out.println("voorbij de start");
+		String dataClient = "NAME$Rosalyn$VERSION$3$EXTENSIONS$0$0$0$0$0$0$0\n";
+		assertEquals(dataClient, socketOutput.toString());
+		assertTrue(outContent.toString().contains("Rosalyn-serverkklhkljh"));
 	}
 
-	@Test
-	void testStartGame() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	void testGetColor() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	void testMakeMove() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	void testIsValidMove() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	void testNextPlayer() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	void testEndGame() {
-		fail("Not yet implemented"); // TODO
-	}
-
-	@Test
-	void testDoCaptures() {
-		fail("Not yet implemented"); // TODO
-	}
-
+	
 }

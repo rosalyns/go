@@ -54,6 +54,7 @@ public class TUIView implements Runnable {
 		while (controller.isRunning()) {
 			boolean wrongInput = false;
 			String line = readString();
+			System.out.println("Consoleinput: " + line);
 			String[] words = line.split(" ");
 
 			

@@ -101,14 +101,14 @@ public class GoClient extends Thread {
 	private int protocolVersion;
 	private Set<Extension> supportedExtensions;
 	private Set<Extension> supportedServerExtensions;
-	private InputStream systemIn;
 	
 	public GoClient(Socket socket, String name) throws IOException {
 		this(System.in, socket.getOutputStream(), socket.getInputStream(), name);
 		this.sock = socket;
 	}
 	
-	public GoClient(InputStream systemIn, OutputStream socketOut, InputStream socketIn, String name) {
+	public GoClient(InputStream systemIn, OutputStream socketOut, InputStream socketIn, 
+			String name) {
 		this.protocolVersion = Protocol.Client.VERSIONNO;
 		this.supportedExtensions = new HashSet<Extension>();
 		//TODO: op het eind: extensions nog toevoegen.
