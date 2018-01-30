@@ -27,7 +27,6 @@ public class ClientHandler extends Thread {
 	
 	private Lobby lobby;
 	private GameController game;
-	private boolean inGame;
 	private NetworkPlayer player;
 	private BufferedReader in;
 	private BufferedWriter out;
@@ -41,7 +40,6 @@ public class ClientHandler extends Thread {
 	public ClientHandler(Lobby lobby, Socket sockArg) throws IOException {
 		this.lobby = lobby;
 		this.client = sockArg;
-		this.inGame = false;
 		
 		in = new BufferedReader(new InputStreamReader(sockArg.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(sockArg.getOutputStream()));
@@ -140,7 +138,6 @@ public class ClientHandler extends Thread {
 	// --------game interaction methods---------
 	public void setGame(GameController game) {
 		this.game = game;
-		this.inGame = true;
 	}
 	
 	public void setGameSettings(Stone color, int boardSize) {
@@ -165,14 +162,13 @@ public class ClientHandler extends Thread {
 	}
 	
 	public void quitGame() {
-		this.inGame = false;
 		game.endGame(this);
 	}
 	
 	//-----------other methods----------
 	
 	public boolean isInGame() {
-		return this.inGame;
+		return !game.ended();
 	}
 	
 	/**
@@ -191,18 +187,15 @@ public class ClientHandler extends Thread {
 	}
 	
 	public void clientShutDown() {
-		if (inGame) {
+		if (game != null && isInGame()) {
 			quitGame();
 		}
-		System.out.println("Waarom?");
 		lobby.removePlayer(this);
 		shutDown();
 	}
 
 	private void shutDown() {
 		try {
-			in.close();
-			out.close();
 			client.close();
 		} catch (IOException e) {
 		}

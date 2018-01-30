@@ -49,7 +49,9 @@ public class MoveCommand extends Command {
 			row = Integer.parseInt(move[0]);
 			column = Integer.parseInt(move[1]);
 		}
-		clientHandler.makeMove(pass, row, column);
+		if (clientHandler.isInGame()) {
+			clientHandler.makeMove(pass, row, column);
+		}
 	}
 
 	@Override

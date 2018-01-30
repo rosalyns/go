@@ -8,6 +8,7 @@ import model.LocalPlayer;
 import model.Move;
 import model.Stone;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -27,6 +28,8 @@ public class TUIView implements Runnable {
 	private String thisPlayerName; // you need the player's name before there even is a player.
 	// private String helpText = "You can use the following commands....";
 	private int boardDim;
+	private Scanner in;
+
 
 	private String menuText = "MENU\n" 
 			+ "1: Start a new Game\n" 
@@ -38,10 +41,11 @@ public class TUIView implements Runnable {
 			+ "1: Set timeout time"
 			+ "2: Back";
 			
-	public TUIView(GoClient controller) {
+	public TUIView(GoClient controller, InputStream systemIn) {
 		this.controller = controller;
 		this.thisPlayerName = controller.getName();
 		this.state = State.INVALIDNAME;
+		in = new Scanner(systemIn);
 	}
 
 	@Override
@@ -67,7 +71,7 @@ public class TUIView implements Runnable {
 					new LeadCommand(controller, false).send();
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("4")) {
 					controller.shutDown();
-					new QuitCommand(controller, false).send();
+					new ExitCommand(controller, false).send();
 				}
 			} else if (state == State.INOPTIONMENU) {
 				if (words.length == 1 && words[0].equalsIgnoreCase("1")) {
@@ -269,9 +273,8 @@ public class TUIView implements Runnable {
 		print(optionMenuText);
 	}
 
-	private static Scanner in = new Scanner(System.in);
-
-	private static String readString() {
+	
+	private String readString() {
 		String result = null;
 		if (in.hasNextLine()) {
 			result = in.nextLine();

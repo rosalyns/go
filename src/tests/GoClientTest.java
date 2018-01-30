@@ -2,18 +2,37 @@ package tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class GoClientTest {
+import client.controller.GoClient;
 
+class GoClientTest {
+	
+	private GoClient client;
+	
 	@BeforeEach
 	void setUp() throws Exception {
+		
 	}
 
 	@Test
 	void testSetServerSettings() {
-		fail("Not yet implemented"); // TODO
+		String dataServer = "NAME$Rosalyn-Server$VERSION$3$EXTENSIONS$0$0$0$0$0$0$0\n";
+		String dataClient = "NAME$Rosalyn$VERSION$3$EXTENSIONS$0$0$0$0$0$0$0\n";
+		String dataTUI = "1\n";
+		dataTUI += "n\n";
+		dataTUI += "request random\n";
+		
+		InputStream socketInput = new ByteArrayInputStream(dataServer.getBytes());
+		OutputStream socketOutput = new ByteArrayOutputStream();
+		InputStream consoleInput = new ByteArrayInputStream(dataTUI.getBytes());
+		client = new GoClient(consoleInput, socketOutput, socketInput, "Rosalyn");
 	}
 
 	@Test

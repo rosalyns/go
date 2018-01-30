@@ -163,17 +163,17 @@ public class GameTest {
 	
 	@Test
 	public void testDoTurnTwoPasses() {
-		assertFalse(game.isGameOver());
+		assertFalse(game.ended());
 		try {
 			game.doTurn(new Move(Stone.BLACK, Move.PASS));
 			
-			assertFalse(game.isGameOver());
+			assertFalse(game.ended());
 			
 			game.doTurn(new Move(Stone.WHITE, Move.PASS));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}
-		assertTrue(game.isGameOver());
+		assertTrue(game.ended());
 	}
 	
 	@Test
@@ -236,7 +236,7 @@ public class GameTest {
 			e.printStackTrace();
 		}
 		
-		assertFalse(game.isGameOver());
+		assertFalse(game.ended());
 		
 		try {
 			game.doTurn(new Move(Stone.BLACK, 80));
@@ -244,7 +244,7 @@ public class GameTest {
 			e.printStackTrace();
 		}
 		
-		assertTrue(game.isGameOver());
+		assertTrue(game.ended());
 	}
 	
 	@Test

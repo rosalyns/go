@@ -5,12 +5,7 @@ import server.controller.ClientHandler;
 public class NetworkPlayer extends Player {
 	private ClientHandler clientHandler;
 	
-	public NetworkPlayer(ClientHandler ch, String name) {
+	public NetworkPlayer(String name) {
 		super(name);
-		this.clientHandler = ch;
-	}
-	
-	public ClientHandler getClientHandler() {
-		return this.clientHandler;
 	}
 }

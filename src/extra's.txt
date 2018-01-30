@@ -14,7 +14,7 @@ Nog fixen:
 - als je weggaat uit lobby niet meer loopen over alle clientHandlers (concurrent modification)
 - Time out op server
 - time out op client instellen
-
+- in welke Menu staat kom je als je request game hebt gedaan?
 
 
 

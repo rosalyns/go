@@ -18,11 +18,13 @@ public class Game {
 	private int currentPlayerIndex;
 	private int blackStonesLeft;
 	private int whiteStonesLeft;
+	private boolean playerQuit;
 
 	public Game(List<Player> players, Board board) throws InvalidBoardSizeException {
 		this.gameBoard = board;
 		this.consecutivePasses = 0;
 		this.players = players;
+		this.playerQuit = false;
 		this.moves = new ArrayList<Move>();
 		
 		if (players.get(0).getColor() == Stone.BLACK) {
@@ -43,7 +45,8 @@ public class Game {
 	}
 	
 	public void doTurn(Move move) throws KoException, NotYourTurnException, 
-																		InvalidCoordinateException {
+		InvalidCoordinateException {
+		
 		if (move.getColor() != players.get(currentPlayerIndex).getColor()) {
 			throw new NotYourTurnException("It's " + players.get(currentPlayerIndex).getName() 
 					+ "'s turn.");
@@ -79,8 +82,12 @@ public class Game {
 		}
 	}	
 	
-	public boolean isGameOver() {
-		return consecutivePasses == 2 || blackStonesLeft == 0 || whiteStonesLeft == 0;
+	public boolean ended() {
+		return consecutivePasses == 2 || blackStonesLeft <= 0 || whiteStonesLeft <= 0 || playerQuit;
+	}
+	
+	public void playerQuit() {
+		playerQuit = true;
 	}
 	
 	public void doCaptures(Board board, Move move) {

@@ -12,7 +12,9 @@ import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -60,7 +62,8 @@ public class GoClient extends Thread {
 		}
 		
 		try {
-			GoClient client = new GoClient(clientName, host, port);
+			Socket sock = new Socket(host, port);
+			GoClient client = new GoClient(sock, clientName);
 			client.run();
 		} catch (IOException e) {
 			print("ERROR: couldn't construct a client object!");
@@ -98,8 +101,13 @@ public class GoClient extends Thread {
 	private int protocolVersion;
 	private Set<Extension> supportedExtensions;
 	private Set<Extension> supportedServerExtensions;
+	private InputStream systemIn;
 	
-	public GoClient(String name, InetAddress host, int port) throws IOException {
+	public GoClient(Socket socket, String name) throws IOException {
+		this(System.in, socket.getOutputStream(), socket.getInputStream(), name);
+	}
+	
+	public GoClient(InputStream systemIn, OutputStream socketOut, InputStream socketIn, String name) {
 		this.protocolVersion = Protocol.Client.VERSIONNO;
 		this.supportedExtensions = new HashSet<Extension>();
 		//TODO: op het eind: extensions nog toevoegen.
@@ -107,13 +115,10 @@ public class GoClient extends Thread {
 		this.gogui = new GoGUIIntegrator(false, true, 9);
 		gogui.startGUI();
 		
-		this.sock = new Socket(host, port);
 		this.setName(name);
-		this.view = new TUIView(this);
-		this.out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream(), 
-				Protocol.General.ENCODING));
-		this.in = new BufferedReader(new InputStreamReader(sock.getInputStream(), 
-				Protocol.General.ENCODING));
+		this.view = new TUIView(this, systemIn);
+		this.out = new BufferedWriter(new OutputStreamWriter(socketOut));
+		this.in = new BufferedReader(new InputStreamReader(socketIn));
 		
 		incomingCommands = new HashMap<String, Command>();
 		incomingCommands.put(Protocol.Server.NAME, new NameCommand(this));
@@ -295,11 +300,22 @@ public class GoClient extends Thread {
 	public void nextPlayer(String playerName) {
 		if (playerName.equals(player.getName())) {
 			player.askForMove(gameBoard);
+			
+			if (!useAI) {
+				int hint = new RandomStrategy().determineMove(gameBoard, player.getColor());
+				Point hintPoint = Board.indexToCoordinates(hint, gameBoard.dim());
+				try {
+					gogui.removeHintIdicator();
+					gogui.addHintIndicator(hintPoint.x, hintPoint.y);
+				} catch (InvalidCoordinateException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		currentPlayer = playerName;
 	}
 	
-	public void endGame(String reason, Map<String, Integer> scores) { 
+	public void endGame(String reason, Map<String, Integer> scores) {
 		view.endGame(reason, scores);
 	}
 	

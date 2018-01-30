@@ -40,7 +40,7 @@ public class Lobby extends Thread {
 			new ErrorCommand(client, ErrorCommand.INVNAME, 
 					"Name cannot be \"Random\" or the same as someone else's .").send();
 		} else {
-			client.setPlayer(new NetworkPlayer(client, client.getName()));
+			client.setPlayer(new NetworkPlayer(client.getName()));
 			this.clients.add(client);
 			announceEnter(client.getName());
 			new NameCommand(client, server.getName(), server.getExtensions()).send();

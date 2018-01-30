@@ -6,6 +6,7 @@ import java.util.Map;
 
 import commands.*;
 import exceptions.InvalidBoardSizeException;
+import exceptions.InvalidCoordinateException;
 import exceptions.KoException;
 import exceptions.NotYourTurnException;
 import model.*;
@@ -57,27 +58,30 @@ public class GameController extends Thread {
 	public void doMove(ClientHandler clientPlayer, Move move) {
 		try {
 			game.doTurn(move);
-		} catch (KoException e1) {
+		} catch (KoException | InvalidCoordinateException e1) {
 			new ErrorCommand(clientPlayer, ErrorCommand.INVMOVE, e1.getMessage()).send();
 			return;
 		} catch (NotYourTurnException e2) {
 			new ErrorCommand(clientPlayer, ErrorCommand.OTHER, e2.getMessage()).send();
 			return;
-		}
-		
+		} 
 		
 		for (ClientHandler client : clients) {
 			new TurnCommand(client, clientPlayer.getName(), move, getBoardDim(),
 					game.getCurrentPlayer()).send();
 		}
 		
-		if (game.isGameOver()) {
+		if (game.ended()) {
 			endGame();
 		}
-		
+	}
+	
+	public boolean ended() {
+		return game.ended();
 	}
 	
 	public void endGame(ClientHandler quitter) {
+		game.playerQuit(); 
 		Map<Player, Integer> scores = game.calculateScores();
 		
 		ClientHandler winner = null;
