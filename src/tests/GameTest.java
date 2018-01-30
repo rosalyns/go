@@ -1,6 +1,6 @@
 package tests;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +9,11 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import exceptions.*;
 import model.Board;
+import model.ComputerPlayer;
 import model.Game;
 import model.Move;
-import model.NetworkPlayer;
 import model.Player;
 import model.Stone;
 
@@ -25,10 +26,8 @@ public class GameTest {
 	@Before
 	public void setUp() throws Exception {
 		List<Player> players = new ArrayList<Player>();
-		player1 = new NetworkPlayer(null, "Player1");
-		player2 = new NetworkPlayer(null, "Player2");
-		player1.setColor(Stone.BLACK);
-		player2.setColor(Stone.WHITE);
+		player1 = new ComputerPlayer(Stone.BLACK, "Player1");
+		player2 = new ComputerPlayer(Stone.WHITE, "Player2");
 		players.add(player1);
 		players.add(player2);
 		
@@ -152,28 +151,123 @@ public class GameTest {
 	}
 	
 	@Test
-	public void testDoTurn() {
-		fail("Not yet implmeented");
+	public void testDoTurnNotYourTurn() {
+		assertThrows(NotYourTurnException.class, () -> game.doTurn(new Move(Stone.WHITE, 0)));
+		
+		try {
+			game.doTurn(new Move(Stone.BLACK, 0));
+		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testDoTurnTwoPasses() {
+		assertFalse(game.isGameOver());
+		try {
+			game.doTurn(new Move(Stone.BLACK, Move.PASS));
+			
+			assertFalse(game.isGameOver());
+			
+			game.doTurn(new Move(Stone.WHITE, Move.PASS));
+		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			e.printStackTrace();
+		}
+		assertTrue(game.isGameOver());
+	}
+	
+	@Test
+	public void testDoTurnViolateKoRule() {
+		/*
+		 *  ox
+		 * oxOx
+		 *  ox
+		 */
+		try {
+			game.doTurn(new Move(Stone.BLACK, 1));
+			game.doTurn(new Move(Stone.WHITE, 2));
+			game.doTurn(new Move(Stone.BLACK, 9));
+			game.doTurn(new Move(Stone.WHITE, 10));
+			game.doTurn(new Move(Stone.BLACK, 19));
+			game.doTurn(new Move(Stone.WHITE, 20));
+			game.doTurn(new Move(Stone.BLACK, 80));
+			game.doTurn(new Move(Stone.WHITE, 12));
+			game.doTurn(new Move(Stone.BLACK, 11));
+		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			e.printStackTrace();
+		}
+		assertThrows(KoException.class, () -> game.doTurn(new Move(Stone.WHITE, 10)));
+	}
+	
+	@Test
+	public void testDoTurnValid() {
+		try {
+			game.doTurn(new Move(Stone.BLACK, 0));
+			game.doTurn(new Move(Stone.WHITE, 1));
+		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			e.printStackTrace();
+		}
+		
+		assertEquals(Stone.BLACK, board.getField(0));
+		assertEquals(Stone.WHITE, board.getField(1));
 	}
 	
 	@Test
 	public void testGetCurrentPlayer() {
-		fail("Not yet implmeented");
-	}
-	
-	@Test
-	public void testGameOverPasses() {
-		fail("Not yet implmeented");
+		assertEquals("Player1", game.getCurrentPlayer());
+		
+		try {
+			game.doTurn(new Move(Stone.BLACK, Move.PASS));
+		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			e.printStackTrace();
+		}
+		
+		assertEquals("Player2", game.getCurrentPlayer());
 	}
 	
 	@Test
 	public void testGameOverNoMoreStones() {
-		fail("Not yet implmeented");
+		try {
+			for (int i = 0; i < (board.dim() * board.dim()) / 2; i++) {
+				game.doTurn(new Move(Stone.BLACK, i));
+				game.doTurn(new Move(Stone.WHITE, Move.PASS));
+			}
+		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			e.printStackTrace();
+		}
+		
+		assertFalse(game.isGameOver());
+		
+		try {
+			game.doTurn(new Move(Stone.BLACK, 80));
+		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			e.printStackTrace();
+		}
+		
+		assertTrue(game.isGameOver());
 	}
 	
 	@Test
 	public void testRecreatesPreviousSituation() {
-		fail("Not yet implmeented");
+		/*
+		 *  ox
+		 * oxOx
+		 *  ox
+		 */
+		try {
+			game.doTurn(new Move(Stone.BLACK, 1));
+			game.doTurn(new Move(Stone.WHITE, 2));
+			game.doTurn(new Move(Stone.BLACK, 9));
+			game.doTurn(new Move(Stone.WHITE, 10));
+			game.doTurn(new Move(Stone.BLACK, 19));
+			game.doTurn(new Move(Stone.WHITE, 20));
+			game.doTurn(new Move(Stone.BLACK, 80));
+			game.doTurn(new Move(Stone.WHITE, 12));
+			game.doTurn(new Move(Stone.BLACK, 11));
+		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			e.printStackTrace();
+		}
+		assertTrue(game.recreatesPreviousSituation(new Move(Stone.WHITE, 10)));
 	}
 
 }

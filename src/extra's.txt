@@ -12,6 +12,9 @@ Nog fixen:
 - server TUI ?
 - Geen "left lobby" sturen als je stopt in een game. "left lobby" sturen als twee mensen een spel beginnen.
 - als je weggaat uit lobby niet meer loopen over alle clientHandlers (concurrent modification)
+- Time out op server
+- time out op client instellen
+
 
 
 

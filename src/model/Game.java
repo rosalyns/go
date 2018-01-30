@@ -31,8 +31,6 @@ public class Game {
 			this.currentPlayerIndex = 1;
 		}
 		
-		
-		
 		int totalStones = gameBoard.dim() * gameBoard.dim(); 
 		if (totalStones % 2 == 0) {
 			blackStonesLeft = totalStones / 2;
@@ -44,25 +42,27 @@ public class Game {
 		
 	}
 	
-	public void doTurn(Move move) throws KoException, NotYourTurnException {
+	public void doTurn(Move move) throws KoException, NotYourTurnException, 
+																		InvalidCoordinateException {
 		if (move.getColor() != players.get(currentPlayerIndex).getColor()) {
 			throw new NotYourTurnException("It's " + players.get(currentPlayerIndex).getName() 
 					+ "'s turn.");
 		}
+		
 		if (move.getPosition() == Move.PASS) {
 			consecutivePasses++;
+		} else if (!gameBoard.isField(move.getPosition()) 
+				&& !gameBoard.isEmptyField(move.getPosition())) {
+			throw new InvalidCoordinateException(move.getPosition() + " is not a valid coordinate");
+		} else if (recreatesPreviousSituation(move)) {
+			throw new KoException("This move recreates a previous board situation.");
 		} else {
-			if (recreatesPreviousSituation(move)) {
-				throw new KoException("This move recreates a previous board situation.");
-			} else {
-				placeStone(gameBoard, move); 
-				if (move.getPosition() != Move.PASS) {
-					reduceStone(move.getColor());
-				}
-				consecutivePasses = 0;
-				moves.add(move);
-			}
+			placeStone(gameBoard, move); 
+			reduceStone(move.getColor());
+			consecutivePasses = 0;
+			moves.add(move);
 		}
+		
 		currentPlayerIndex = (currentPlayerIndex + 1) % NO_OF_PLAYERS;
 	}
 
