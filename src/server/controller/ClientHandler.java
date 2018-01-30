@@ -55,6 +55,7 @@ public class ClientHandler extends Thread {
 		incomingCommands.put(Protocol.Client.LOBBY, new LobbyCommand(this));
 		incomingCommands.put(Protocol.Client.CHAT, new ChatCommand(this));
 		incomingCommands.put(Protocol.Client.LEADERBOARD, new LeadCommand(this));
+		incomingCommands.put(Protocol.Client.EXIT, new ExitCommand(this));
 	}
 
 	/**

@@ -62,9 +62,11 @@ public class Lobby extends Thread {
 	}
 	
 	private ClientHandler findPlayer(String playerName) throws PlayerNotFoundException {
-		for (ClientHandler client : clients) {
-			if (client.getName().equalsIgnoreCase(playerName)) {
-				return client;
+		synchronized (clients) {
+			for (ClientHandler client : clients) {
+				if (client.getName().equalsIgnoreCase(playerName)) {
+					return client;
+				}
 			}
 		}
 		throw new PlayerNotFoundException();
@@ -90,25 +92,29 @@ public class Lobby extends Thread {
 	}
 	
 	public void chat(String name, String message) {
-		for (ClientHandler ch : clients) {
-			new ChatCommand(ch, name, message).send();
+		synchronized (clients) {
+			for (ClientHandler ch : clients) {
+				new ChatCommand(ch, name, message).send();
+			}
 		}
 	}
 	
 	public void announceEnter(String playerName) {
 		chat("[Lobby]", "\"" + playerName + "\" entered the lobby.");
-		System.out.println(thisMoment() + "\"" + playerName + "\" entered the lobby.");
+		System.out.println("[GoServer] " + "\"" + playerName + "\" entered the lobby.");
 	}
 	
 	public void announceLeave(String playerName) {
 		chat("[Lobby]", "\"" + playerName + "\" left the lobby.");
-		System.out.println(thisMoment() + "\"" + playerName + "\" left the lobby.");
+		System.out.println("[GoServer] " + "\"" + playerName + "\" left the lobby.");
 	}
 	
 	private boolean nameInUse(String name) {
-		for (ClientHandler client : clients) {
-			if (client.getName().equalsIgnoreCase(name)) {
-				return true;
+		synchronized (clients) {
+			for (ClientHandler client : clients) {
+				if (client.getName().equalsIgnoreCase(name)) {
+					return true;
+				}
 			}
 		}
 		return false;
@@ -116,14 +122,16 @@ public class Lobby extends Thread {
 	
 	public List<String> getFreePlayers() {
 		List<String> playerNames = new ArrayList<String>();
-		for (ClientHandler client : clients) {
-			playerNames.add(client.getName());
+		synchronized (clients) {
+			for (ClientHandler client : clients) {
+				playerNames.add(client.getName());
+			}
 		}
 		return playerNames;
 	}
 	
 	public void run() {
-		System.out.println(thisMoment() + "Lobby started...");
+		System.out.println("[GoServer] Lobby started...");
 		while (this.server.isRunning()) {
 			if (randomChallenges.size() > 1) {
 				startGame(randomChallenges.remove(0), randomChallenges.remove(0));
@@ -138,7 +146,7 @@ public class Lobby extends Thread {
 	}
 	
 	public void startGame(ClientHandler player1, ClientHandler player2) {
-		System.out.println(thisMoment() + "Starting a game with players " + 
+		System.out.println("[GoServer] Starting a game with players " + 
 				player1.getName() + " and " + 
 				player2.getName());
 		List<ClientHandler> players = new ArrayList<ClientHandler>();

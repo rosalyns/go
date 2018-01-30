@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,23 +26,13 @@ class GoClientTest {
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		//System.setOut(new PrintStream(outContent))
+		System.setOut(new PrintStream(outContent));
 		socketInput = new ByteArrayInputStream(correctDataServer.getBytes());
 		socketOutput = new ByteArrayOutputStream();
 		consoleInput = new ByteArrayInputStream(dataTUI.getBytes());
 		client = new GoClient(consoleInput, socketOutput, socketInput, "Rosalyn");
 	}
-	
-	
-	@Test
-	void testSetUpCorrect() {
-		client.start();
-		System.out.println("voorbij de start");
-		String dataClient = "NAME$Rosalyn$VERSION$3$EXTENSIONS$0$0$0$0$0$0$0\n";
-		assertEquals(dataClient, socketOutput.toString());
-		assertTrue(outContent.toString().contains("Rosalyn-serverkklhkljh"));
-	}
-	
+
 	@Test
 	void testCommandName() {
 		client.start();

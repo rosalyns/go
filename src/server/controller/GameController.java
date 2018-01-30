@@ -96,7 +96,7 @@ public class GameController extends Thread {
 		for (ClientHandler client : clients) {
 			new EndGameCommand(client, EndGameCommand.ABORTED, 
 					winner.getName(), scores.get(winner.getPlayer()), 
-					loser.getName(), scores.get(loser.getPlayer())).send();
+					loser.getName(), 0).send();
 		}
 	}
 	

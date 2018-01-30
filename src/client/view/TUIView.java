@@ -3,9 +3,6 @@ package client.view;
 import client.controller.GoClient;
 import commands.*;
 import general.Protocol;
-import model.Board;
-import model.LocalPlayer;
-import model.Move;
 import model.Stone;
 
 import java.io.InputStream;
@@ -13,6 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * TUIView handles the input from the user and is used to show all output to the user. Communicates
+ * with the GoClient about the game state and what should be sent to the server.
+ * @author Rosalyn.Sleurink
+ *
+ */
 public class TUIView implements Runnable {
 	private static final int THISPLAYER = 1;
 	private static final int NONE = 0;
@@ -24,12 +27,8 @@ public class TUIView implements Runnable {
 
 	private State state;
 	private GoClient controller;
-	private LocalPlayer player;
 	private String thisPlayerName; // you need the player's name before there even is a player.
-	// private String helpText = "You can use the following commands....";
-	private int boardDim;
 	private Scanner in;
-
 
 	private String menuText = "MENU\n" 
 			+ "1: Start a new Game\n" 
@@ -127,21 +126,12 @@ public class TUIView implements Runnable {
 				if (!isAI) {
 					if ((words.length == 2 || words.length == 3) 
 							&& words[0].equalsIgnoreCase("MOVE")) {
-						if (player.hasTurn()) {
-							if (words.length == 2 && words[1].equalsIgnoreCase("PASS")) {
-								new MoveCommand(controller, true, 0, 0).send();
-							} else if (words.length == 3) {
-								int row = Integer.parseInt(words[1]);
-								int column = Integer.parseInt(words[2]);
-								if (controller.isValidMove(new Move(player.getColor(), 
-										Board.index(row, column, boardDim)))) {
-									new MoveCommand(controller, false, row, column).send();
-								} else {
-									print("This is not a valid move. Try again.");
-								}
-							}
-						} else {
-							print("Wait till it is your turn.");
+						if (words.length == 2 && words[1].equalsIgnoreCase("PASS")) {
+							controller.tryMove(true, 0, 0);
+						} else if (words.length == 3) {
+							int row = Integer.parseInt(words[1]);
+							int column = Integer.parseInt(words[2]);
+							controller.tryMove(false, row, column);
 						}
 					} else if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
 						new QuitCommand(controller, false).send();
@@ -150,17 +140,15 @@ public class TUIView implements Runnable {
 					}
 				} else {
 					if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
-						new QuitCommand(controller).send();
+						new QuitCommand(controller, false).send();
 					}
 				}
 			}
 		}
 	}
 
-	public void startGame(LocalPlayer thisPlayer, int boardSize) {
+	public void startGame() {
 		state = State.INGAME;
-		this.boardDim = boardSize;
-		this.player = thisPlayer;
 	}
 
 	public void endGame(String reason, Map<String, Integer> scores) {
@@ -203,7 +191,7 @@ public class TUIView implements Runnable {
 	}
 
 	public void askForName() {
-		print("The name you entered is already in use on the server. Enter a different name: ");
+		
 	}
 	
 	public void askForSettings() {
@@ -261,8 +249,29 @@ public class TUIView implements Runnable {
 	public void showPass(String playerName) {
 		print(playerName + " passed.");
 	}
+	
+	public void showInvalidMove() {
+		print("This is not a valid move. Try again.");
+	}
+	
+	public void showNotYourTurn() {
+		print("Wait till it is your turn.");
+	}
 
 	public void showError(String type, String message) {
+		if (type.equals(ErrorCommand.INVPROTOCOL)) {
+			print("The protocols of the server or client are incompatible.");
+		} else if (type.equals(ErrorCommand.INVCOMMAND)) {
+			print("An unknown command was sent to the server");
+		} else if (type.equals(ErrorCommand.INVNAME)) {
+			print("The name you entered is already in use on the server. Enter a different name: ");
+		} else if (type.equals(ErrorCommand.INVMOVE)) {
+			showInvalidMove();
+		} else if (type.equals(ErrorCommand.OTHER)) {
+			print(message);
+		}
+		
+		
 		print(message);
 	}
 
