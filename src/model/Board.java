@@ -38,6 +38,7 @@ public class Board {
 			copyBoard = new Board(this.dim);
 		} catch (InvalidBoardSizeException e) {
 			//not possible
+			e.printStackTrace();
 		}
 		for (int i = 0; i < dim * dim; i++) {
 			copyBoard.setField(new Move(fields[i], i));
@@ -134,7 +135,7 @@ public class Board {
 		return neighbours;
 	}
 	
-	private Set<Integer> getNeighbours(int index) {
+	public Set<Integer> getNeighbours(int index) {
 		Set<Integer> neighbours = new HashSet<Integer>();
 		if (index == 0) {
 			neighbours.add(index + 1);
@@ -158,7 +159,7 @@ public class Board {
 			neighbours.add(index + 1);
 		} else if (index % dim == dim - 1) {
 			neighbours.add(index - dim);
-			neighbours.add(index - dim);
+			neighbours.add(index + dim);
 			neighbours.add(index - 1);
 		} else if (index > dim * (dim - 1)) {
 			neighbours.add(index - 1);
@@ -217,8 +218,13 @@ public class Board {
 		if (!(o instanceof Board)) {
 			return false;
 		}
+		Board boardToCheck = (Board) o;
+		if (boardToCheck.dim() != dim) {
+			return false;
+		}
+		
 		for (int i = 0; i < dim * dim; i++) {
-			if (fields[i] != ((Board) o).getField(i)) {
+			if (fields[i] != boardToCheck.getField(i)) {
 				return false;
 			}
 		}

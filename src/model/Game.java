@@ -65,7 +65,9 @@ public class Game {
 	public void doTurn(Move move) throws KoException, NotYourTurnException, 
 		InvalidCoordinateException {
 		
-		if (move.getColor() != players.get(currentPlayerIndex).getColor()) {
+		if (ended()) {
+			return;
+		} else if (move.getColor() != players.get(currentPlayerIndex).getColor()) {
 			throw new NotYourTurnException("It's " + players.get(currentPlayerIndex).getName() 
 					+ "'s turn.");
 		}
@@ -73,7 +75,7 @@ public class Game {
 		if (move.getPosition() == Move.PASS) {
 			consecutivePasses++;
 		} else if (!gameBoard.isField(move.getPosition()) 
-				&& !gameBoard.isEmptyField(move.getPosition())) {
+				|| !gameBoard.isEmptyField(move.getPosition())) {
 			throw new InvalidCoordinateException(move.getPosition() + " is not a valid coordinate");
 		} else if (recreatesPreviousSituation(move)) {
 			throw new KoException("This move recreates a previous board situation.");

@@ -19,9 +19,13 @@ import model.Stone;
 
 public class GameTest {
 	private Game game;
+	private Game game2;
 	private Board board;
+	private Board board2;
 	private Player player1;
 	private Player player2;
+	private Player player3;
+	private Player player4;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -33,6 +37,14 @@ public class GameTest {
 		
 		board = new Board(9);
 		game = new Game(players, board);
+		
+		players = new ArrayList<Player>();
+		player3 = new ComputerPlayer(Stone.WHITE, "Player1");
+		player4 = new ComputerPlayer(Stone.BLACK, "Player2");
+		players.add(player3);
+		players.add(player4);
+		board2 = new Board(10);
+		game2 = new Game(players, board2);
 	}
 	
 	@Test
@@ -63,6 +75,13 @@ public class GameTest {
 		Map<Player, Integer> scores = game.calculateScores();
 		assertEquals(8, (int) scores.get(player1));
 		assertEquals(7, (int) scores.get(player2));
+	}
+	
+	@Test
+	public void testCalculateScoresEmptyBoard() {
+		Map<Player, Integer> scores = game.calculateScores();
+		assertEquals(0, (int) scores.get(player1));
+		assertEquals(0, (int) scores.get(player2));
 	}
 	
 	@Test
@@ -162,6 +181,33 @@ public class GameTest {
 	}
 	
 	@Test
+	public void testDoTurnInvalidCoordinate() {
+		assertThrows(InvalidCoordinateException.class, 
+				() -> game.doTurn(new Move(Stone.BLACK, -2)));
+		try {
+			game.doTurn(new Move(Stone.BLACK, 1));
+		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			e.printStackTrace();
+		}
+		
+		assertThrows(InvalidCoordinateException.class, () -> game.doTurn(new Move(Stone.WHITE, 1)));
+	}
+	
+	@Test
+	public void testDoTurnGameEnded() {
+		try {
+			game.doTurn(new Move(Stone.BLACK, Move.PASS));
+			game.doTurn(new Move(Stone.WHITE, Move.PASS));
+			game.doTurn(new Move(Stone.BLACK, 1));
+		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			e.printStackTrace();
+		}
+		
+		assertEquals(Stone.EMPTY, board.getField(1));
+		
+	}
+	
+	@Test
 	public void testDoTurnTwoPasses() {
 		assertFalse(game.ended());
 		try {
@@ -215,14 +261,17 @@ public class GameTest {
 	@Test
 	public void testGetCurrentPlayer() {
 		assertEquals("Player1", game.getCurrentPlayer());
+		assertEquals("Player2", game2.getCurrentPlayer());
 		
 		try {
 			game.doTurn(new Move(Stone.BLACK, Move.PASS));
+			game2.doTurn(new Move(Stone.BLACK, Move.PASS));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}
 		
 		assertEquals("Player2", game.getCurrentPlayer());
+		assertEquals("Player1", game2.getCurrentPlayer());
 	}
 	
 	@Test
@@ -248,6 +297,12 @@ public class GameTest {
 	}
 	
 	@Test
+	public void testPlayerQuit() {
+		game.playerQuit();
+		assertTrue(game.ended());
+	}
+	
+	@Test
 	public void testRecreatesPreviousSituation() {
 		/*
 		 *  ox
@@ -268,6 +323,11 @@ public class GameTest {
 			e.printStackTrace();
 		}
 		assertTrue(game.recreatesPreviousSituation(new Move(Stone.WHITE, 10)));
+	}
+	
+	@Test
+	public void testGetBoardDim() {
+		assertEquals(9, game.getBoardDim());
 	}
 
 }
