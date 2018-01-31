@@ -45,6 +45,12 @@ public class Board {
 		return copyBoard;
 	}
 	
+	public void clear() {
+		for (int i = 0; i < dim * dim; i++) {
+			fields[i] = Stone.EMPTY;
+		}
+	}
+	
 	public int dim() {
 		return this.dim;
 	}

@@ -53,6 +53,15 @@ public class Game {
 		this.gameBoard.clear();
 	}
 	
+	/**
+	 * Checks if the move doesn't violate any game rules or exceeds the board size. If
+	 * the move is valid it places the stone on the board and reduces the stones of that
+	 * player by one.
+	 * @param move Move the player wants to make
+	 * @throws KoException if performing this move results in a violation of the Ko Rule
+	 * @throws NotYourTurnException if it's not this players turn
+	 * @throws InvalidCoordinateException if an invalid coordinate is passed in the move
+	 */
 	public void doTurn(Move move) throws KoException, NotYourTurnException, 
 		InvalidCoordinateException {
 		
@@ -78,11 +87,21 @@ public class Game {
 		currentPlayerIndex = (currentPlayerIndex + 1) % NO_OF_PLAYERS;
 	}
 
+	/**
+	 * Performs the move on the given board and if the move results in any captured groups, it will
+	 * remove these groups from the board.
+	 * @param board Board you want to place a stone on
+	 * @param move Move you want to perform
+	 */
 	private void placeStone(Board board, Move move) {
 		board.setField(move);
 		doCaptures(board, move);
 	}
 	
+	/**
+	 * Reduces the stone count of the given color by one.
+	 * @param color Color that the count is reduced of
+	 */
 	private void reduceStone(Stone color) {
 		if (color == Stone.BLACK) {
 			blackStonesLeft--;
@@ -91,14 +110,30 @@ public class Game {
 		}
 	}	
 	
+	/**
+	 * Returns if the game is game over (two consecutive passes happened or there are no stones 
+	 * left) or if a player has quit the game. No more moves can be made.
+	 * @return true if the game ended
+	 */
 	public boolean ended() {
 		return consecutivePasses == 2 || blackStonesLeft <= 0 || whiteStonesLeft <= 0 || playerQuit;
 	}
 	
+	/**
+	 * Ends the game so no more moves can be made.
+	 */
 	public void playerQuit() {
 		playerQuit = true;
 	}
 	
+	/**
+	 * 
+	 * Checks if any groups are captured, first for the opponent (the color that is not
+	 * in move) and then for the move itself (this means it was a suicide). Then removes
+	 * the groups that were captured. 
+	 * @param board To be checked for captures
+	 * @param move The move that was made
+	 */
 	public void doCaptures(Board board, Move move) {
 		Stone playerColor = move.getColor();
 		Stone opponentColor = playerColor.other();
@@ -124,6 +159,12 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * Removes the group from the board.
+	 * @param board Board that the stones should be removed from
+	 * @param group That should be removed
+	 * @param color Of the group that should be removed.
+	 */
 	private void removeGroup(Board board, Set<Integer> group, Stone color) {
 		for (Integer field : group) {
 			board.setField(new Move(Stone.EMPTY, field));
@@ -131,6 +172,11 @@ public class Game {
 		board.getGroups().get(color).remove(group);
 	}
 	
+	/**
+	 * Calculates the score by using Area scoring. An empty group is captured
+	 * when all the surrounding stones are of one color.
+	 * @return Map of scores by player
+	 */
 	public Map<Player, Integer> calculateScores() {
 		gameBoard.recalculateGroups(true);
 		scores = new HashMap<Player, Integer>(); 
@@ -163,6 +209,14 @@ public class Game {
 		return scores;
 	}
 	
+	/**
+	 * Tests if the Ko Rule has been violated by performing this move.
+	 * First places the stone on a copy of the real board, and then checks
+	 * if the new situation has appeared before by simulating all the moves that
+	 * were made before one by one.
+	 * @param move Move to check for Ko Rule
+	 * @return true if the situation appeared before.
+	 */
 	public boolean recreatesPreviousSituation(Move move) {
 		Board copiedBoard = gameBoard.deepCopy();
 		Board simulationBoard = null;
@@ -184,10 +238,18 @@ public class Game {
 		return false;
 	}
 	
+	/**
+	 * Get the name of the player who has to make a move.
+	 * @return Name of the player
+	 */
 	public String getCurrentPlayer() {
 		return players.get(currentPlayerIndex).getName();
 	}
 	
+	/**
+	 * Get the dimension of the board from this game.
+	 * @return board dimension
+	 */
 	public int getBoardDim() {
 		return gameBoard.dim();
 	}
