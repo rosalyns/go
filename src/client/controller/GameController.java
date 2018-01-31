@@ -4,6 +4,8 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.nedap.go.gui.GOGUI;
 import com.nedap.go.gui.InvalidCoordinateException;
@@ -14,7 +16,7 @@ import commands.QuitCommand;
 import exceptions.*;
 import model.*;
 
-public class GameController {
+public class GameController implements Observer {
 
 	private GoClient client;
 	private GOGUI gui;
@@ -52,7 +54,7 @@ public class GameController {
 			e.printStackTrace();
 		}
 		game = new Game(players, board);
-
+		game.addObserver(this);
 		gui.setBoardSize(boardSize);
 		tui.startGame(this);
 	}
@@ -86,13 +88,6 @@ public class GameController {
 	 */
 	public void makeMove(Move move) {
 		if (move.getPosition() != Move.PASS) {
-			try {
-				Point coordinates = Board.indexToCoordinates(move.getPosition(), getBoardDim());
-				gui.addStone(coordinates.x, coordinates.y, move.getColor() == Stone.WHITE);
-			} catch (InvalidCoordinateException e) {
-				//comes from server, not likely
-				e.printStackTrace();
-			}
 			game.doTurn(move);
 		} else {
 			if (game.getCurrentPlayer().equalsIgnoreCase(opponent.getName())) {
@@ -159,5 +154,23 @@ public class GameController {
 	
 	public void quit() {
 		new QuitCommand(client, false).send();
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		Move move = (Move) arg;
+		try {
+			if (move.getColor() == Stone.EMPTY) {
+				Point coordinates = Board.indexToCoordinates(move.getPosition(), getBoardDim());
+				gui.removeStone(coordinates.x, coordinates.y);
+			} else {
+				Point coordinates = Board.indexToCoordinates(move.getPosition(), getBoardDim());
+				gui.addStone(coordinates.x, coordinates.y, move.getColor() == Stone.WHITE);
+			}
+		} catch (InvalidCoordinateException e) {
+			//comes from server, not likely
+			e.printStackTrace();
+		}
+		
 	}
 }

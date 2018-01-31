@@ -51,7 +51,7 @@ public class BoardTest {
 	
 	@Test
 	public void testIndexToCoordinates() {
-		Point topLeftCorner = new Point(0,0);
+		Point topLeftCorner = new Point(0, 0);
 		Point topRightCorner = new Point(board.dim() - 1, 0);
 		assertEquals(topLeftCorner, Board.indexToCoordinates(0, 9));
 		assertEquals(topRightCorner, Board.indexToCoordinates(8, 9));
@@ -261,6 +261,7 @@ public class BoardTest {
 		assertTrue(board.isEmpty());
 	}
 	
+	@SuppressWarnings("unlikely-arg-type")
 	@Test
 	public void testEquals() {
 		assertFalse(board.equals(new Move(Stone.BLACK, 3)));

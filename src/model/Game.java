@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Set;
 
 import com.nedap.go.gui.InvalidCoordinateException;
 
 import exceptions.*;
 
-public class Game {
+public class Game extends Observable {
 	public static final int NO_OF_PLAYERS = 2;
 	
 	private List<Player> players;
@@ -109,6 +110,8 @@ public class Game {
 	private void placeStone(Board board, Move move) {
 		board.setField(move);
 		doCaptures(board, move);
+		setChanged();
+		notifyObservers(move);
 	}
 	
 	/**
@@ -181,6 +184,8 @@ public class Game {
 	private void removeGroup(Board board, Set<Integer> group, Stone color) {
 		for (Integer field : group) {
 			board.setField(new Move(Stone.EMPTY, field));
+			setChanged();
+			notifyObservers(new Move(Stone.EMPTY, field));
 		}
 		board.getGroups().get(color).remove(group);
 	}

@@ -53,6 +53,7 @@ public class Lobby extends Thread {
 			new ErrorCommand(client, ErrorCommand.INVNAME, 
 					"Name cannot be \"Random\" or the same as someone else's .").send();
 		} else {
+			clients.add(client);
 			client.setPlayer(new NetworkPlayer(client.getName()));
 			new NameCommand(client, server.getName(), server.getExtensions()).send();
 			enter(client);
