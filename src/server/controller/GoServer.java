@@ -75,7 +75,7 @@ public class GoServer {
 	 * started that takes care of the further communication with the Client.
 	 */
 	public void run() throws IOException {
-		System.out.println("Opening a socket on port " + port);
+		System.out.println("[GoServer] Opening a socket on port " + port);
 		sock = new ServerSocket(port);
 		
 		lobby = new Lobby(this);
@@ -84,14 +84,13 @@ public class GoServer {
 		boolean keepRunning = true;
 		while (keepRunning) {
 			try {
-				System.out.println("Server is waiting on client to connect...");
+				System.out.println("[GoServer] Server is waiting on client to connect...");
 				Socket client = sock.accept();
-				System.out.println("Client connected on the server.");
+				System.out.println("[GoServer] Client connected on the server.");
 				ClientHandler clientHandler = new ClientHandler(lobby, client);
 				clientHandler.start();
 			} catch (IOException e) {
 				keepRunning = false;
-				System.out.println("Hier?");
 			}
 		}
 	}

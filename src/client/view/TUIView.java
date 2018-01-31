@@ -3,6 +3,7 @@ package client.view;
 import client.controller.GameController;
 import client.controller.GoClient;
 import commands.*;
+import general.Extension;
 import general.Protocol;
 import model.Stone;
 
@@ -114,11 +115,7 @@ public class TUIView implements Runnable {
 				}
 			} else if (state == State.WAITFORREQUEST) {
 				if (words.length == 2 && words[0].equalsIgnoreCase("REQUEST")) {
-					if (words[1].equalsIgnoreCase(RequestCommand.RANDOM)) {
-						new RequestCommand(controller, 2, RequestCommand.RANDOM).send();
-					} else {
-						new RequestCommand(controller, 2, words[1]).send();
-					}
+					controller.sendRequest(words[1]);
 				} else {
 					print("Type REQUEST <playername> or REQUEST RANDOM.");
 				}
@@ -241,6 +238,12 @@ public class TUIView implements Runnable {
 		int rank = 1;
 		for (Integer score : scores.keySet()) {
 			print(rank + ": " + scores.get(score) + "score");
+		}
+	}
+	
+	public void showUnsupportedExtension(Extension type) {
+		if (type == Extension.CHALLENGE) {
+			print("The server doesnt support challenges.");
 		}
 	}
 

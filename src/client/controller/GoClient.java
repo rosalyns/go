@@ -189,7 +189,6 @@ public class GoClient extends Thread {
 	 */
 	public void sendCommandToServer(String command) {
 		try {
-			System.out.println("Sending \"" + command + "\" to server");
 			out.write(command);
 			out.flush();
 		} catch (IOException e) {
@@ -255,6 +254,18 @@ public class GoClient extends Thread {
 	
 	public void useAI(boolean ai) {
 		this.useAI = ai;
+	}
+	
+	public void sendRequest(String challengee) {
+		
+		if (!supportedServerExtensions.contains(Extension.CHALLENGE)) {
+			if (!challengee.equalsIgnoreCase(RequestCommand.RANDOM)) {
+				view.showUnsupportedExtension(Extension.CHALLENGE);
+			}
+			new RequestCommand(this, 2, RequestCommand.RANDOM).send();
+		} else {
+			new RequestCommand(this, 2, challengee).send();
+		}
 	}
 	
 	/**

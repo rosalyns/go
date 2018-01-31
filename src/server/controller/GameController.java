@@ -102,7 +102,7 @@ public class GameController extends Thread {
 	 * @return true if the game has ended (finished normally or a player quit)
 	 */
 	public boolean ended() {
-		return game.ended();
+		return game != null && game.ended();
 	}
 	
 	/**

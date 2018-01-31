@@ -183,7 +183,6 @@ public class ClientHandler extends Thread {
 	 */
 	public void sendCommandToClient(String command) {
 		try {
-			System.out.println("Sending \"" + command + "\" to client " + this.getName());
 			out.write(command);
 			out.flush();
 		} catch (IOException e) {
