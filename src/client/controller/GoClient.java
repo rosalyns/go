@@ -201,14 +201,27 @@ public class GoClient extends Thread {
 		}
 	}
 	
+	/**
+	 * Shows the leaderboard in the TUI.
+	 * @param scores collection of scores and playernames from the server
+	 */
 	public void showLeaderboard(Map<Integer, String> scores) {
 		view.showLeaderboard(scores);
 	}
 	
+	/**
+	 * Shows the players available for challenges.
+	 * @param players in lobby
+	 */
 	public void showPlayersInLobby(List<String> players) {
 		view.showPlayersInLobby(players);
 	}
 	
+	/**
+	 * Show chat message in the TUI.
+	 * @param playerName Player that sent the cat
+	 * @param message Message that the player sent
+	 */
 	public void showChatMessage(String playerName, String message) {
 		view.showChatMessage(playerName, message);
 	}

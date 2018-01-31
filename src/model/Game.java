@@ -20,7 +20,15 @@ public class Game {
 	private int whiteStonesLeft;
 	private boolean playerQuit;
 
-	public Game(List<Player> players, Board board) throws InvalidBoardSizeException {
+	/**
+	 * Initializes a new game object with the given players and board. The first
+	 * player is determined by finding the player that uses black stones. 
+	 * Both players are given half of the total stones (number of fields on the board)
+	 * where black has the advantage if the number is odd.
+	 * @param players that want to play the game. Should be of size 2
+	 * @param board that you want to play the game on. Will be cleared before using.
+	 */
+	public Game(List<Player> players, Board board) {
 		this.gameBoard = board;
 		this.consecutivePasses = 0;
 		this.players = players;
@@ -42,6 +50,7 @@ public class Game {
 			blackStonesLeft = totalStones - whiteStonesLeft;
 		}
 		
+		this.gameBoard.clear();
 	}
 	
 	public void doTurn(Move move) throws KoException, NotYourTurnException, 

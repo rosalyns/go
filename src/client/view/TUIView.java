@@ -17,10 +17,11 @@ import java.util.Scanner;
  *
  */
 public class TUIView implements Runnable {
-	private static final int THISPLAYER = 1;
-	private static final int NONE = 0;
-	private static final int OTHERPLAYER = -1;
-
+	/**
+	 * State is used to decide what user input is allowed in what state of the menu.
+	 * @author Rosalyn.Sleurink
+	 *
+	 */
 	public enum State {
 		INVALIDNAME, INMENU, INOPTIONMENU, PICKPLAYERTYPE, WAITFORREQUEST, ASKFORSETTINGS, INGAME
 	}
@@ -44,7 +45,7 @@ public class TUIView implements Runnable {
 		this.controller = controller;
 		this.thisPlayerName = controller.getName();
 		this.state = State.INVALIDNAME;
-		in = new Scanner(systemIn);
+		this.in = new Scanner(systemIn);
 	}
 
 	@Override
@@ -152,6 +153,10 @@ public class TUIView implements Runnable {
 	}
 
 	public void endGame(String reason, Map<String, Integer> scores) {
+		final int thisPlayer = 1;
+		final int none = 0;
+		final int otherPlayer = -1;
+		
 		state = State.INMENU;
 		if (reason.equalsIgnoreCase(EndGameCommand.ABORTED)) {
 			print("The other player quit unexpectedly.");
@@ -160,7 +165,7 @@ public class TUIView implements Runnable {
 		} else if (reason.equalsIgnoreCase(EndGameCommand.TIMEOUT)) {
 			print("The other player didn't respond and the game ended.");
 		}
-
+		
 		int highestScore = -1;
 		int result = 0;
 
@@ -170,20 +175,20 @@ public class TUIView implements Runnable {
 			if (score > highestScore) {
 				highestScore = score;
 				if (thisPlayerName.equals(playerStr)) {
-					result = THISPLAYER;
+					result = thisPlayer;
 				} else {
-					result = OTHERPLAYER;
+					result = otherPlayer;
 				}
 			} else if (score == highestScore) {
-				result = NONE;
+				result = none;
 			}
 		}
 
-		if (result == THISPLAYER) {
+		if (result == thisPlayer) {
 			print("You won! :)");
-		} else if (result == OTHERPLAYER) {
+		} else if (result == otherPlayer) {
 			print("You didn't win. :(");
-		} else if (result == NONE) {
+		} else if (result == none) {
 			print("It was a draw.");
 		}
 		
@@ -191,13 +196,13 @@ public class TUIView implements Runnable {
 	}
 
 	public void askForName() {
-		
+		print("The name you entered is already in use on the server. Enter a different name: ");
 	}
 	
 	public void askForSettings() {
 		print("A game is starting with you as the first player. Please choose a color and "
 				+ "boardsize by entering: SETTINGS <color> <boardSize>. Possible colors are "
-				+ "BLACK or WHITE, possible boardsizes 9, 13 or 19.");
+				+ "BLACK or WHITE, boardsize should be between 5 and 19.");
 		state = State.ASKFORSETTINGS;
 	}
 
