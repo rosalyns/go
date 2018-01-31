@@ -102,6 +102,7 @@ public class GoClient extends Thread {
 	private Board gameBoard;
 	private LocalPlayer player;
 	private boolean useAI;
+	private boolean streamsClosed;
 	private Map<String, Command> incomingCommands;
 	private int protocolVersion;
 	private Set<Extension> supportedExtensions;
@@ -138,6 +139,7 @@ public class GoClient extends Thread {
 		this.view = new TUIView(this, systemIn);
 		this.out = new BufferedWriter(new OutputStreamWriter(socketOut));
 		this.in = new BufferedReader(new InputStreamReader(socketIn));
+		this.streamsClosed = false;
 		
 		incomingCommands = new HashMap<String, Command>();
 		incomingCommands.put(Protocol.Server.NAME, new NameCommand(this));
@@ -289,7 +291,7 @@ public class GoClient extends Thread {
 	 * @return true if socket is not closed, false if it is closed.
 	 */
 	public boolean isRunning() {
-		return !sock.isClosed();
+		return !streamsClosed;
 	}
 	
 	/**
@@ -298,8 +300,12 @@ public class GoClient extends Thread {
 	 */
 	public void shutDown() {
 		gogui.stopGUI();
+		
+		streamsClosed = true;
 		try {
-			sock.close();
+			if (sock != null) {
+				sock.close();
+			}
 		} catch (IOException e) {
 		} finally {
 			System.exit(0);

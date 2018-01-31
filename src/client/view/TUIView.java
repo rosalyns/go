@@ -54,9 +54,7 @@ public class TUIView implements Runnable {
 		while (controller.isRunning()) {
 			boolean wrongInput = false;
 			String line = readString();
-			System.out.println("Consoleinput: " + line);
 			String[] words = line.split(" ");
-
 			
 			if (state == State.INVALIDNAME) {
 				controller.setName(words[0]);
@@ -264,6 +262,7 @@ public class TUIView implements Runnable {
 	}
 
 	public void showError(String type, String message) {
+		print("[Server] ERROR ");
 		if (type.equals(ErrorCommand.INVPROTOCOL)) {
 			print("The protocols of the server or client are incompatible.");
 		} else if (type.equals(ErrorCommand.INVCOMMAND)) {
