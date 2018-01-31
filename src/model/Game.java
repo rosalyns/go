@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.nedap.go.gui.InvalidCoordinateException;
+
 import exceptions.*;
 
 public class Game {
@@ -53,16 +56,9 @@ public class Game {
 		this.gameBoard.clear();
 	}
 	
-	/**
-	 * Checks if the move doesn't violate any game rules or exceeds the board size. If
-	 * the move is valid it places the stone on the board and reduces the stones of that
-	 * player by one.
-	 * @param move Move the player wants to make
-	 * @throws KoException if performing this move results in a violation of the Ko Rule
-	 * @throws NotYourTurnException if it's not this players turn
-	 * @throws InvalidCoordinateException if an invalid coordinate is passed in the move
-	 */
-	public void doTurn(Move move) throws KoException, NotYourTurnException, 
+	
+	
+	public void tryTurn(Move move) throws KoException, NotYourTurnException, 
 		InvalidCoordinateException {
 		
 		if (ended()) {
@@ -73,12 +69,27 @@ public class Game {
 		}
 		
 		if (move.getPosition() == Move.PASS) {
-			consecutivePasses++;
+			return;
 		} else if (!gameBoard.isField(move.getPosition()) 
 				|| !gameBoard.isEmptyField(move.getPosition())) {
 			throw new InvalidCoordinateException(move.getPosition() + " is not a valid coordinate");
 		} else if (recreatesPreviousSituation(move)) {
 			throw new KoException("This move recreates a previous board situation.");
+		} 
+	}
+	
+	/**
+	 * Checks if the move doesn't violate any game rules or exceeds the board size. If
+	 * the move is valid it places the stone on the board and reduces the stones of that
+	 * player by one.
+	 * @param move Move the player wants to make
+	 * @throws KoException if performing this move results in a violation of the Ko Rule
+	 * @throws NotYourTurnException if it's not this players turn
+	 * @throws InvalidCoordinateException if an invalid coordinate is passed in the move
+	 */
+	public void doTurn(Move move) {
+		if (move.getPosition() == Move.PASS) {
+			consecutivePasses++;
 		} else {
 			placeStone(gameBoard, move); 
 			reduceStone(move.getColor());

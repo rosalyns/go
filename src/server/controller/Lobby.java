@@ -1,9 +1,10 @@
 package server.controller;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -19,7 +20,7 @@ import model.NetworkPlayer;
 public class Lobby extends Thread {
 	
 	private GoServer server;
-	private List<ClientHandler> clients;
+	private Set<ClientHandler> clients;
 	private SortedMap<Integer, String> leaderboard;
 	private Map<ClientHandler, ClientHandler> pendingChallenges;
 	private List<ClientHandler> randomChallenges;
@@ -30,7 +31,7 @@ public class Lobby extends Thread {
 	 * @param server that you started this lobby from.
 	 */
 	public Lobby(GoServer server) {
-		this.clients = new ArrayList<ClientHandler>();
+		this.clients = new HashSet<ClientHandler>();
 		this.server = server;
 		this.leaderboard = new TreeMap<Integer, String>();
 		this.pendingChallenges = new HashMap<ClientHandler, ClientHandler>();
@@ -53,11 +54,14 @@ public class Lobby extends Thread {
 					"Name cannot be \"Random\" or the same as someone else's .").send();
 		} else {
 			client.setPlayer(new NetworkPlayer(client.getName()));
-			this.clients.add(client);
-			announceEnter(client.getName());
 			new NameCommand(client, server.getName(), server.getExtensions()).send();
+			enter(client);
 		}
 		
+	}
+	
+	public void enter(ClientHandler client) {
+		announceEnter(client.getName());
 	}
 	
 	/**
@@ -65,9 +69,9 @@ public class Lobby extends Thread {
 	 * announced in the lobby that the player has left.
 	 * @param client
 	 */
-	public ClientHandler removePlayer(ClientHandler client) {
+	public void removePlayer(ClientHandler client) {
 		announceLeave(client.getName());
-		return clients.remove(clients.indexOf(client));
+		clients.remove(client);
 	}
 	
 	/**
@@ -117,7 +121,7 @@ public class Lobby extends Thread {
 				pendingChallenges.put(challenger, challengee);
 			} else if (randomChallenges.contains(challengee)) {
 				randomChallenges.remove(challengee);
-				startGame(removePlayer(challenger), removePlayer(challengee));
+				startGame(challenger, challengee);
 			} else {
 				new ErrorCommand(challenger, ErrorCommand.OTHER, 
 						"The player you challenged can't play a game right now.");
@@ -152,7 +156,14 @@ public class Lobby extends Thread {
 	 * @param playerName Player that left the lobby.
 	 */
 	public void announceLeave(String playerName) {
-		chat("[GoServer]", "\"" + playerName + "\" left the lobby.");
+		synchronized (clients) {
+			for (ClientHandler ch : clients) {
+				if (!ch.getName().equals(playerName)) {
+					new ChatCommand(ch, "[GoServer]", 
+							"\"" + playerName + "\" left the lobby.").send();
+				}
+			}
+		}
 		System.out.println("[GoServer] " + "\"" + playerName + "\" left the lobby.");
 	}
 	
@@ -189,7 +200,9 @@ public class Lobby extends Thread {
 		List<String> playerNames = new ArrayList<String>();
 		synchronized (clients) {
 			for (ClientHandler client : clients) {
-				playerNames.add(client.getName());
+				if (!client.isInGame()) {
+					playerNames.add(client.getName());
+				}
 			}
 		}
 		return playerNames;
@@ -203,8 +216,8 @@ public class Lobby extends Thread {
 		System.out.println("[GoServer] Lobby started...");
 		while (this.server.isRunning()) {
 			if (randomChallenges.size() > 1) {
-				startGame(removePlayer(randomChallenges.remove(0)),
-						removePlayer(randomChallenges.remove(0)));
+				startGame(randomChallenges.remove(0),
+						randomChallenges.remove(0));
 			}
 			try {
 				Thread.sleep(2000);

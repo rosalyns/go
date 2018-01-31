@@ -118,6 +118,10 @@ public class ClientHandler extends Thread {
 		lobby.addPlayer(this);
 	}
 	
+	public void reenterLobby() {
+		lobby.enter(this);
+	}
+	
 	public Map<Integer, String> getLeaderboard() {
 		return lobby.getLeaderBoard();
 	}
@@ -169,7 +173,7 @@ public class ClientHandler extends Thread {
 	//-----------other methods----------
 	
 	public boolean isInGame() {
-		return !game.ended();
+		return game != null && !game.ended();
 	}
 	
 	/**

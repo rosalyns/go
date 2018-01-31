@@ -62,13 +62,16 @@ public class LobbyCommand extends Command {
 	public void parse(String command) throws InvalidCommandLengthException {
 		String[] words = command.split("\\" + delim1);
 		if (toClient) {
-			if (words.length != 2) {
+			if (words.length != 1 && words.length != 2) {
 				throw new InvalidCommandLengthException();
 			}
+			
 			availablePlayers = new ArrayList<String>();
-			String[] players = words[1].split(delim2);
-			for (String player : players) {
-				availablePlayers.add(player);
+			if (words.length == 2) {
+				String[] players = words[1].split(delim2);
+				for (String player : players) {
+					availablePlayers.add(player);
+				}
 			}
 			client.showPlayersInLobby(availablePlayers);
 		} else {

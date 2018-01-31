@@ -3,12 +3,10 @@ package client.controller;
 import model.*;
 import client.view.*;
 import commands.*;
-import exceptions.InvalidBoardSizeException;
 import exceptions.InvalidCommandLengthException;
 import general.Extension;
 import general.Protocol;
 
-import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -19,7 +17,6 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +26,6 @@ import java.util.Set;
 
 import com.nedap.go.gui.GOGUI;
 import com.nedap.go.gui.GoGUIIntegrator;
-import com.nedap.go.gui.InvalidCoordinateException;
 
 public class GoClient extends Thread {
 	
@@ -97,10 +93,7 @@ public class GoClient extends Thread {
 	private BufferedWriter out;
 	private TUIView view;
 	private GOGUI gogui;
-	private String currentPlayer;
-	private String opponentName;
-	private Board gameBoard;
-	private LocalPlayer player;
+	private GameController game;
 	private boolean useAI;
 	private boolean streamsClosed;
 	private Map<String, Command> incomingCommands;
@@ -281,7 +274,7 @@ public class GoClient extends Thread {
 			view.shutdown();
 			shutDown();
 		} else if (type.equals(ErrorCommand.INVMOVE)) {
-			player.askForMove(gameBoard);
+			game.askForMove();
 		}
 	}
 	
@@ -300,7 +293,6 @@ public class GoClient extends Thread {
 	 */
 	public void shutDown() {
 		gogui.stopGUI();
-		
 		streamsClosed = true;
 		try {
 			if (sock != null) {
@@ -323,192 +315,11 @@ public class GoClient extends Thread {
 	 * @param playerColor The color the local player will be during this game
 	 */
 	public void startGame(String opponent, int boardSize, Stone playerColor) {
-		this.opponentName = opponent;
-		try {
-			gameBoard = new Board(boardSize);
-		} catch (InvalidBoardSizeException e1) {
-			//comes from server, not likely
-		}
-		if (useAI) {
-			this.player = new ComputerPlayer(playerColor, this.getName(), this);
-		} else {
-			this.player = new HumanPlayer(playerColor, this.getName());
-		}
-
-		gogui.clearBoard();
-		try {
-			gogui.setBoardSize(boardSize);
-		} catch (InvalidCoordinateException e) {
-		}
-		
-		view.startGame();
+		game = new GameController(this, gogui, view);
+		game.start(useAI, opponent, boardSize, playerColor);
 	}
 	
-	public int getBoardDim() {
-		return gameBoard.dim();
-	}
-	
-	/**
-	 * Get the color that the player with this name is using.
-	 * @param playerName name of the player you want to know the color of
-	 * @return Stone that can be Stone.BLACK or Stone.WHITE.
-	 */
-	public Stone getColor(String playerName) {
-		if (playerName.equals(player.getName())) {
-			return player.getColor();
-		}
-		return player.getColor().other();
-	}
-	
-	/**
-	 * Performs a move on the board as a response to a TURN command. Adds the stone to the GUI
-	 * and places it on the board that this client uses. If the player passed it shows the pass
-	 * on the TUI. It also updates the player so that it can't make a move.
-	 * @param move Move that the server sent. Contains color of the stone and the position.
-	 */
-	public void makeMove(Move move) {
-		if (move.getPosition() != Move.PASS) {
-			try {
-				Point coordinates = Board.indexToCoordinates(move.getPosition(), getBoardDim());
-				gogui.addStone(coordinates.x, coordinates.y, move.getColor() == Stone.WHITE);
-			} catch (InvalidCoordinateException e) {
-				e.printStackTrace();
-			}
-			placeStone(gameBoard, move);
-		} else {
-			if (currentPlayer.equalsIgnoreCase(opponentName)) {
-				view.showPass(opponentName);
-			}
-		}
-		player.madeMove();
-	}
-	
-	/**
-	 * Tries a move that the user entered in the TUI. Sends the move command to the server if:
-	 * it's the player turn and it's a valid move. If it's not a valid move the TUI will wait
-	 * for a new input.
-	 * @param pass true if the player passed
-	 * @param row the row the player wants to place a stone in
-	 * @param column the column the player wants to place a stone in
-	 */
-	public void tryMove(boolean pass, int row, int column) {
-		if (player.hasTurn()) {
-			if (pass) {
-				new MoveCommand(this, true, 0, 0).send();
-			} else if (isValidMove(new Move(player.getColor(), 
-					Board.index(row, column, getBoardDim())))) {
-				new MoveCommand(this, false, row, column).send();
-			} else {
-				view.showInvalidMove();
-				
-			}
-		} else {
-			view.showNotYourTurn();
-		}
-	}
-	
-	/**
-	 * Checks if the move is valid.
-	 * @param move Move to be checked. Contains color of the stone and position.
-	 * @return true if the field on the board is empty
-	 */
-	public boolean isValidMove(Move move) {
-		return gameBoard.isField(move.getPosition()) && gameBoard.isEmptyField(move.getPosition());
-	}
-	
-	/**
-	 * Sets the next player of the game. If the next player is this player, it asks the player to 
-	 * make a move. If the player is an AI it will not show on the TUI. It will also place a hint on
-	 * the GUI board if an AI is not used.
-	 * @param playerName
-	 */
-	public void nextPlayer(String playerName) {
-		if (playerName.equals(player.getName())) {
-			player.askForMove(gameBoard);
-			
-			if (!useAI) {
-				int hint = new RandomStrategy().determineMove(gameBoard, player.getColor());
-				Point hintPoint = Board.indexToCoordinates(hint, gameBoard.dim());
-				try {
-					gogui.removeHintIdicator();
-					gogui.addHintIndicator(hintPoint.x, hintPoint.y);
-				} catch (InvalidCoordinateException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		currentPlayer = playerName;
-	}
-	
-	/**
-	 * Shows the scores and the player that won.
-	 * @param reason Reason that the game ended. FINISHED, ABORTED or TIMEOUT
-	 * @param scores The end scores.
-	 */
-	public void endGame(String reason, Map<String, Integer> scores) {
-		view.endGame(reason, scores);
-	}
-	
-	// ------game logic-------
-	/**
-	 * Places the stone on the board, and if the stone captured a group or committed 
-	 * suicide, the relevant stones will be captured.
-	 * @param board Board that the stone should be placed on
-	 * @param move The move that was made
-	 */
-	private void placeStone(Board board, Move move) {
-		board.setField(move);
-		doCaptures(board, move);
-	}
-	
-	/**
-	 * Checks if any groups are captured, first for the opponent (the color that is not
-	 * in move) and then for the move itself (this means it was a suicide). Then removes
-	 * the groups that were captured. 
-	 * @param board To be checked for captures
-	 * @param move The move that was made
-	 */
-	public void doCaptures(Board board, Move move) {
-		Stone playerColor = move.getColor();
-		Stone opponentColor = playerColor.other();
-		List<Set<Integer>> groupsToRemove = new ArrayList<Set<Integer>>();
-		for (Set<Integer> group : board.getGroups().get(opponentColor)) {
-			if (!board.hasLiberties(group)) {
-				groupsToRemove.add(group);
-			}
-		}
-		
-		for (Set<Integer> group : groupsToRemove) {
-			removeGroup(board, group, opponentColor);
-		}
-		
-		for (Set<Integer> group : board.getGroups().get(playerColor)) {
-			if (!board.hasLiberties(group)) {
-				groupsToRemove.add(group);
-			}
-		}
-		
-		for (Set<Integer> group : groupsToRemove) {
-			removeGroup(board, group, opponentColor);
-		}
-	}
-	
-	/**
-	 * Removes the group from the board.
-	 * @param board Board that the stones should be removed from
-	 * @param group That should be removed
-	 * @param color Of the group that should be removed.
-	 */
-	private void removeGroup(Board board, Set<Integer> group, Stone color) {
-		for (Integer field : group) {
-			board.setField(new Move(Stone.EMPTY, field));
-			try {
-				Point coordinates = Board.indexToCoordinates(field, getBoardDim());
-				gogui.removeStone(coordinates.x, coordinates.y);
-			} catch (InvalidCoordinateException e) {
-				e.printStackTrace();
-			}
-		}
-		board.getGroups().get(color).remove(group);
+	public GameController getGameController() {
+		return game;
 	}
 }

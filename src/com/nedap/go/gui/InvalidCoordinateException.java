@@ -1,4 +1,4 @@
-package exceptions;
+package com.nedap.go.gui;
 
 /**
  * Created by daan.vanbeek on 15-12-16.

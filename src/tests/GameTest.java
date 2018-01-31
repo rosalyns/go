@@ -9,6 +9,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.nedap.go.gui.InvalidCoordinateException;
 import exceptions.*;
 import model.Board;
 import model.ComputerPlayer;
@@ -170,35 +171,35 @@ public class GameTest {
 	}
 	
 	@Test
-	public void testDoTurnNotYourTurn() {
-		assertThrows(NotYourTurnException.class, () -> game.doTurn(new Move(Stone.WHITE, 0)));
+	public void testtryTurnNotYourTurn() {
+		assertThrows(NotYourTurnException.class, () -> game.tryTurn(new Move(Stone.WHITE, 0)));
 		
 		try {
-			game.doTurn(new Move(Stone.BLACK, 0));
+			game.tryTurn(new Move(Stone.BLACK, 0));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@Test
-	public void testDoTurnInvalidCoordinate() {
+	public void testTryTurnInvalidCoordinate() {
 		assertThrows(InvalidCoordinateException.class, 
-				() -> game.doTurn(new Move(Stone.BLACK, -2)));
+				() -> game.tryTurn(new Move(Stone.BLACK, -2)));
 		try {
-			game.doTurn(new Move(Stone.BLACK, 1));
+			game.tryTurn(new Move(Stone.BLACK, 1));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}
 		
-		assertThrows(InvalidCoordinateException.class, () -> game.doTurn(new Move(Stone.WHITE, 1)));
+		assertThrows(InvalidCoordinateException.class, () -> game.tryTurn(new Move(Stone.WHITE, 1)));
 	}
 	
 	@Test
-	public void testDoTurnGameEnded() {
+	public void testTryTurnGameEnded() {
 		try {
-			game.doTurn(new Move(Stone.BLACK, Move.PASS));
-			game.doTurn(new Move(Stone.WHITE, Move.PASS));
-			game.doTurn(new Move(Stone.BLACK, 1));
+			game.tryTurn(new Move(Stone.BLACK, Move.PASS));
+			game.tryTurn(new Move(Stone.WHITE, Move.PASS));
+			game.tryTurn(new Move(Stone.BLACK, 1));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}
@@ -208,14 +209,14 @@ public class GameTest {
 	}
 	
 	@Test
-	public void testDoTurnTwoPasses() {
+	public void testTryTurnTwoPasses() {
 		assertFalse(game.ended());
 		try {
-			game.doTurn(new Move(Stone.BLACK, Move.PASS));
+			game.tryTurn(new Move(Stone.BLACK, Move.PASS));
 			
 			assertFalse(game.ended());
 			
-			game.doTurn(new Move(Stone.WHITE, Move.PASS));
+			game.tryTurn(new Move(Stone.WHITE, Move.PASS));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}
@@ -223,33 +224,33 @@ public class GameTest {
 	}
 	
 	@Test
-	public void testDoTurnViolateKoRule() {
+	public void testTryTurnViolateKoRule() {
 		/*
 		 *  ox
 		 * oxOx
 		 *  ox
 		 */
 		try {
-			game.doTurn(new Move(Stone.BLACK, 1));
-			game.doTurn(new Move(Stone.WHITE, 2));
-			game.doTurn(new Move(Stone.BLACK, 9));
-			game.doTurn(new Move(Stone.WHITE, 10));
-			game.doTurn(new Move(Stone.BLACK, 19));
-			game.doTurn(new Move(Stone.WHITE, 20));
-			game.doTurn(new Move(Stone.BLACK, 80));
-			game.doTurn(new Move(Stone.WHITE, 12));
-			game.doTurn(new Move(Stone.BLACK, 11));
+			game.tryTurn(new Move(Stone.BLACK, 1));
+			game.tryTurn(new Move(Stone.WHITE, 2));
+			game.tryTurn(new Move(Stone.BLACK, 9));
+			game.tryTurn(new Move(Stone.WHITE, 10));
+			game.tryTurn(new Move(Stone.BLACK, 19));
+			game.tryTurn(new Move(Stone.WHITE, 20));
+			game.tryTurn(new Move(Stone.BLACK, 80));
+			game.tryTurn(new Move(Stone.WHITE, 12));
+			game.tryTurn(new Move(Stone.BLACK, 11));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}
-		assertThrows(KoException.class, () -> game.doTurn(new Move(Stone.WHITE, 10)));
+		assertThrows(KoException.class, () -> game.tryTurn(new Move(Stone.WHITE, 10)));
 	}
 	
 	@Test
-	public void testDoTurnValid() {
+	public void testTryTurnValid() {
 		try {
-			game.doTurn(new Move(Stone.BLACK, 0));
-			game.doTurn(new Move(Stone.WHITE, 1));
+			game.tryTurn(new Move(Stone.BLACK, 0));
+			game.tryTurn(new Move(Stone.WHITE, 1));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}
@@ -264,8 +265,8 @@ public class GameTest {
 		assertEquals("Player2", game2.getCurrentPlayer());
 		
 		try {
-			game.doTurn(new Move(Stone.BLACK, Move.PASS));
-			game2.doTurn(new Move(Stone.BLACK, Move.PASS));
+			game.tryTurn(new Move(Stone.BLACK, Move.PASS));
+			game2.tryTurn(new Move(Stone.BLACK, Move.PASS));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}
@@ -278,8 +279,8 @@ public class GameTest {
 	public void testGameOverNoMoreStones() {
 		try {
 			for (int i = 0; i < (board.dim() * board.dim()) / 2; i++) {
-				game.doTurn(new Move(Stone.BLACK, i));
-				game.doTurn(new Move(Stone.WHITE, Move.PASS));
+				game.tryTurn(new Move(Stone.BLACK, i));
+				game.tryTurn(new Move(Stone.WHITE, Move.PASS));
 			}
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
@@ -288,7 +289,7 @@ public class GameTest {
 		assertFalse(game.ended());
 		
 		try {
-			game.doTurn(new Move(Stone.BLACK, 80));
+			game.tryTurn(new Move(Stone.BLACK, 80));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}
@@ -310,15 +311,15 @@ public class GameTest {
 		 *  ox
 		 */
 		try {
-			game.doTurn(new Move(Stone.BLACK, 1));
-			game.doTurn(new Move(Stone.WHITE, 2));
-			game.doTurn(new Move(Stone.BLACK, 9));
-			game.doTurn(new Move(Stone.WHITE, 10));
-			game.doTurn(new Move(Stone.BLACK, 19));
-			game.doTurn(new Move(Stone.WHITE, 20));
-			game.doTurn(new Move(Stone.BLACK, 80));
-			game.doTurn(new Move(Stone.WHITE, 12));
-			game.doTurn(new Move(Stone.BLACK, 11));
+			game.tryTurn(new Move(Stone.BLACK, 1));
+			game.tryTurn(new Move(Stone.WHITE, 2));
+			game.tryTurn(new Move(Stone.BLACK, 9));
+			game.tryTurn(new Move(Stone.WHITE, 10));
+			game.tryTurn(new Move(Stone.BLACK, 19));
+			game.tryTurn(new Move(Stone.WHITE, 20));
+			game.tryTurn(new Move(Stone.BLACK, 80));
+			game.tryTurn(new Move(Stone.WHITE, 12));
+			game.tryTurn(new Move(Stone.BLACK, 11));
 		} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
 			e.printStackTrace();
 		}

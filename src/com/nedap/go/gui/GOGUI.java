@@ -11,7 +11,7 @@ public interface GOGUI {
      * @param size the desired width and height of the board.
      * @throws InvalidCoordinateException when x or y coordinate fall outside of the board.
      */
-    void setBoardSize(int size) throws InvalidCoordinateException;
+    void setBoardSize(int size);
 
     /**
      * Adds a new stone to the board of the given type and at the given position.

@@ -1,5 +1,6 @@
 package client.view;
 
+import client.controller.GameController;
 import client.controller.GoClient;
 import commands.*;
 import general.Protocol;
@@ -28,17 +29,18 @@ public class TUIView implements Runnable {
 
 	private State state;
 	private GoClient controller;
+	private GameController game;
 	private String thisPlayerName; // you need the player's name before there even is a player.
 	private Scanner in;
 
-	private String menuText = "MENU\n" 
+	private String menuText = "\nMENU\n" 
 			+ "1: Start a new Game\n" 
 			+ "2: Options\n" 
 			+ "3: Show leaderboard\n" 
 			+ "4: Quit";
 	
 	private String optionMenuText = "OPTIONS\n"
-			+ "1: Set timeout time"
+			+ "1: Set timeout time\n"
 			+ "2: Back";
 			
 	public TUIView(GoClient controller, InputStream systemIn) {
@@ -126,28 +128,29 @@ public class TUIView implements Runnable {
 					if ((words.length == 2 || words.length == 3) 
 							&& words[0].equalsIgnoreCase("MOVE")) {
 						if (words.length == 2 && words[1].equalsIgnoreCase("PASS")) {
-							controller.tryMove(true, 0, 0);
+							game.tryMove(true, 0, 0);
 						} else if (words.length == 3) {
 							int row = Integer.parseInt(words[1]);
 							int column = Integer.parseInt(words[2]);
-							controller.tryMove(false, row, column);
+							game.tryMove(false, row, column);
 						}
 					} else if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
-						new QuitCommand(controller, false).send();
+						game.quit();
 					} else {
 						print("Unknown command. Type HELP to see all possible commands.");
 					}
 				} else {
 					if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
-						new QuitCommand(controller, false).send();
+						game.quit();
 					}
 				}
 			}
 		}
 	}
 
-	public void startGame() {
+	public void startGame(GameController gc) {
 		state = State.INGAME;
+		this.game = gc;
 	}
 
 	public void endGame(String reason, Map<String, Integer> scores) {
@@ -155,7 +158,6 @@ public class TUIView implements Runnable {
 		final int none = 0;
 		final int otherPlayer = -1;
 		
-		state = State.INMENU;
 		if (reason.equalsIgnoreCase(EndGameCommand.ABORTED)) {
 			print("The other player quit unexpectedly.");
 		} else if (reason.equalsIgnoreCase(EndGameCommand.FINISHED)) {
@@ -190,6 +192,7 @@ public class TUIView implements Runnable {
 			print("It was a draw.");
 		}
 		
+		state = State.INMENU;
 		showMenu();
 	}
 

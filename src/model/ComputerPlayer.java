@@ -38,7 +38,8 @@ public class ComputerPlayer extends LocalPlayer {
 		if (position == Move.PASS) {
 			new MoveCommand(client, true, 0, 0).send();
 		} else {
-			Point coordinates = Board.indexToCoordinates(position, client.getBoardDim());
+			Point coordinates = Board.indexToCoordinates(position, 
+					client.getGameController().getBoardDim());
 			new MoveCommand(client, false, coordinates.y, coordinates.x).send();
 		}
 	}

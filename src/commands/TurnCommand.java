@@ -2,6 +2,7 @@ package commands;
 
 import java.awt.Point;
 
+import client.controller.GameController;
 import client.controller.GoClient;
 import model.Board;
 import model.Move;
@@ -67,19 +68,20 @@ public class TurnCommand extends Command {
 			throw new InvalidCommandLengthException();
 		}
 		
+		GameController game = client.getGameController();
 		if (words[2].equals(PASS)) {
-			client.makeMove(new Move(client.getColor(words[1]), Move.PASS));
+			game.makeMove(new Move(game.getColor(words[1]), Move.PASS));
 		} else if (!words[2].equals(FIRST)) {
 			String[] coordinatesStr = words[2].split(delim2);
 			int[] coordinates = new int[2];
 			for (int i = 0; i < 2; i++) {
 				coordinates[i] = Integer.parseInt(coordinatesStr[i]);
 			}
-			int dim = client.getBoardDim();
-			client.makeMove(new Move(client.getColor(words[1]), 
+			int dim = game.getBoardDim();
+			game.makeMove(new Move(game.getColor(words[1]), 
 					coordinates[0] * dim + coordinates[1]));
 		}
-		client.nextPlayer(words[3]);
+		game.nextPlayer(words[3]);
 	}
 
 }

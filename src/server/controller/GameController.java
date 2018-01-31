@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.nedap.go.gui.InvalidCoordinateException;
 import commands.*;
 import exceptions.InvalidBoardSizeException;
-import exceptions.InvalidCoordinateException;
 import exceptions.KoException;
 import exceptions.NotYourTurnException;
 import model.*;
@@ -27,7 +27,6 @@ public class GameController extends Thread {
 		//this.lobby = lobby;
 		this.clients = clients;
 	}
-	
 	
 	/**
 	 * Sends START command to the player that may choose the color and boardsize. Sets the game in
@@ -78,7 +77,7 @@ public class GameController extends Thread {
 	 */
 	public void doMove(ClientHandler clientPlayer, Move move) {
 		try {
-			game.doTurn(move);
+			game.tryTurn(move);
 		} catch (KoException | InvalidCoordinateException e1) {
 			new ErrorCommand(clientPlayer, ErrorCommand.INVMOVE, e1.getMessage()).send();
 			return;
@@ -86,6 +85,7 @@ public class GameController extends Thread {
 			new ErrorCommand(clientPlayer, ErrorCommand.OTHER, e2.getMessage()).send();
 			return;
 		} 
+		game.doTurn(move);
 		
 		for (ClientHandler client : clients) {
 			new TurnCommand(client, clientPlayer.getName(), move, getBoardDim(),

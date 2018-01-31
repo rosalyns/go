@@ -8,6 +8,7 @@ import exceptions.InvalidCommandLengthException;
 import general.Protocol;
 import server.controller.ClientHandler;
 /**
+ * SERVER -> CLIENT
  * Als het spel klaar is om welke reden dan ook. Reden kan zijn FINISHED (normaal einde), 
  * ABORTED (abrupt einde) of TIMEOUT (geen respons binnen redelijke tijd)<br>
  * Format: ENDGAME reden winspeler score verliesspeler score<br>
@@ -45,6 +46,7 @@ public class EndGameCommand extends Command {
 
 	@Override
 	public String compose() {
+		clientHandler.reenterLobby();
 		String command = commandStr + delim1 + endReason + delim1 + winningPlayer + delim1 + 
 						winningScore + delim1 + losingPlayer + delim1 + losingScore + commandEnd;
 		return command;
@@ -60,7 +62,7 @@ public class EndGameCommand extends Command {
 		Map<String, Integer> endScores = new HashMap<String, Integer>();
 		endScores.put(words[2], Integer.parseInt(words[3]));
 		endScores.put(words[4], Integer.parseInt(words[5]));
-		client.endGame(words[1], endScores);		
+		client.getGameController().endGame(words[1], endScores);		
 	}
 
 }
