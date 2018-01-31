@@ -62,8 +62,7 @@ public class TurnCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command) throws InvalidCommandLengthException {
-		String[] words = command.split("\\" + delim1);
+	public void parse(String[] words) throws InvalidCommandLengthException {
 		if (words.length != 4) {
 			throw new InvalidCommandLengthException();
 		}

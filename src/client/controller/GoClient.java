@@ -100,6 +100,7 @@ public class GoClient extends Thread {
 	private int protocolVersion;
 	private Set<Extension> supportedExtensions;
 	private Set<Extension> supportedServerExtensions;
+	private int timeLimit;
 	
 	/**
 	 * Constructs a client object with the standard System in for user input and
@@ -133,6 +134,7 @@ public class GoClient extends Thread {
 		this.out = new BufferedWriter(new OutputStreamWriter(socketOut));
 		this.in = new BufferedReader(new InputStreamReader(socketIn));
 		this.streamsClosed = false;
+		this.timeLimit = 2000;
 		
 		incomingCommands = new HashMap<String, Command>();
 		incomingCommands.put(Protocol.Server.NAME, new NameCommand(this));
@@ -165,15 +167,14 @@ public class GoClient extends Thread {
 		try {
 			String socketInput = "";
 			while ((socketInput = in.readLine()) != null && this.isRunning()) {
-				System.out.println(this.getName() + " received the command " + socketInput);
-				for (String command : incomingCommands.keySet()) {
-					if (socketInput.startsWith(command)) {
-						try {
-							incomingCommands.get(command).parse(socketInput);
-						} catch (InvalidCommandLengthException e) {
-							e.printStackTrace();
-						}
+				String[] words = socketInput.split("\\" + Protocol.General.DELIMITER1);
+				try {
+					Command command = incomingCommands.get(words[0]);
+					if (command != null) {
+						command.parse(words);
 					}
+				} catch (InvalidCommandLengthException e) {
+					e.printStackTrace();
 				}
 			}
 			shutDown();
@@ -196,6 +197,16 @@ public class GoClient extends Thread {
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	public void setTimeLimit(int microseconds) {
+		this.timeLimit = microseconds;
+	}
+	
+	public int getTimeLimit() {
+		return timeLimit;
+	}
 	/**
 	 * Shows the leaderboard in the TUI.
 	 * @param scores collection of scores and playernames from the server
@@ -246,6 +257,10 @@ public class GoClient extends Thread {
 		this.useAI = ai;
 	}
 	
+	/**
+	 * Challenge extension is not fully implemented.
+	 * @param playerName
+	 */
 	public void challengedBy(String playerName) {
 		view.showChallengedBy(playerName);
 	}
@@ -304,15 +319,12 @@ public class GoClient extends Thread {
 		}
 	}
 	
-	// -----game interaction methods-------
-	
 	/**
-	 * Starts a game with the user. Initializes a human player or an AI, the user
-	 * already decided this in the TUI. The GUI Board is cleared to remove any previous
-	 * board situations and the view is updated so it can take game related input.
+	 * Starts a game with the user. The user has already decided if he wants to
+	 * use an AI in the TUI. 
 	 * @param opponent The name of the opponent
 	 * @param boardSize The size of the board
-	 * @param playerColor The color the local player will be during this game
+	 * @param playerColor The color the local player will use during this game
 	 */
 	public void startGame(String opponent, int boardSize, Stone playerColor) {
 		game = new GameController(this, gogui, view);

@@ -24,7 +24,7 @@ public abstract class Command {
 		this.toClient = toClient;
 	}
 	
-	public abstract void parse(String command) throws InvalidCommandLengthException;
+	public abstract void parse(String[] words) throws InvalidCommandLengthException;
 	public abstract String compose();
 	
 	public void send() {

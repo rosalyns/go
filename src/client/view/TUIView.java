@@ -24,7 +24,8 @@ public class TUIView implements Runnable {
 	 *
 	 */
 	public enum State {
-		INVALIDNAME, INMENU, INOPTIONMENU, PICKPLAYERTYPE, WAITFORREQUEST, ASKFORSETTINGS, INGAME
+		INVALIDNAME, INMENU, INOPTIONMENU, SETTIMELIMIT, PICKPLAYERTYPE, WAITFORREQUEST, 
+		ASKFORSETTINGS, INGAME
 	}
 
 	private State state;
@@ -40,7 +41,7 @@ public class TUIView implements Runnable {
 			+ "4: Quit";
 	
 	private String optionMenuText = "OPTIONS\n"
-			+ "1: Set timeout time\n"
+			+ "1: Set timelimit for AI\n"
 			+ "2: Back";
 			
 	public TUIView(GoClient controller, InputStream systemIn) {
@@ -73,13 +74,29 @@ public class TUIView implements Runnable {
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("4")) {
 					controller.shutDown();
 					new ExitCommand(controller, false).send();
+				} else {
+					print("Enter 1, 2, 3 or 4.");
 				}
 			} else if (state == State.INOPTIONMENU) {
 				if (words.length == 1 && words[0].equalsIgnoreCase("1")) {
-					//TODO timeout Time;
+					state = State.SETTIMELIMIT;
+					print("The current time limit is " + controller.getTimeLimit());
+					print("What do you want it to be? (in microseconds)");
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("2")) {
 					state = State.INMENU;
 					showMenu();
+				} else {
+					print("Enter 1 or 2.");
+				}
+			} else if (state == State.SETTIMELIMIT) {
+				if (words.length == 1) {
+					try {
+						controller.setTimeLimit(Integer.parseInt(words[0]));
+						state = State.INOPTIONMENU;
+						showOptionMenu();
+					} catch (NumberFormatException e) {
+						print("Enter a number.");
+					}
 				}
 			} else if (state == State.PICKPLAYERTYPE) {
 				if (words.length == 1 && words[0].equalsIgnoreCase("y")) {
@@ -102,6 +119,8 @@ public class TUIView implements Runnable {
 					} else {
 						new RequestCommand(controller, 2, words[1]).send();
 					}
+				} else {
+					print("Type REQUEST <playername> or REQUEST RANDOM.");
 				}
 			} else if (state == State.ASKFORSETTINGS) {
 				if (words.length == 3 && words[0].equalsIgnoreCase("SETTINGS")) {
@@ -122,6 +141,8 @@ public class TUIView implements Runnable {
 					if (!wrongInput) {
 						new SettingsCommand(controller, color, boardSize).send();
 					}
+				} else {
+					print("SETTINGS <color> <boardSize>");
 				}
 			} else if (state == State.INGAME) {
 				if (!isAI) {
@@ -137,11 +158,13 @@ public class TUIView implements Runnable {
 					} else if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
 						game.quit();
 					} else {
-						print("Unknown command. Type HELP to see all possible commands.");
+						print("Type MOVE <row> <column>, MOVE PASS or QUIT.");
 					}
 				} else {
 					if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
 						game.quit();
+					} else {
+						print("You can quit by typing QUIT.");
 					}
 				}
 			}
@@ -265,9 +288,9 @@ public class TUIView implements Runnable {
 	}
 
 	public void showError(String type, String message) {
-		print("[Server] ERROR ");
+		//print("[Server] ERROR ");
 		if (type.equals(ErrorCommand.INVPROTOCOL)) {
-			print("The protocols of the server or client are incompatible.");
+			print("The protocols of the server and client are incompatible.");
 		} else if (type.equals(ErrorCommand.INVCOMMAND)) {
 			print("An unknown command was sent to the server");
 		} else if (type.equals(ErrorCommand.INVNAME)) {
@@ -277,9 +300,6 @@ public class TUIView implements Runnable {
 		} else if (type.equals(ErrorCommand.OTHER)) {
 			print(message);
 		}
-		
-		
-		print(message);
 	}
 
 	public void showMenu() {

@@ -23,12 +23,10 @@ class GoClientTest {
 	private PipedOutputStream serverToClient;
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	PrintStream stdout = System.out;
-	
 	String dataTUI = "1\nn\nrequestrandom\n";
 	
 	@BeforeEach
 	void setUp() throws Exception {
-		
 		System.setOut(new PrintStream(outContent));
 		
 		serverToClient = new PipedOutputStream();

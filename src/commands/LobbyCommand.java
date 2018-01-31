@@ -59,8 +59,7 @@ public class LobbyCommand extends Command {
 	}
 
 	@Override
-	public void parse(String command) throws InvalidCommandLengthException {
-		String[] words = command.split("\\" + delim1);
+	public void parse(String[] words) throws InvalidCommandLengthException {
 		if (toClient) {
 			if (words.length != 1 && words.length != 2) {
 				throw new InvalidCommandLengthException();

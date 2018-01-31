@@ -67,17 +67,17 @@ public class ClientHandler extends Thread {
 	 */
 	public void run() {
 		try {
-			String command = "";
-			while ((command = in.readLine()) != null && lobby.isAlive()) {
-				System.out.println(this.getName() + " received the command " + command);
-				for (String commandStr : incomingCommands.keySet()) {
-					if (command.startsWith(commandStr)) {
-						try {
-							incomingCommands.get(commandStr).parse(command);
-						} catch (InvalidCommandLengthException e) {
-							new ErrorCommand(this, ErrorCommand.INVCOMMAND, "Number of arguments is not valid.").send();
-						}
+			String socketInput = "";
+			while ((socketInput = in.readLine()) != null && lobby.isAlive()) {
+				String[] words = socketInput.split("\\" + Protocol.General.DELIMITER1);
+				try {
+					Command command = incomingCommands.get(words[0]);
+					if (command != null) {
+						command.parse(words);
 					}
+				} catch (InvalidCommandLengthException e) {
+					new ErrorCommand(this, ErrorCommand.INVCOMMAND, 
+							"Number of arguments is not valid.").send();
 				}
 			}
 			clientShutDown();

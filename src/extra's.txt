@@ -10,11 +10,9 @@ Nog fixen:
 - checken voor extensions
 - als je verkeerd commando intypt in TUI goeie output geven
 - server TUI ?
-- Geen "left lobby" sturen als je stopt in een game. "left lobby" sturen als twee mensen een spel beginnen.
 - Time out op server
 - time out op client instellen
 - in welke Menu staat kom je als je request game hebt gedaan?
-- spelers terug in lobby stoppen
 - alle commandos vanuit goclient sturen ipv TUI
 - cijfertjes in GUI nog iets verder naar links zetten.
 
