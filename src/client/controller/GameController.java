@@ -33,11 +33,15 @@ public class GameController implements Observer {
 		this.tui = tui;
 	}
 	
-	public void start(boolean useAI, String opponentName, int boardSize, Stone playerColor) {
+	public void start(GoClient.AI useAI, String opponentName, int boardSize, Stone playerColor) {
 		opponent = new NetworkPlayer(opponentName);
 		
-		if (useAI) {
-			this.player = new ComputerPlayer(playerColor, client.getName(), client);
+		if (useAI == GoClient.AI.BASIC) {
+			this.player = new ComputerPlayer(playerColor, client.getName(), 
+					client, new BasicStrategy());
+		} else if (useAI == GoClient.AI.RANDOM) {
+			this.player = new ComputerPlayer(playerColor, client.getName(), 
+					client, new RandomStrategy());
 		} else {
 			this.player = new HumanPlayer(playerColor, client.getName());
 		}
@@ -76,7 +80,7 @@ public class GameController implements Observer {
 	}
 	
 	public void askForMove() {
-		player.askForMove(board);
+		player.askForMove(game);
 	}
 	
 	/**
@@ -128,10 +132,10 @@ public class GameController implements Observer {
 	 */
 	public void nextPlayer(String playerName) {
 		if (playerName.equals(player.getName())) {
-			player.askForMove(board);
+			player.askForMove(game);
 			
 			if (player instanceof HumanPlayer) {
-				int hint = new RandomStrategy().determineMove(board, player.getColor());
+				int hint = new RandomStrategy().determineMove(game, player.getColor());
 				Point hintPoint = Board.indexToCoordinates(hint, board.dim());
 				try {
 					gui.removeHintIdicator();

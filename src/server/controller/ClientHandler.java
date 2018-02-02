@@ -82,7 +82,7 @@ public class ClientHandler extends Thread {
 			}
 			clientShutDown();
 		} catch (IOException e) {
-			clientShutDown();
+			//als dit gebeurt is clientShutDown al aangeroepen
 		}
 	}
 

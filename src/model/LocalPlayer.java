@@ -16,7 +16,7 @@ public abstract class LocalPlayer extends Player {
 		return isTurn;
 	}
 
-	public void askForMove(Board board) {
+	public void askForMove(Game game) {
 		isTurn = true;
 	}
 }

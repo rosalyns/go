@@ -72,7 +72,9 @@ public class Lobby extends Thread {
 	 */
 	public void removePlayer(ClientHandler client) {
 		announceLeave(client.getName());
-		clients.remove(client);
+		synchronized (clients) {
+			clients.remove(client);
+		}
 	}
 	
 	/**
@@ -148,7 +150,6 @@ public class Lobby extends Thread {
 	 * @param playerName Player that entered the lobby.
 	 */
 	public void announceEnter(String playerName) {
-		chat("[GoServer]", "\"" + playerName + "\" entered the lobby.");
 		System.out.println("[GoServer] " + "\"" + playerName + "\" entered the lobby.");
 	}
 	
@@ -157,14 +158,6 @@ public class Lobby extends Thread {
 	 * @param playerName Player that left the lobby.
 	 */
 	public void announceLeave(String playerName) {
-		synchronized (clients) {
-			for (ClientHandler ch : clients) {
-				if (!ch.getName().equals(playerName)) {
-					new ChatCommand(ch, "[GoServer]", 
-							"\"" + playerName + "\" left the lobby.").send();
-				}
-			}
-		}
 		System.out.println("[GoServer] " + "\"" + playerName + "\" left the lobby.");
 	}
 	

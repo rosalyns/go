@@ -92,26 +92,16 @@ public class Game extends Observable {
 		if (move.getPosition() == Move.PASS) {
 			consecutivePasses++;
 		} else {
-			placeStone(gameBoard, move); 
+			gameBoard.setField(move);
+			doCaptures(gameBoard, move);
+			setChanged();
+			notifyObservers(move);
 			reduceStone(move.getColor());
 			consecutivePasses = 0;
 			moves.add(move);
 		}
 		
 		currentPlayerIndex = (currentPlayerIndex + 1) % NO_OF_PLAYERS;
-	}
-
-	/**
-	 * Performs the move on the given board and if the move results in any captured groups, it will
-	 * remove these groups from the board.
-	 * @param board Board you want to place a stone on
-	 * @param move Move you want to perform
-	 */
-	private void placeStone(Board board, Move move) {
-		board.setField(move);
-		doCaptures(board, move);
-		setChanged();
-		notifyObservers(move);
 	}
 	
 	/**
@@ -190,6 +180,15 @@ public class Game extends Observable {
 		board.getGroups().get(color).remove(group);
 	}
 	
+	public boolean capturedGroup(Board board, Move move) {
+		for (Set<Integer> group : board.getGroups().get(move.getColor().other())) {
+			if (!board.hasLiberties(group)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Calculates the score by using Area scoring. An empty group is captured
 	 * when all the surrounding stones are of one color.
@@ -244,10 +243,12 @@ public class Game extends Observable {
 			// not possible
 		}
 		
-		placeStone(copiedBoard, move);
+		copiedBoard.setField(move);
+		doCaptures(copiedBoard, move);
 		
 		for (Move m : moves) {
-			placeStone(simulationBoard, m);
+			simulationBoard.setField(m);
+			doCaptures(simulationBoard, m);
 			
 			if (simulationBoard.equals(copiedBoard)) {
 				return true;
@@ -264,6 +265,19 @@ public class Game extends Observable {
 		return players.get(currentPlayerIndex).getName();
 	}
 	
+	public List<Integer> getValidMoves(Stone color) {
+		List<Integer> empties = gameBoard.getEmptyFields();
+		List<Integer> valids = new ArrayList<Integer>();
+		for (int i : empties) {
+			try {
+				tryTurn(new Move(color, i));
+				valids.add(i);
+			} catch (KoException | NotYourTurnException | InvalidCoordinateException e) {
+			}
+		}
+		return valids;
+	}
+	
 	/**
 	 * Get the dimension of the board from this game.
 	 * @return board dimension
@@ -272,4 +286,7 @@ public class Game extends Observable {
 		return gameBoard.dim();
 	}
 	
+	public Board getBoard() {
+		return this.gameBoard;
+	}
 }

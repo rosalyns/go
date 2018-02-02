@@ -46,7 +46,7 @@ public class GoClient extends Thread {
 		try {
 			host = InetAddress.getByName(readString());
 		} catch (UnknownHostException e) {
-			print("ERROR: invalid hostname!");
+			System.err.println("ERROR: invalid hostname!");
 			System.exit(0);
 		}
 		
@@ -58,7 +58,7 @@ public class GoClient extends Thread {
 				port = Protocol.General.DEFAULT_PORT;
 			}
 		} catch (NumberFormatException e) {
-			print("ERROR: invalid portnummer!");
+			System.err.println("ERROR: invalid portnummer!");
 			System.exit(0);
 		}
 		
@@ -67,7 +67,7 @@ public class GoClient extends Thread {
 			GoClient client = new GoClient(sock, clientName);
 			client.run();
 		} catch (IOException e) {
-			print("ERROR: couldn't construct a client object!");
+			System.err.println("ERROR: couldn't construct a client object!");
 			System.exit(0);
 		}
 	}
@@ -88,13 +88,17 @@ public class GoClient extends Thread {
 	
 	// --------------- CLASS METHODS ---------------
 	
+	public enum AI {
+		NONE, BASIC, RANDOM
+	}
+	
+	private AI useAI;
 	private Socket sock;
 	private BufferedReader in;
 	private BufferedWriter out;
 	private TUIView view;
 	private GOGUI gogui;
 	private GameController game;
-	private boolean useAI;
 	private boolean streamsClosed;
 	private Map<String, Command> incomingCommands;
 	private int protocolVersion;
@@ -127,6 +131,7 @@ public class GoClient extends Thread {
 		this.protocolVersion = Protocol.Client.VERSIONNO;
 		this.supportedExtensions = new HashSet<Extension>();
 		//TODO: op het eind: extensions nog toevoegen.
+		supportedExtensions.add(Extension.CHAT);
 		
 		this.gogui = new GoGUIIntegrator(false, true, 9);
 		this.setName(name);
@@ -253,11 +258,18 @@ public class GoClient extends Thread {
 	}
 	
 	public void useAI(boolean ai) {
+		if (ai) {
+			this.useAI = AI.RANDOM;
+		} else {
+			this.useAI = AI.NONE;
+		}
+	}
+	
+	public void setStrategy(AI ai) {
 		this.useAI = ai;
 	}
 	
 	public void sendRequest(String challengee) {
-		
 		if (!supportedServerExtensions.contains(Extension.CHALLENGE)) {
 			if (!challengee.equalsIgnoreCase(RequestCommand.RANDOM)) {
 				view.showUnsupportedExtension(Extension.CHALLENGE);
@@ -265,6 +277,14 @@ public class GoClient extends Thread {
 			new RequestCommand(this, 2, RequestCommand.RANDOM).send();
 		} else {
 			new RequestCommand(this, 2, challengee).send();
+		}
+	}
+	
+	public void sendChat(String msg) {
+		if (supportedServerExtensions.contains(Extension.CHAT)) {
+			new ChatCommand(this, msg).send();
+		} else {
+			view.showUnsupportedExtension(Extension.CHAT);
 		}
 	}
 	
@@ -302,6 +322,10 @@ public class GoClient extends Thread {
 		} else if (type.equals(ErrorCommand.INVMOVE)) {
 			game.askForMove();
 		}
+	}
+	
+	public void handleError(String type) {
+		view.showError(type, "Something went wrong on the server.");
 	}
 	
 	/**

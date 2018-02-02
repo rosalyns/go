@@ -44,11 +44,15 @@ public class ErrorCommand extends Command {
 
 	@Override
 	public void parse(String[] words) throws InvalidCommandLengthException {
-		if (words.length != 3) {
+		if (words.length != 3 && words.length != 2) {
 			throw new InvalidCommandLengthException();
 		}
 		//altijd van server naar client
-		client.handleError(words[1], words[2]);
+		if (words.length == 2) {
+			client.handleError(words[1]);
+		} else {
+			client.handleError(words[1], words[2]);
+		}
 	}
 
 }

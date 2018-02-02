@@ -10,8 +10,8 @@ public class RandomStrategy implements Strategy {
 	}
 
 	@Override
-	public int determineMove(Board b, Stone color) {
-		List<Integer> emptyFields = b.getEmptyFields();
+	public int determineMove(Game game, Stone color) {
+		List<Integer> emptyFields = game.getBoard().getEmptyFields();
 		int random = (int) (Math.random() * emptyFields.size());
 		return emptyFields.get(random);
 	}

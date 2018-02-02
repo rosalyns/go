@@ -66,28 +66,28 @@ public class NameCommand extends Command {
 			int version = Integer.parseInt(words[3]);
 			// words[ 6 t/m 12] bevatten extensions
 			for (int i = 5; i < 12; i++) {
-				boolean extension = Boolean.parseBoolean(words[i]);
-				if (extension) {
+				int extension = Integer.parseInt(words[i]);
+				if (extension == 1) {
 					switch (i) {
-						case 6:
+						case 5:
 							supportedExtensions.add(Extension.CHAT);
 							break;
-						case 7:
+						case 6:
 							supportedExtensions.add(Extension.CHALLENGE);
 							break;
-						case 8:
+						case 7:
 							supportedExtensions.add(Extension.LEADERBOARD);
 							break;
-						case 9:
+						case 8:
 							supportedExtensions.add(Extension.SECURITY);
 							break;
-						case 10:
+						case 9:
 							supportedExtensions.add(Extension.MOREPLAYERS);
 							break;
-						case 11:
+						case 10:
 							supportedExtensions.add(Extension.SIMULTANEOUS);
 							break;
-						case 12:
+						case 11:
 							supportedExtensions.add(Extension.MULTIMOVES);
 							break;
 						default:

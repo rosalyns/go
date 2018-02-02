@@ -25,8 +25,8 @@ public class TUIView implements Runnable {
 	 *
 	 */
 	public enum State {
-		INVALIDNAME, INMENU, INOPTIONMENU, SETTIMELIMIT, PICKPLAYERTYPE, WAITFORREQUEST, 
-		ASKFORSETTINGS, INGAME
+		INVALIDNAME, INMENU, INOPTIONMENU, SETTIMELIMIT, PICKPLAYERTYPE, PICKSTRATEGY,
+		WAITFORREQUEST, ASKFORSETTINGS, INGAME
 	}
 
 	private State state;
@@ -73,8 +73,8 @@ public class TUIView implements Runnable {
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("3")) {
 					new LeadCommand(controller, false).send();
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("4")) {
-					controller.shutDown();
 					new ExitCommand(controller, false).send();
+					controller.shutDown();
 				} else {
 					print("Enter 1, 2, 3 or 4.");
 				}
@@ -103,15 +103,35 @@ public class TUIView implements Runnable {
 				if (words.length == 1 && words[0].equalsIgnoreCase("y")) {
 					isAI = true;
 					controller.useAI(true);
-					new LobbyCommand(controller, false).send();
-					state = State.WAITFORREQUEST;
+					print("Random or Basic strategy? b/r");
+					state = State.PICKSTRATEGY;
 				} else if (words.length == 1 && words[0].equalsIgnoreCase("n")) {
 					isAI = false;
 					controller.useAI(false);
-					new LobbyCommand(controller, false).send();
+					print("Waiting for response from server.");
 					state = State.WAITFORREQUEST;
 				} else {
 					print("Type \"y\" or \"n\"");
+				}
+			} else if (state == State.PICKSTRATEGY) {
+				if (words.length == 1 && words[0].equalsIgnoreCase("B")) {
+					controller.setStrategy(GoClient.AI.BASIC);
+					state = State.WAITFORREQUEST;
+					if (controller.getExtensions().contains(Extension.CHALLENGE)) {
+						new LobbyCommand(controller, false).send();
+					} else {
+						new RequestCommand(controller, 2, RequestCommand.RANDOM).send();
+					}
+					print("Waiting for response from server.");
+				} else if (words.length == 1 && words[0].equalsIgnoreCase("R")) {
+					controller.setStrategy(GoClient.AI.RANDOM);
+					state = State.WAITFORREQUEST;
+					if (controller.getExtensions().contains(Extension.CHALLENGE)) {
+						new LobbyCommand(controller, false).send();
+					} else {
+						new RequestCommand(controller, 2, RequestCommand.RANDOM).send();
+					}
+					print("Waiting for response from server.");
 				}
 			} else if (state == State.WAITFORREQUEST) {
 				if (words.length == 2 && words[0].equalsIgnoreCase("REQUEST")) {
@@ -154,12 +174,16 @@ public class TUIView implements Runnable {
 						}
 					} else if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
 						game.quit();
+					} else if (words.length == 2 && words[0].equalsIgnoreCase("CHAT")) {
+						controller.sendChat(words[1]);
 					} else {
 						print("Type MOVE <row> <column>, MOVE PASS or QUIT.");
 					}
 				} else {
 					if (words.length == 1 && words[0].equalsIgnoreCase("QUIT")) {
 						game.quit();
+					} else if (words.length == 2 && words[0].equalsIgnoreCase("CHAT")) {
+						controller.sendChat(words[1]);
 					} else {
 						print("You can quit by typing QUIT.");
 					}
@@ -243,7 +267,9 @@ public class TUIView implements Runnable {
 	
 	public void showUnsupportedExtension(Extension type) {
 		if (type == Extension.CHALLENGE) {
-			print("The server doesnt support challenges.");
+			print("The server doesn't support challenges.");
+		} else if (type == Extension.CHAT) {
+			print("The server doesn't support chats.");
 		}
 	}
 
